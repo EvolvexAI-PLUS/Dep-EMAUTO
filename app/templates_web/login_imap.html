@@ -3,153 +3,326 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Email Automation - IMAP Login</title>
+    <title>Connect Your Email - Email Automation</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
-        .imap-form {
-            max-width: 500px;
-            margin: 0 auto;
+        .imap-container {
+            max-width: 550px;
+            margin: 2rem auto;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .imap-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
             padding: 2rem;
+            text-align: center;
         }
-        .form-group {
-            margin-bottom: 1.5rem;
+
+        .imap-header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 600;
         }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-            color: #333;
-        }
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+
+        .imap-header p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
             font-size: 1rem;
         }
-        .checkbox-group {
+
+        .imap-form {
+            padding: 2rem;
+        }
+
+        .form-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
         }
-        .error-message {
-            background-color: #fee;
-            border: 1px solid #fcc;
-            color: #c33;
-            padding: 1rem;
-            border-radius: 4px;
-            margin-bottom: 1rem;
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 120px;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
         }
-        .info-box {
-            background-color: #e8f4fd;
-            border: 1px solid #b8d4f0;
-            color: #2c5aa0;
-            padding: 1rem;
-            border-radius: 4px;
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 0.875rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+            margin-top: 0.25rem;
+        }
+
+        .error-message {
+            background: linear-gradient(135deg, #fee 0%, #fcc 100%);
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
             margin-bottom: 1.5rem;
             font-size: 0.9rem;
         }
-        .server-suggestions {
-            margin-top: 0.5rem;
-            font-size: 0.85rem;
+
+        .info-banner {
+            background: linear-gradient(135deg, #e8f4fd 0%, #b8d4f0 100%);
+            border: 1px solid #4dabf7;
+            color: #1e88e5;
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .server-hints {
+            font-size: 0.8rem;
             color: #666;
+            margin-top: 0.5rem;
+            line-height: 1.4;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-bottom: 1rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #6c757d;
+            border: 2px solid #e9ecef;
+        }
+
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+
+        .help-section {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            border: 1px solid #e9ecef;
+        }
+
+        .help-section h4 {
+            margin: 0 0 1rem 0;
+            color: #495057;
+            font-size: 1rem;
+        }
+
+        .help-section ul {
+            margin: 0;
+            padding-left: 1.2rem;
+        }
+
+        .help-section li {
+            margin-bottom: 0.5rem;
+            color: #6c757d;
+        }
+
+        .domain-badge {
+            display: inline-block;
+            background: #e9ecef;
+            color: #495057;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin: 0.25rem 0.25rem 0.25rem 0;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="imap-form">
-            <h2>📧 Connect Your Email</h2>
-            <p>Connect any email account for full automation</p>
+    <div class="imap-container">
+        <div class="imap-header">
+            <h1>📧 Connect Your Email</h1>
+            <p>Enable AI-powered email automation for any email account</p>
+        </div>
 
+        <form method="POST" action="/login/imap" class="imap-form">
             {% if error %}
             <div class="error-message">
-                ❌ {{ error }}
+                ⚠️ <strong>Connection Error:</strong><br>
+                {{ error }}
             </div>
             {% endif %}
 
-            <div class="info-box">
-                💡 <strong>Supported:</strong> Gmail, Outlook, Yahoo, Custom domains<br>
-                🔒 <strong>Security:</strong> SSL/TLS encryption required<br>
-                ⚡ <strong>Features:</strong> Full read/write automation
+            <div class="info-banner">
+                🔒 <strong>Secure & Private:</strong> Your credentials are encrypted and never stored in plain text.<br>
+                📧 <strong>Full Support:</strong> Works with Gmail, Outlook, Yahoo, and any custom domain.
             </div>
 
-            <form method="POST" action="/login/imap">
-                <div class="form-group">
+            <!-- Account Credentials -->
+            <div class="form-section">
+                <h3 class="section-title">🔐 Account Credentials</h3>
+
+                <div class="form-group full-width">
                     <label for="email">📧 Email Address</label>
                     <input type="email" id="email" name="email"
-                           placeholder="huzaimah@aljual.ae" required
+                           placeholder="abc@example.com" required
                            value="{{ request.form.email if request.form.email else '' }}">
                 </div>
 
-                <div class="form-group">
+                <div class="form-group full-width">
                     <label for="password">🔑 Password</label>
                     <input type="password" id="password" name="password"
                            placeholder="Your email password" required>
+                    <div class="server-hints">
+                        Use your email account password or app-specific password
+                    </div>
                 </div>
+            </div>
 
-                <div class="form-group">
-                    <label for="imap_server">📥 IMAP Server</label>
-                    <input type="text" id="imap_server" name="imap_server"
-                           placeholder="mail.aljual.ae" required
-                           value="{{ request.form.imap_server if request.form.imap_server else '' }}">
-                    <div class="server-suggestions">
-                        Common: mail.yourdomain.com, imap.gmail.com, outlook.office365.com
+            <!-- Server Configuration -->
+            <div class="form-section">
+                <h3 class="section-title">⚙️ Server Configuration</h3>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="imap_server">📥 IMAP Server</label>
+                        <input type="text" id="imap_server" name="imap_server"
+                               placeholder="mail.example.com" required
+                               value="{{ request.form.imap_server if request.form.imap_server else '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="imap_port">Port</label>
+                        <select id="imap_port" name="imap_port">
+                            <option value="993" selected>993 (SSL)</option>
+                            <option value="143">143 (TLS)</option>
+                        </select>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="imap_port">🔌 IMAP Port</label>
-                    <select id="imap_port" name="imap_port">
-                        <option value="993" selected>993 (SSL)</option>
-                        <option value="143">143 (Non-SSL)</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="smtp_server">📤 SMTP Server</label>
-                    <input type="text" id="smtp_server" name="smtp_server"
-                           placeholder="mail.aljual.ae" required
-                           value="{{ request.form.smtp_server if request.form.smtp_server else '' }}">
-                    <div class="server-suggestions">
-                        Common: mail.yourdomain.com, smtp.gmail.com, smtp-mail.outlook.com
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="smtp_server">📤 SMTP Server</label>
+                        <input type="text" id="smtp_server" name="smtp_server"
+                               placeholder="mail.example.com" required
+                               value="{{ request.form.smtp_server if request.form.smtp_server else '' }}">
+                    </div>
+                    <div class="form-group">
+                        <label for="smtp_port">Port</label>
+                        <select id="smtp_port" name="smtp_port">
+                            <option value="587" selected>587 (TLS)</option>
+                            <option value="465">465 (SSL)</option>
+                            <option value="25">25 (Plain)</option>
+                        </select>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="smtp_port">🔌 SMTP Port</label>
-                    <select id="smtp_port" name="smtp_port">
-                        <option value="587" selected>587 (TLS)</option>
-                        <option value="465">465 (SSL)</option>
-                        <option value="25">25 (Non-SSL)</option>
-                    </select>
-                </div>
-
-                <div class="form-group">
+                <div class="form-group full-width">
                     <div class="checkbox-group">
                         <input type="checkbox" id="use_ssl" name="use_ssl" checked>
-                        <label for="use_ssl">🔒 Use SSL/TLS encryption (recommended)</label>
+                        <label for="use_ssl">
+                            🔒 Use SSL/TLS encryption (recommended for security)
+                        </label>
                     </div>
                 </div>
+            </div>
 
-                <button type="submit" class="btn btn-primary">
-                    🔗 Connect Email Account
-                </button>
-            </form>
+            <button type="submit" class="btn btn-primary">
+                🔗 Connect & Test Email Account
+            </button>
 
-            <div style="text-align: center; margin-top: 2rem;">
+            <div class="back-link">
                 <a href="/login" class="btn btn-secondary">
                     ← Back to Login Options
                 </a>
             </div>
+        </form>
 
-            <div style="margin-top: 2rem; padding: 1rem; background: #f9f9f9; border-radius: 4px; font-size: 0.9rem;">
-                <strong>🔍 Auto-Detection:</strong><br>
-                For Gmail: imap.gmail.com:993, smtp.gmail.com:587<br>
-                For Outlook: outlook.office365.com:993, smtp-mail.outlook.com:587<br>
-                For Custom: Usually mail.yourdomain.com for both IMAP and SMTP
+        <div class="help-section">
+            <h4>🔍 Server Auto-Detection Examples</h4>
+            <div>
+                <span class="domain-badge">Gmail</span>
+                <span class="domain-badge">Outlook</span>
+                <span class="domain-badge">Yahoo</span>
+                <span class="domain-badge">Custom Domain</span>
             </div>
+            <ul>
+                <li><strong>Gmail:</strong> imap.gmail.com:993, smtp.gmail.com:587</li>
+                <li><strong>Outlook:</strong> outlook.office365.com:993, smtp-mail.outlook.com:587</li>
+                <li><strong>Yahoo:</strong> imap.mail.yahoo.com:993, smtp.mail.yahoo.com:587</li>
+                <li><strong>Custom:</strong> mail.yourdomain.com for both IMAP and SMTP</li>
+            </ul>
+            <p><em>💡 The form will auto-fill common servers based on your email domain.</em></p>
         </div>
     </div>
 
@@ -159,22 +332,50 @@
             const email = this.value;
             if (!email.includes('@')) return;
 
-            const domain = email.split('@')[1];
+            const domain = email.split('@')[1].toLowerCase();
             const imapServer = document.getElementById('imap_server');
             const smtpServer = document.getElementById('smtp_server');
 
-            if (!imapServer.value) {
-                if (domain === 'gmail.com') {
-                    imapServer.value = 'imap.gmail.com';
-                    smtpServer.value = 'smtp.gmail.com';
-                } else if (domain === 'outlook.com' || domain === 'hotmail.com') {
-                    imapServer.value = 'outlook.office365.com';
-                    smtpServer.value = 'smtp-mail.outlook.com';
-                } else {
-                    imapServer.value = `mail.${domain}`;
-                    smtpServer.value = `mail.${domain}`;
-                }
+            // Don't overwrite if user has already typed
+            if (imapServer.value || smtpServer.value) return;
+
+            // Auto-fill based on domain
+            if (domain === 'gmail.com') {
+                imapServer.value = 'imap.gmail.com';
+                smtpServer.value = 'smtp.gmail.com';
+            } else if (domain === 'outlook.com' || domain === 'hotmail.com' || domain === 'live.com') {
+                imapServer.value = 'outlook.office365.com';
+                smtpServer.value = 'smtp-mail.outlook.com';
+            } else if (domain === 'yahoo.com' || domain === 'yahoo.co.uk') {
+                imapServer.value = 'imap.mail.yahoo.com';
+                smtpServer.value = 'smtp.mail.yahoo.com';
+            } else if (domain === 'aol.com') {
+                imapServer.value = 'imap.aol.com';
+                smtpServer.value = 'smtp.aol.com';
+            } else {
+                // Generic configuration for custom domains
+                imapServer.value = `mail.${domain}`;
+                smtpServer.value = `mail.${domain}`;
             }
+        });
+
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const imapServer = document.getElementById('imap_server').value;
+            const smtpServer = document.getElementById('smtp_server').value;
+
+            if (!email || !password || !imapServer || !smtpServer) {
+                e.preventDefault();
+                alert('Please fill in all required fields.');
+                return false;
+            }
+
+            // Show loading state
+            const submitBtn = document.querySelector('button[type="submit"]');
+            submitBtn.textContent = '🔄 Testing Connection...';
+            submitBtn.disabled = true;
         });
     </script>
 </body>
