@@ -84,12 +84,13 @@ def _format_profile_persona(user_email: str, profile: dict) -> str:
         "- Maintain the existing thread subject and context.\n"
     )
 
+    preferences_text = f"Preferences: {pref_text}\n" if pref_text else ""
     return (
         f"{who}"
         f"{tz_line}"
         f"Tone: {tone}.\n"
         f"{guardrails}"
-        f"{('Preferences: ' + pref_text + '\\n') if pref_text else ''}"
+        f"{preferences_text}"
         f"Always sign off exactly as:\n{signoff}\n"
     )
 
