@@ -19,7 +19,12 @@ def init_oauth(app: Flask):
     oauth.init_app(app)
 
     # Get Railway domain for OAuth redirects
-    railway_domain = os.getenv("RAILWAY_STATIC_URL", "https://dep-emauto-production.up.railway.app")
+    railway_domain = os.getenv("RAILWAY_STATIC_URL")
+    if not railway_domain:
+        # Fallback: construct from Railway-provided variables
+        railway_domain = f"https://{os.getenv('RAILWAY_PROJECT_NAME', 'dep-emauto-production')}.up.railway.app"
+    if not railway_domain.startswith('https://'):
+        railway_domain = f"https://{railway_domain}"
 
     # === Google (Gmail) ===
     oauth.register(
@@ -53,3 +58,5 @@ def init_oauth(app: Flask):
 
     print("✅ OAuth providers registered: Google, Yahoo (Outlook via MSAL)")
     print(f"🔗 OAuth redirect domain: {railway_domain}")
+    print(f"🔗 Google redirect URI: {railway_domain}/callback/google")
+    print(f"🔗 Outlook redirect URI: {railway_domain}/callback/outlook")
