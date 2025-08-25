@@ -1,0 +1,299 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+:root {
+  --app-bg: #0e1422;
+  --panel-bg: #121a2c;
+  --text-color: #e8eeff;
+  --muted: #a6b0c3;
+  --table-bg: #141d31;
+  --table-header-bg: #18233a;
+  --table-border: #273149;
+  --row-hover: rgba(255, 255, 255, 0.05);
+  --highlight-admin: #2ba972;
+  --highlight-user: #6291fd;
+  --highlight-superuser: #b37bff;
+  --btn-primary: #0b62d6;
+  --btn-primary-hover: #094ea9;
+  --btn-border: #33425b;
+  --logout-color: #6291fd;
+  --input-bg: #0f1a2c;
+  --input-border: #2d3a53;
+  --danger: #f44336;
+  --warning: #ffb020;
+  --focus: #4a5f82;
+  --shadow: 0 8px 24px rgba(0,0,0,0.35);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  padding: 32px 16px;
+  font-family: 'Poppins', sans-serif;
+  background: radial-gradient(800px 400px at 10% 0%, #0c1220 0%, #0b1221 40%, var(--app-bg) 100%);
+  color: var(--text-color);
+}
+
+.container, .dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h1, h2, h3 {
+  margin: 0 0 12px;
+  line-height: 1.25;
+}
+
+h2 {
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.subtitle {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin-top: -6px;
+}
+
+.panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--table-border);
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+
+/* Topbar */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.topbar-left {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.topbar .muted {
+  color: var(--muted);
+  font-size: 0.92rem;
+}
+.topbar-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  line-height: 1;
+  border: 1px solid var(--btn-border);
+  border-radius: 8px;
+  background: #111a2b;
+  color: #dce6ff;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s, opacity 0.2s, transform 0.04s;
+  user-select: none;
+}
+.btn:hover {
+  background: #0e1726;
+  border-color: #3c4f73;
+}
+.btn:active {
+  transform: translateY(1px);
+}
+.btn.primary {
+  background: var(--btn-primary);
+  border-color: var(--btn-primary);
+  color: #fff;
+}
+.btn.primary:hover {
+  background: var(--btn-primary-hover);
+  border-color: var(--btn-primary-hover);
+}
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Inputs */
+select, .select, input[type="text"], input[type="email"] {
+  background: var(--input-bg);
+  color: var(--text-color);
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+select:focus, .select:focus, input[type="text"]:focus, input[type="email"]:focus {
+  border-color: var(--focus);
+  box-shadow: 0 0 0 3px rgba(74, 95, 130, 0.25);
+}
+
+/* Table */
+.table-wrap {
+  overflow: auto;
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--table-border);
+  background: var(--table-bg);
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 760px;
+  background: var(--table-bg);
+}
+thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--table-header-bg);
+  color: #dbe6ff;
+  text-align: left;
+  font-weight: 500;
+  font-size: 13px;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--table-border);
+  letter-spacing: 0.3px;
+}
+tbody td {
+  padding: 12px 14px;
+  font-size: 14px;
+  color: #dbe6ff;
+  border-top: 1px solid var(--table-border);
+  vertical-align: middle;
+}
+tbody tr:hover {
+  background: var(--row-hover);
+}
+
+/* Density controls (optional classes you can toggle on table-wrap) */
+.table-dense tbody td { padding: 8px 12px; font-size: 13px; }
+.table-comfy tbody td { padding: 14px 16px; }
+
+/* Role badges */
+.role-badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  letter-spacing: 0.2px;
+  border: 1px solid transparent;
+}
+.role-user {
+  background: rgba(98, 145, 253, 0.12);
+  color: var(--highlight-user);
+  border-color: rgba(98, 145, 253, 0.35);
+}
+.role-admin {
+  background: rgba(43, 169, 114, 0.12);
+  color: var(--highlight-admin);
+  border-color: rgba(43, 169, 114, 0.35);
+}
+.role-superuser {
+  background: rgba(179, 123, 255, 0.12);
+  color: var(--highlight-superuser);
+  border-color: rgba(179, 123, 255, 0.35);
+}
+
+/* Actions cell */
+.actions {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Inline alerts / helpers */
+.note {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.warn {
+  color: var(--warning);
+  font-size: 0.9rem;
+}
+.danger {
+  color: var(--danger);
+  font-size: 0.9rem;
+}
+
+/* Footer/logout */
+.logout-link {
+  margin-top: 20px;
+  text-align: center;
+}
+.logout-link a {
+  color: var(--logout-color);
+  text-decoration: none;
+  font-weight: 500;
+  padding: 10px 20px;
+  background-color: rgba(98, 145, 253, 0.1);
+  border: 1px solid rgba(98, 145, 253, 0.25);
+  border-radius: 8px;
+  transition: background-color 0.2s, border-color 0.2s, transform 0.04s;
+}
+.logout-link a:hover {
+  background-color: rgba(98, 145, 253, 0.2);
+  border-color: rgba(98, 145, 253, 0.45);
+}
+.logout-link a:active {
+  transform: translateY(1px);
+}
+
+/* Small helpers for layout around the table */
+.section {
+  display: grid;
+  gap: 12px;
+}
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.header-row .left {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.header-row .right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  body { padding: 24px 12px; }
+  .topbar { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .topbar-actions { width: 100%; justify-content: flex-start; flex-wrap: wrap; }
+  .table-wrap { border-radius: 8px; }
+  thead th, tbody td { padding: 10px 12px; }
+  /* Example: hide a less important column on smaller screens (e.g., provider) if needed
+     tbody td:nth-child(2), thead th:nth-child(2) { display: none; } */
+}
+
+@media (max-width: 600px) {
+  .btn { padding: 7px 10px; font-size: 13px; }
+  select, input[type="text"], input[type="email"] { padding: 7px 9px; font-size: 13px; }
+  .role-badge { padding: 3px 8px; font-size: 0.78rem; }
+}

@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Review Pending Email - Email AI Assistant</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Review and edit AI-generated email responses">
+
+  <!-- Self-contained styles to prevent conflicts -->
+  <style>
+    /* CSS Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      height: 100%;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #f9fafb;
+      background: linear-gradient(135deg, #0b101a 0%, #1a1f2e 100%);
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Layout Container */
+    .page-wrapper {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background:
+        radial-gradient(1200px 600px at 30% -10%, rgba(59,130,246,0.15), transparent 60%),
+        radial-gradient(1000px 500px at 100% 0%, rgba(99,102,241,0.12), transparent 60%),
+        #0b101a;
+    }
+
+    /* Header */
+    .page-header {
+      background: rgba(17, 24, 39, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 1.5rem 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .header-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .header-title {
+      font-size: clamp(1.75rem, 5vw, 2.5rem);
+      font-weight: 800;
+      color: #ffffff;
+      background: linear-gradient(135deg, #ffffff 0%, #e2e8f0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.2;
+    }
+
+    .header-subtitle {
+      font-size: 1rem;
+      color: #94a3b8;
+      font-weight: 400;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    /* Button Base Styles */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(17, 24, 39, 0.6);
+      color: #f1f5f9;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+      transition: left 0.6s;
+    }
+
+    .btn:hover::before {
+      left: 100%;
+    }
+
+    .btn:hover {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: rgba(59, 130, 246, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(59, 130, 246, 0.15);
+    }
+
+    .btn.primary {
+      background: #2563eb;
+      border-color: #1d4ed8;
+      color: white;
+    }
+
+    .btn.primary:hover {
+      background: #1d4ed8;
+      border-color: #1e40af;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      padding: 2rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    /* Email Review Container */
+    .email-review {
+      background: rgba(17, 24, 39, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Warning Banner */
+    .warning-banner {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
+      border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .warning-icon {
+      font-size: 1.25rem;
+      color: #f59e0b;
+    }
+
+    .warning-text {
+      color: #fed7aa;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    /* Content Sections */
+    .email-sections {
+      display: grid;
+      gap: 2rem;
+      padding: 2rem;
+      grid-template-columns: 1fr;
+      flex: 1;
+    }
+
+    /* Email Section */
+    .email-section {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .section-header {
+      padding: 1.25rem 1.5rem;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.08), rgba(59, 130, 246, 0.04));
+      border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .section-icon {
+      font-size: 1.5rem;
+      width: 2rem;
+      height: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      flex-shrink: 0;
+    }
+
+    .original-email .section-icon {
+      background: rgba(59, 130, 246, 0.2);
+      color: #3b82f6;
+    }
+
+    .ai-response .section-icon {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+    }
+
+    .section-title-group {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .section-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 0.25rem;
+    }
+
+    .section-subtitle {
+      font-size: 0.875rem;
+      color: #94a3b8;
+      font-weight: 400;
+    }
+
+    .section-content {
+      padding: 1.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    /* Email Meta Information */
+    .email-meta {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      flex-shrink: 0;
+    }
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .meta-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .meta-value {
+      font-size: 0.9rem;
+      color: #e2e8f0;
+      font-weight: 500;
+    }
+
+    /* Email Content */
+    .email-content {
+      margin-bottom: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .email-snippet {
+      background: rgba(0, 0, 0, 0.25);
+      border-left: 3px solid #64748b;
+      padding: 1rem 1.25rem;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 1rem;
+      font-style: italic;
+      color: #cbd5e1;
+    }
+
+    .email-body {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 1.25rem;
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+      font-size: 0.875rem;
+      line-height: 1.6;
+      color: #cbd5e1;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      flex-shrink: 0;
+    }
+
+    /* Response Form */
+    .response-form {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+      padding: 1.5rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+
+    .form-input,
+    .form-textarea {
+      padding: 0.75rem 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.4);
+      color: #f1f5f9;
+      font-family: inherit;
+      font-size: 0.9rem;
+      transition: all 0.2s ease;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+      outline: none;
+      border-color: #3b82f6;
+      background: rgba(59, 130, 246, 0.05);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .form-input::placeholder,
+    .form-textarea::placeholder {
+      color: #64748b;
+    }
+
+    .form-textarea {
+      min-height: 300px;
+      resize: vertical;
+      line-height: 1.6;
+      font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+      flex: 1;
+    }
+
+    /* Attachments Section */
+    .attachments-section {
+      margin-top: 1.5rem;
+      padding: 1.25rem;
+      background: rgba(245, 158, 11, 0.05);
+      border: 1px solid rgba(245, 158, 11, 0.2);
+      border-radius: 8px;
+      flex-shrink: 0;
+    }
+
+    .attachments-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fed7aa;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .attachments-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .attachment-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .attachment-item:hover {
+      background: rgba(245, 158, 11, 0.05);
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    .attachment-icon {
+      font-size: 1.25rem;
+      color: #f59e0b;
+      flex-shrink: 0;
+    }
+
+    .attachment-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .attachment-name {
+      font-weight: 500;
+      color: #e2e8f0;
+      margin-bottom: 0.125rem;
+      word-break: break-word;
+    }
+
+    .attachment-size {
+      font-size: 0.75rem;
+      color: #94a3b8;
+    }
+
+    .attachments-note {
+      margin-top: 0.75rem;
+      padding: 0.5rem 0.75rem;
+      background: rgba(245, 158, 11, 0.1);
+      border-radius: 6px;
+      font-size: 0.8rem;
+      color: #fed7aa;
+      text-align: center;
+    }
+
+    /* Form Actions */
+    .form-actions {
+      text-align: center;
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      flex-shrink: 0;
+    }
+
+    .form-actions .btn {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+      margin-top: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      flex-shrink: 0;
+    }
+
+    .action-buttons .btn {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .page-header {
+        padding: 1rem 1.5rem;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+      }
+
+      .header-title {
+        font-size: 1.75rem;
+      }
+
+      .main-content {
+        padding: 1rem;
+      }
+
+      .email-sections {
+        gap: 1.5rem;
+        padding: 1.5rem;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .email-meta {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+
+      .attachments-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .action-buttons {
+        flex-direction: column;
+        padding: 1.5rem;
+      }
+
+      .action-buttons .btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .page-header {
+        padding: 0.75rem 1rem;
+      }
+
+      .main-content {
+        padding: 0.75rem;
+      }
+
+      .email-sections {
+        padding: 1rem;
+        gap: 1rem;
+      }
+
+      .section-header {
+        padding: 1rem;
+      }
+
+      .section-content {
+        padding: 1rem;
+      }
+
+      .email-body {
+        max-height: 250px;
+        padding: 1rem;
+      }
+
+      .form-textarea {
+        min-height: 200px;
+      }
+    }
+
+    /* Scrollbar Styling */
+    .email-body::-webkit-scrollbar,
+    .form-textarea::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .email-body::-webkit-scrollbar-track,
+    .form-textarea::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 4px;
+    }
+
+    .email-body::-webkit-scrollbar-thumb,
+    .form-textarea::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+
+    .email-body::-webkit-scrollbar-thumb:hover,
+    .form-textarea::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Ensure proper text rendering */
+    .email-body,
+    .form-textarea {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-wrapper">
+    <header class="page-header">
+      <div class="header-info">
+        <h1 class="header-title">Email Review</h1>
+        <p class="header-subtitle">Review AI-generated response before sending</p>
+      </div>
+      <div class="header-actions">
+        <a class="btn" href="{{ url_for('routes.pending_list') }}">
+          ← Back to Pending
+        </a>
+        <a class="btn" href="/logout">Logout</a>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <div class="email-review">
+        {% if (item.sensitivity or '') != 'normal' or (item.attachments or [])|length > 0 %}
+        <div class="warning-banner">
+          <span class="warning-icon">⚠️</span>
+          <p class="warning-text">This email requires manual review due to sensitivity settings or attachments.</p>
+        </div>
+        {% endif %}
+
+        <div class="email-sections">
+          <!-- Original Email Section -->
+          {% if item.original_email %}
+          <section class="email-section original-email">
+            <div class="section-header">
+              <span class="section-icon">📧</span>
+              <div class="section-title-group">
+                <h2 class="section-title">Original Email</h2>
+                <div class="section-subtitle">What the sender wrote</div>
+              </div>
+            </div>
+            <div class="section-content">
+              <div class="email-meta">
+                {% if item.original_email.sender %}
+                <div class="meta-item">
+                  <span class="meta-label">From</span>
+                  <span class="meta-value">
+                    {% if item.original_email.sender.emailAddress %}
+                      {{ item.original_email.sender.emailAddress.address }}
+                    {% else %}
+                      {{ item.original_email.sender }}
+                    {% endif %}
+                  </span>
+                </div>
+                {% endif %}
+                {% if item.original_email.timestamp %}
+                <div class="meta-item">
+                  <span class="meta-label">Received</span>
+                  <span class="meta-value">{{ item.original_email.timestamp }}</span>
+                </div>
+                {% endif %}
+              </div>
+
+              {% if item.original_email.snippet %}
+              <div class="email-snippet">{{ item.original_email.snippet }}</div>
+              {% endif %}
+
+              {% if item.original_email.body %}
+              <div class="email-body">{{ item.original_email.body }}</div>
+              {% endif %}
+            </div>
+          </section>
+          {% endif %}
+
+          <!-- AI Response Section -->
+          <section class="email-section ai-response">
+            <div class="section-header">
+              <span class="section-icon">🤖</span>
+              <div class="section-title-group">
+                <h2 class="section-title">AI-Generated Response</h2>
+                <div class="section-subtitle">Review and edit before sending</div>
+              </div>
+            </div>
+            <div class="section-content">
+              <form method="POST" action="{{ url_for('routes.pending_save', pid=item.id) }}" class="response-form">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label">Subject Line</label>
+                    <input type="text" name="subject" value="{{ item.subject or '' }}" required class="form-input" placeholder="Enter email subject...">
+                  </div>
+
+                  <div class="form-group">
+                    <label class="form-label">Recipients</label>
+                    <input type="text" name="recipients" value="{{ (item.recipients or []) | join(', ') }}" required class="form-input" placeholder="email@example.com, another@example.com">
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label">Response Content</label>
+                  <textarea name="body_draft" class="form-textarea" placeholder="Your AI-generated response will appear here...">{{ item.body_draft or '' }}</textarea>
+                </div>
+
+                {% if (item.attachments or [])|length > 0 %}
+                <div class="attachments-section">
+                  <h3 class="attachments-title">📎 Email Attachments ({{ (item.attachments or []) | length }})</h3>
+                  <div class="attachments-grid">
+                    {% for a in item.attachments %}
+                    <div class="attachment-item">
+                      <span class="attachment-icon">📄</span>
+                      <div class="attachment-info">
+                        <div class="attachment-name">{{ a.filename or 'file' }}</div>
+                        <div class="attachment-size">{{ a.size or '?' }} bytes</div>
+                      </div>
+                    </div>
+                    {% endfor %}
+                  </div>
+                  <div class="attachments-note">These attachments will be preserved when you send the email.</div>
+                </div>
+                {% endif %}
+
+                <div class="form-actions">
+                  <button class="btn primary" type="submit">
+                    💾 Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
+          </section>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <form method="POST" action="{{ url_for('routes.pending_send', pid=item.id) }}" style="display:inline;">
+            <input type="hidden" name="provider" value="{{ item.provider }}">
+            <button class="btn primary" type="submit">🚀 Send Email</button>
+          </form>
+          <form method="POST" action="{{ url_for('routes.pending_cancel', pid=item.id) }}" style="display:inline;">
+            <button class="btn" type="submit">❌ Cancel</button>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

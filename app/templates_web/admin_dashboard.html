@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Global app styles if any -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <!-- Admin dashboard specific styles -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='admin_dashboard.css') }}">
+</head>
+<body>
+  <div class="dashboard-container container">
+    <div class="topbar">
+      <div class="topbar-left">
+        <h2>Admin Dashboard</h2>
+        <span class="subtitle">Manage users and roles</span>
+      </div>
+      <div class="topbar-actions">
+        <a class="btn" href="/dashboard">User Dashboard</a>
+        {% if role == "superuser" %}
+          <a class="btn" href="/superuser">Superuser Dashboard</a>
+        {% endif %}
+        <a class="btn" href="/logout">Logout</a>
+      </div>
+    </div>
+
+    <div class="panel section">
+      <div class="header-row">
+        <div class="left">
+          <strong>Signed in as:</strong>
+          <span class="role-badge {% if role=='user' %}role-user{% elif role=='admin' %}role-admin{% else %}role-superuser{% endif %}">
+            {{ role }}
+          </span>
+        </div>
+        <div class="right note">
+          Admins can change user/admin roles. Superuser changes are not permitted here.
+        </div>
+      </div>
+
+      <div class="table-wrap table-dense">
+        <table>
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Provider</th>
+              <th>Role</th>
+              <th>Plan</th>
+              <th style="min-width: 260px;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for u in users %}
+              {% set u_role = (u.role if u.role else ('admin' if u.is_admin else 'user')) %}
+              <tr>
+                <td>{{ u.email }}</td>
+                <td>{{ u.provider or '-' }}</td>
+                <td>
+                  <span class="role-badge {% if u_role=='user' %}role-user{% elif u_role=='admin' %}role-admin{% else %}role-superuser{% endif %}">
+                    {{ u_role }}
+                  </span>
+                </td>
+                <td>{{ u.plan or 'trial' }}</td>
+                <td class="actions">
+                  {% if u_role == 'superuser' %}
+                    <span class="note">Managed by superuser</span>
+                  {% else %}
+                    <form method="POST" action="/admin/change_role" style="display:inline-flex; gap:8px; align-items:center;">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+                      <input type="hidden" name="email" value="{{ u.email }}">
+                      <select name="role" aria-label="Role">
+                        <option value="user" {% if u_role=='user' %}selected{% endif %}>user</option>
+                        <option value="admin" {% if u_role=='admin' %}selected{% endif %}>admin</option>
+                      </select>
+                      <button class="btn primary" type="submit">Update</button>
+                    </form>
+                  {% endif %}
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note" style="margin-top: 8px;">
+        Tip: Use the role badge to quickly identify account privileges.
+      </div>
+    </div>
+
+    <div class="logout-link">
+      <a href="/logout">Sign out</a>
+    </div>
+  </div>
+</body>
+</html>

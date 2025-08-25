@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="login-container">
+    <h2>Login to Continue</h2>
+
+    <a class="btn google" href="/login/google">
+      <img src="{{ url_for('static', filename='logos/google.svg') }}" alt="Google logo">
+      Continue with Google
+    </a>
+
+    <a class="btn outlook" href="/login/outlook">
+      <img src="{{ url_for('static', filename='logos/outlook.svg') }}" alt="Outlook logo">
+      Continue with Outlook
+    </a>
+
+    <a class="btn yahoo" href="/login/yahoo">
+      <img src="{{ url_for('static', filename='logos/yahoo.svg') }}" alt="Yahoo logo">
+      Continue with Yahoo
+    </a>
+    <a class="btn admin" href="/admin/login">
+      <img src="{{ url_for('static', filename='logos/admin.svg') }}" alt="Admin logo">
+      Admin Login
+    </a>
+  </div>
+</body>
+</html>

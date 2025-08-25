@@ -1,0 +1,1267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>User Profile - Email AI Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+  <style>
+    /* Modern Glassmorphism Profile Styles */
+    :root {
+      --profile-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --profile-glass: rgba(255, 255, 255, 0.08);
+      --profile-border: rgba(255, 255, 255, 0.15);
+      --profile-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      --profile-hover-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      --profile-accent: rgba(102, 126, 234, 0.2);
+    }
+
+    .app-content {
+      overflow-y: auto !important;
+      max-height: calc(100vh - 100px);
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      position: relative;
+    }
+
+    .app-content::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        radial-gradient(circle at 20% 30%, rgba(102, 126, 234, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .profile-content {
+      padding: 2rem 1rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .profile-header {
+      margin-bottom: 3rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .profile-avatar {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: var(--profile-gradient);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 4rem;
+      font-weight: 800;
+      color: white;
+      margin: 0 auto 2rem;
+      border: 6px solid rgba(255, 255, 255, 0.2);
+      box-shadow: var(--profile-shadow);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(20px);
+    }
+
+    .profile-avatar::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transform: rotate(45deg);
+      transition: transform 0.8s ease;
+    }
+
+    .profile-avatar:hover::before {
+      transform: rotate(45deg) translate(50%, 50%);
+    }
+
+    .profile-title {
+      font-size: 3rem;
+      font-weight: 900;
+      background: var(--profile-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1rem;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .profile-subtitle {
+      color: var(--text-muted);
+      font-size: 1.3rem;
+      font-weight: 400;
+      margin-bottom: 0;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+      gap: 2.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .profile-card {
+      background: var(--profile-glass);
+      backdrop-filter: blur(25px);
+      border: 1px solid var(--profile-border);
+      border-radius: 24px;
+      padding: 3rem;
+      box-shadow: var(--profile-shadow);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--profile-gradient);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .profile-card:hover {
+      transform: translateY(-12px) scale(1.02);
+      box-shadow: var(--profile-hover-shadow);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .profile-card:hover::before {
+      opacity: 1;
+    }
+
+    .profile-card-header {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--profile-border);
+    }
+
+    .profile-card-icon {
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--profile-gradient);
+      border-radius: 16px;
+      color: white;
+      font-size: 2rem;
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+      position: relative;
+    }
+
+    .profile-card-icon::after {
+      content: '';
+      position: absolute;
+      inset: -2px;
+      border-radius: 18px;
+      background: var(--profile-gradient);
+      z-index: -1;
+      opacity: 0.3;
+    }
+
+    .profile-card-title {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      margin: 0;
+      background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .profile-field-group {
+      margin-bottom: 2.5rem;
+    }
+
+    .profile-field-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .profile-field {
+      margin-bottom: 2rem;
+    }
+
+    .profile-field:last-child {
+      margin-bottom: 0;
+    }
+
+    .profile-label {
+      display: block;
+      font-weight: 700;
+      color: var(--text-secondary);
+      margin-bottom: 1rem;
+      font-size: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      position: relative;
+    }
+
+    .profile-label::after {
+      content: '';
+      position: absolute;
+      bottom: -5px;
+      left: 0;
+      width: 30px;
+      height: 2px;
+      background: var(--profile-gradient);
+      border-radius: 1px;
+    }
+
+    .profile-value {
+      color: var(--text-primary);
+      padding: 1.25rem 1.5rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--profile-border);
+      border-radius: 16px;
+      font-size: 1.1rem;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      font-weight: 500;
+      backdrop-filter: blur(15px);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .profile-value::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      background: var(--profile-gradient);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: -1;
+    }
+
+    .profile-value:hover::before {
+      opacity: 0.05;
+    }
+
+    .profile-input {
+      width: 100%;
+      padding: 1.25rem 1.5rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--profile-border);
+      border-radius: 16px;
+      color: var(--text-primary);
+      font-size: 1.1rem;
+      min-height: 60px;
+      transition: all 0.3s ease;
+      font-family: inherit;
+      backdrop-filter: blur(15px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-input::before {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--profile-gradient);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .profile-input:focus {
+      outline: none;
+      border-color: rgba(102, 126, 234, 0.5);
+      background: rgba(102, 126, 234, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+    }
+
+    .profile-input:focus::before {
+      transform: scaleX(1);
+    }
+
+    .profile-input::placeholder {
+      color: var(--text-muted);
+      opacity: 0.8;
+    }
+
+    .profile-textarea {
+      resize: vertical;
+      min-height: 140px;
+      line-height: 1.8;
+      padding-top: 1.5rem;
+    }
+
+    .profile-actions {
+      display: flex;
+      gap: 1.5rem;
+      margin-top: 3rem;
+      padding-top: 3rem;
+      border-top: 1px solid var(--profile-border);
+      justify-content: flex-end;
+    }
+
+    .profile-btn {
+      padding: 1.25rem 2.5rem;
+      border: none;
+      border-radius: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      font-size: 1.1rem;
+      position: relative;
+      overflow: hidden;
+      min-width: 180px;
+      justify-content: center;
+    }
+
+    .profile-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.8s ease;
+    }
+
+    .profile-btn:hover::before {
+      left: 100%;
+    }
+
+    .profile-btn-primary {
+      background: var(--profile-gradient);
+      color: white;
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+    }
+
+    .profile-btn-primary:hover {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: 0 12px 35px rgba(102, 126, 234, 0.6);
+    }
+
+    .profile-btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-primary);
+      border: 1px solid var(--profile-border);
+    }
+
+    .profile-btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .profile-btn-danger {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+      box-shadow: 0 8px 25px rgba(239, 68, 68, 0.5);
+    }
+
+    .profile-btn-danger:hover {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: 0 12px 35px rgba(239, 68, 68, 0.6);
+    }
+
+    .profile-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.5rem;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--profile-border);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      backdrop-filter: blur(15px);
+    }
+
+    .profile-toggle:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .profile-toggle-text {
+      font-weight: 700;
+      color: var(--text-primary);
+      font-size: 1.2rem;
+    }
+
+    .profile-toggle-subtext {
+      font-size: 1rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      line-height: 1.5;
+    }
+
+    .profile-toggle-switch {
+      position: relative;
+      width: 64px;
+      height: 32px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      transition: all 0.4s ease;
+      border: 2px solid var(--profile-border);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-toggle-switch::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--profile-gradient);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .profile-toggle-switch.active::before {
+      opacity: 1;
+    }
+
+    .profile-toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 26px;
+      height: 26px;
+      background: white;
+      border-radius: 50%;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .profile-toggle-switch.active::after {
+      transform: translateX(30px);
+      box-shadow: 0 3px 8px rgba(102, 126, 234, 0.3);
+    }
+
+    .profile-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .profile-stat {
+      text-align: center;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.06);
+      border-radius: 20px;
+      border: 1px solid var(--profile-border);
+      backdrop-filter: blur(15px);
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .profile-stat::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--profile-gradient);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .profile-stat:hover {
+      transform: translateY(-8px) scale(1.05);
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .profile-stat:hover::before {
+      opacity: 0.05;
+    }
+
+    .profile-stat-value {
+      font-size: 3rem;
+      font-weight: 900;
+      color: var(--text-primary);
+      margin-bottom: 0.75rem;
+      background: var(--profile-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+    }
+
+    .profile-stat-label {
+      font-size: 1rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      position: relative;
+    }
+
+    .profile-plan-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 1rem 1.5rem;
+      background: var(--profile-gradient);
+      color: white;
+      border-radius: 30px;
+      font-size: 1rem;
+      font-weight: 800;
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .profile-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1.5rem;
+      border-radius: 25px;
+      font-size: 1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .profile-status.active {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+    }
+
+    .profile-status.inactive {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      color: white;
+    }
+
+    @media (max-width: 1200px) {
+      .profile-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .profile-card {
+        padding: 2.5rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .profile-content {
+        padding: 1.5rem 1rem;
+      }
+
+      .profile-card {
+        padding: 2rem;
+        border-radius: 20px;
+      }
+
+      .profile-title {
+        font-size: 2.5rem;
+      }
+
+      .profile-subtitle {
+        font-size: 1.1rem;
+      }
+
+      .profile-avatar {
+        width: 120px;
+        height: 120px;
+        font-size: 3.5rem;
+      }
+
+      .profile-actions {
+        flex-direction: column;
+      }
+
+      .profile-btn {
+        width: 100%;
+        min-width: unset;
+      }
+
+      .profile-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+      }
+
+      .profile-card-header {
+        gap: 1rem;
+      }
+
+      .profile-card-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 1.5rem;
+      }
+
+      .profile-card-title {
+        font-size: 1.5rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .profile-stats {
+        grid-template-columns: 1fr;
+      }
+
+      .profile-card {
+        padding: 1.5rem;
+      }
+
+      .profile-title {
+        font-size: 2rem;
+      }
+
+      .profile-avatar {
+        width: 100px;
+        height: 100px;
+        font-size: 3rem;
+      }
+    }
+
+    /* Form validation styles */
+    .profile-field.error .profile-input {
+      border-color: var(--error);
+      background: rgba(239, 68, 68, 0.1);
+      animation: shake 0.5s ease;
+    }
+
+    .profile-field.error .profile-error {
+      color: var(--error);
+      font-size: 0.95rem;
+      margin-top: 0.75rem;
+      font-weight: 500;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    /* Loading states */
+    .profile-loading {
+      opacity: 0.7;
+      pointer-events: none;
+      position: relative;
+    }
+
+    .profile-loading::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 32px;
+      height: 32px;
+      margin: -16px 0 0 -16px;
+      border: 3px solid var(--profile-border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      z-index: 10;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Staggered animation for cards */
+    .profile-card {
+      animation: fadeInUp 0.8s ease-out;
+      animation-fill-mode: both;
+    }
+
+    .profile-card:nth-child(1) { animation-delay: 0.2s; }
+    .profile-card:nth-child(2) { animation-delay: 0.4s; }
+    .profile-card:nth-child(3) { animation-delay: 0.6s; }
+    .profile-card:nth-child(4) { animation-delay: 0.8s; }
+    .profile-card:nth-child(5) { animation-delay: 1s; }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(50px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Scroll indicator */
+    .scroll-indicator {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 50px;
+      height: 50px;
+      background: var(--profile-gradient);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.2rem;
+      cursor: pointer;
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 100;
+    }
+
+    .scroll-indicator.show {
+      opacity: 1;
+    }
+
+    .scroll-indicator:hover {
+      transform: scale(1.1);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div id="appShell" class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" aria-label="Sidebar">
+      <div class="sb-top">
+        <button id="collapseBtn" class="icon-btn" aria-label="Toggle sidebar" aria-expanded="true" title="Collapse sidebar">☰</button>
+      </div>
+
+      <div class="user-block">{{ user_email or 'User' }}</div>
+
+      <nav class="sidebar-list">
+        <div class="sidebar-list-item">
+          <a href="/dashboard" data-label="Dashboard">
+            <span class="icon" aria-hidden="true">
+              <img src="{{ url_for('static', filename='logos/mail_send.svg') }}" alt="" width="24" height="24">
+            </span>
+            <span class="label">Dashboard</span>
+          </a>
+        </div>
+        <div class="sidebar-list-item">
+          <a href="/pending" data-label="Pending">
+            <span class="icon" aria-hidden="true">
+              <img src="{{ url_for('static', filename='logos/pending_mails.svg') }}" alt="" width="24" height="24">
+            </span>
+            <span class="label">Pending</span>
+          </a>
+        </div>
+        <div class="sidebar-list-item active">
+          <a href="/profile" data-label="Profile">
+            <span class="icon" aria-hidden="true">
+              <img src="{{ url_for('static', filename='logos/user.svg') }}" alt="" width="24" height="24">
+            </span>
+            <span class="label">Profile</span>
+          </a>
+        </div>
+        {% if role in ('admin', 'superuser') %}
+        <div class="sidebar-list-item">
+          <a href="/admin" data-label="Admin">
+            <span class="icon" aria-hidden="true">⚙️</span>
+            <span class="label">Admin</span>
+          </a>
+        </div>
+        {% endif %}
+        <div class="sidebar-list-item">
+          <a href="/logout" data-label="Logout">
+            <span class="icon" aria-hidden="true">
+              <img src="{{ url_for('static', filename='logos/logout-rounded.gif') }}" alt="" width="24" height="24">
+            </span>
+            <span class="label">Logout</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="app-content" role="main">
+      <!-- Header -->
+      <div class="app-content-header" role="region" aria-label="Profile header">
+        <h1 class="app-content-headerText">
+          <img src="{{ url_for('static', filename='logos/user.svg') }}" alt="" width="18" height="18">
+          User Profile
+        </h1>
+
+        <div class="header-actions">
+          <button id="saveProfile" type="button" class="action-button" aria-label="Save profile changes">
+            💾 Save Changes
+          </button>
+        </div>
+      </div>
+
+      <!-- Profile Content Container -->
+      <div class="profile-content" style="overflow-y: auto; height: calc(100vh - 120px);">
+
+      <!-- Profile Content -->
+      <div class="profile-header">
+        <div class="profile-avatar">
+          {{ (user_email or 'U')[0].upper() }}
+        </div>
+        <h1 class="profile-title">{{ user_email.split('@')[0].title() }}</h1>
+        <p class="profile-subtitle">Manage your account settings and preferences</p>
+      </div>
+
+      <div class="profile-grid">
+        <!-- Account Information -->
+        <div class="profile-card">
+          <div class="profile-card-header">
+            <div class="profile-card-icon">👤</div>
+            <h2 class="profile-card-title">Account Information</h2>
+          </div>
+
+          <div class="profile-field-group">
+            <div class="profile-field">
+              <label class="profile-label">Email Address</label>
+              <div class="profile-value">{{ user_email }}</div>
+            </div>
+
+            <div class="profile-field">
+              <label class="profile-label">Account Role</label>
+              <div class="profile-value">
+                {{ role.title() if role else 'User' }}
+                <span class="profile-status active" style="margin-left: 0.5rem;">Active</span>
+              </div>
+            </div>
+
+            <div class="profile-field">
+              <label class="profile-label">Current Plan</label>
+              <div class="profile-value">
+                <span class="profile-plan-badge">
+                  🎯 {{ profile.get('plan', 'Trial')|title }}
+                </span>
+              </div>
+            </div>
+
+            <div class="profile-field">
+              <label class="profile-label">Account Created</label>
+              <div class="profile-value">{{ profile.get('created_at', 'Recently')|default('Recently') }}</div>
+            </div>
+          </div>
+
+          <!-- Usage Statistics -->
+          <div class="profile-stats">
+            <div class="profile-stat">
+              <div class="profile-stat-value">{{ total_emails|default(0) }}</div>
+              <div class="profile-stat-label">Total Emails</div>
+            </div>
+            <div class="profile-stat">
+              <div class="profile-stat-value">{{ sent_replies|default(0) }}</div>
+              <div class="profile-stat-label">Sent Replies</div>
+            </div>
+            <div class="profile-stat">
+              <div class="profile-stat-value">{{ pending_reviews|default(0) }}</div>
+              <div class="profile-stat-label">Pending</div>
+            </div>
+            <div class="profile-stat">
+              <div class="profile-stat-value">{{ ai_accuracy|default(0) }}%</div>
+              <div class="profile-stat-label">AI Accuracy</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Personal Information -->
+        <div class="profile-card">
+          <div class="profile-card-header">
+            <div class="profile-card-icon">📝</div>
+            <h2 class="profile-card-title">Personal Information</h2>
+          </div>
+
+          <div class="profile-field-group">
+            <div class="profile-field">
+              <label class="profile-label" for="fullName">Full Name</label>
+              <input type="text" id="fullName" class="profile-input" value="{{ profile.get('name', '') }}" placeholder="Enter your full name">
+            </div>
+
+            <div class="profile-field">
+              <label class="profile-label" for="jobTitle">Job Title</label>
+              <input type="text" id="jobTitle" class="profile-input" value="{{ profile.get('title', '') }}" placeholder="Enter your job title">
+            </div>
+
+            <div class="profile-field">
+              <label class="profile-label" for="organization">Organization</label>
+              <input type="text" id="organization" class="profile-input" value="{{ profile.get('org', '') }}" placeholder="Enter your organization">
+            </div>
+
+            <div class="profile-field">
+              <label class="profile-label" for="timezone">Timezone</label>
+              <select id="timezone" class="profile-input">
+                <option value="">Select timezone...</option>
+                <option value="UTC" {% if profile.get('timezone') == 'UTC' %}selected{% endif %}>UTC</option>
+                <option value="America/New_York" {% if profile.get('timezone') == 'America/New_York' %}selected{% endif %}>Eastern Time</option>
+                <option value="America/Chicago" {% if profile.get('timezone') == 'America/Chicago' %}selected{% endif %}>Central Time</option>
+                <option value="America/Denver" {% if profile.get('timezone') == 'America/Denver' %}selected{% endif %}>Mountain Time</option>
+                <option value="America/Los_Angeles" {% if profile.get('timezone') == 'America/Los_Angeles' %}selected{% endif %}>Pacific Time</option>
+                <option value="Europe/London" {% if profile.get('timezone') == 'Europe/London' %}selected{% endif %}>London</option>
+                <option value="Europe/Paris" {% if profile.get('timezone') == 'Europe/Paris' %}selected{% endif %}>Paris</option>
+                <option value="Asia/Tokyo" {% if profile.get('timezone') == 'Asia/Tokyo' %}selected{% endif %}>Tokyo</option>
+                <option value="Asia/Dubai" {% if profile.get('timezone') == 'Asia/Dubai' %}selected{% endif %}>Dubai</option>
+                <option value="Asia/Singapore" {% if profile.get('timezone') == 'Asia/Singapore' %}selected{% endif %}>Singapore</option>
+              </select>
+            </div>
+
+            <div class="profile-field">
+              <label class="profile-label" for="bio">Bio</label>
+              <textarea id="bio" class="profile-input profile-textarea" placeholder="Tell us about yourself...">{{ profile.get('bio', '') }}</textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Email Preferences -->
+        <div class="profile-card">
+          <div class="profile-card-header">
+            <div class="profile-card-icon">⚙️</div>
+            <h2 class="profile-card-title">Email Preferences</h2>
+          </div>
+
+          <div class="profile-field-group">
+            <div class="profile-toggle" onclick="toggleAutoSend()">
+              <div>
+                <div class="profile-toggle-text">Auto-send Drafts</div>
+                <div class="profile-toggle-subtext">Automatically send AI-generated responses without manual approval</div>
+              </div>
+              <div class="profile-toggle-switch {{ 'active' if profile.get('preferences', {}).get('auto_send', False) else '' }}" id="autoSendToggle"></div>
+            </div>
+
+            <div class="profile-field">
+              <label class="profile-label" for="tone">Response Tone</label>
+              <select id="tone" class="profile-input">
+                <option value="professional" {% if profile.get('tone', 'professional') == 'professional' %}selected{% endif %}>Professional</option>
+                <option value="friendly" {% if profile.get('tone') == 'friendly' %}selected{% endif %}>Friendly</option>
+                <option value="formal" {% if profile.get('tone') == 'formal' %}selected{% endif %}>Formal</option>
+                <option value="casual" {% if profile.get('tone') == 'casual' %}selected{% endif %}>Casual</option>
+                <option value="enthusiastic" {% if profile.get('tone') == 'enthusiastic' %}selected{% endif %}>Enthusiastic</option>
+              </select>
+            </div>
+
+            <div class="profile-field">
+              <label class="profile-label" for="signature">Email Signature</label>
+              <textarea id="signature" class="profile-input profile-textarea" placeholder="Enter your email signature...">{{ profile.get('signature', '') }}</textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Settings -->
+        <div class="profile-card">
+          <div class="profile-card-header">
+            <div class="profile-card-icon">🤖</div>
+            <h2 class="profile-card-title">AI Settings</h2>
+          </div>
+
+          <div class="profile-field-group">
+            <div class="profile-field">
+              <label class="profile-label" for="brevity">Response Length</label>
+              <select id="brevity" class="profile-input">
+                <option value="concise" {% if profile.get('preferences', {}).get('brevity', 'balanced') == 'concise' %}selected{% endif %}>Concise</option>
+                <option value="balanced" {% if profile.get('preferences', {}).get('brevity', 'balanced') == 'balanced' %}selected{% endif %}>Balanced</option>
+                <option value="detailed" {% if profile.get('preferences', {}).get('brevity') == 'detailed' %}selected{% endif %}>Detailed</option>
+              </select>
+            </div>
+
+            <div class="profile-toggle" onclick="toggleEmoji()">
+              <div>
+                <div class="profile-toggle-text">Include Emojis</div>
+                <div class="profile-toggle-subtext">Allow AI to add relevant emojis to responses</div>
+              </div>
+              <div class="profile-toggle-switch {{ 'active' if not profile.get('preferences', {}).get('no_emoji', True) else '' }}" id="emojiToggle"></div>
+            </div>
+
+            <div class="profile-field">
+              <label class="profile-label" for="productContext">Product/Service Context</label>
+              <textarea id="productContext" class="profile-input profile-textarea" placeholder="Describe your product/service for better AI responses...">{{ profile.get('product_context', '') }}</textarea>
+            </div>
+
+            <div class="profile-field">
+              <label class="profile-label" for="faq">FAQ Information</label>
+              <textarea id="faq" class="profile-input profile-textarea" placeholder="Add frequently asked questions to help AI respond better...">{{ profile.get('faq', '') }}</textarea>
+            </div>
+          </div>
+        </div>
+
+        <!-- Security Settings -->
+        <div class="profile-card">
+          <div class="profile-card-header">
+            <div class="profile-card-icon">🔒</div>
+            <h2 class="profile-card-title">Security & Privacy</h2>
+          </div>
+
+          <div class="profile-field-group">
+            <div class="profile-field">
+              <label class="profile-label">Connected Accounts</label>
+              <div class="profile-value">
+                {% if session.get('provider') %}
+                  <span class="profile-status active">{{ session.get('provider', 'Unknown').title() }}</span>
+                {% else %}
+                  <span class="profile-status inactive">None</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="profile-toggle" onclick="toggleNotifications()">
+              <div>
+                <div class="profile-toggle-text">Email Notifications</div>
+                <div class="profile-toggle-subtext">Receive email notifications for important updates</div>
+              </div>
+              <div class="profile-toggle-switch {{ 'active' if profile.get('preferences', {}).get('notifications', True) else '' }}" id="notificationToggle"></div>
+            </div>
+
+            <div class="profile-actions">
+              <button class="profile-btn profile-btn-secondary" onclick="changePassword()">
+                🔑 Change Password
+              </button>
+              <button class="profile-btn profile-btn-secondary" onclick="exportData()">
+                📤 Export Data
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Account Management -->
+        <div class="profile-card">
+          <div class="profile-card-header">
+            <div class="profile-card-icon">⚠️</div>
+            <h2 class="profile-card-title">Account Management</h2>
+          </div>
+
+          <div class="profile-field-group">
+            <div class="profile-actions">
+              <button class="profile-btn profile-btn-danger" onclick="deleteAccount()">
+                🗑️ Delete Account
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+  <script>
+    // Collapsible sidebar functionality
+    const shell = document.getElementById('appShell');
+    const collapseBtn = document.getElementById('collapseBtn');
+
+    function setCollapsed(on) {
+      shell.classList.toggle('collapsed', on);
+      if (collapseBtn) collapseBtn.setAttribute('aria-expanded', on ? 'false' : 'true');
+      localStorage.setItem('sb-collapsed', on ? '1' : '0');
+    }
+
+    if (shell && collapseBtn) {
+      const saved = localStorage.getItem('sb-collapsed');
+      const prefersCollapsed = window.matchMedia('(max-width: 960px)').matches;
+      setCollapsed(saved === '1' || (saved === null && prefersCollapsed));
+
+      collapseBtn.addEventListener('click', () => {
+        setCollapsed(!shell.classList.contains('collapsed'));
+      });
+    }
+
+    // Profile management functions
+    async function saveProfile() {
+      const saveBtn = document.getElementById('saveProfile');
+      const originalText = saveBtn.innerHTML;
+
+      saveBtn.innerHTML = '💾 Saving...';
+      saveBtn.disabled = true;
+
+      try {
+        const profileData = {
+          name: document.getElementById('fullName').value,
+          title: document.getElementById('jobTitle').value,
+          org: document.getElementById('organization').value,
+          timezone: document.getElementById('timezone').value,
+          bio: document.getElementById('bio').value,
+          tone: document.getElementById('tone').value,
+          signature: document.getElementById('signature').value,
+          preferences: {
+            auto_send: document.getElementById('autoSendToggle').classList.contains('active'),
+            brevity: document.getElementById('brevity').value,
+            no_emoji: !document.getElementById('emojiToggle').classList.contains('active'),
+            notifications: document.getElementById('notificationToggle').classList.contains('active')
+          },
+          product_context: document.getElementById('productContext').value,
+          faq: document.getElementById('faq').value
+        };
+
+        const response = await fetch('/profile/update', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(profileData)
+        });
+
+        if (response.ok) {
+          if (window.notifications) {
+            window.notifications.success('Profile updated successfully!');
+          }
+        } else {
+          throw new Error('Failed to update profile');
+        }
+      } catch (error) {
+        console.error('Profile save error:', error);
+        if (window.notifications) {
+          window.notifications.error('Failed to save profile changes');
+        }
+      } finally {
+        saveBtn.innerHTML = originalText;
+        saveBtn.disabled = false;
+      }
+    }
+
+    function toggleAutoSend() {
+      const toggle = document.getElementById('autoSendToggle');
+      toggle.classList.toggle('active');
+    }
+
+    function toggleEmoji() {
+      const toggle = document.getElementById('emojiToggle');
+      toggle.classList.toggle('active');
+    }
+
+    function toggleNotifications() {
+      const toggle = document.getElementById('notificationToggle');
+      toggle.classList.toggle('active');
+    }
+
+    async function changePassword() {
+      const newPassword = prompt('Enter new password (Note: This is for future OAuth integration):');
+      if (newPassword) {
+        if (window.notifications) {
+          window.notifications.info('Password change will be available in future OAuth integration');
+        }
+      }
+    }
+
+    async function exportData() {
+      try {
+        if (window.notifications) {
+          window.notifications.info('Preparing data export...');
+        }
+
+        const response = await fetch('/profile/export', {
+          method: 'POST'
+        });
+
+        if (response.ok) {
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = url;
+          a.download = 'email-ai-data-export.json';
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+
+          if (window.notifications) {
+            window.notifications.success('Data export completed!');
+          }
+        } else {
+          throw new Error('Export failed');
+        }
+      } catch (error) {
+        console.error('Export error:', error);
+        if (window.notifications) {
+          window.notifications.error('Failed to export data');
+        }
+      }
+    }
+
+    async function deleteAccount() {
+      const confirmed = confirm('Are you sure you want to delete your account? This action cannot be undone.');
+      if (!confirmed) return;
+
+      // Fix XSS vulnerability - escape the email properly
+      const userEmail = '{{ user_email|tojson }}';
+      const password = prompt('Please enter your email address to confirm account deletion:');
+      if (password !== userEmail) {
+        if (window.notifications) {
+          window.notifications.error('Email address does not match');
+        }
+        return;
+      }
+
+      try {
+        const response = await fetch('/profile/delete', {
+          method: 'POST'
+        });
+
+        if (response.ok) {
+          if (window.notifications) {
+            window.notifications.success('Account deletion requested. You will be logged out.');
+          }
+          setTimeout(() => window.location.href = '/logout', 2000);
+        } else {
+          throw new Error('Account deletion failed');
+        }
+      } catch (error) {
+        console.error('Delete account error:', error);
+        if (window.notifications) {
+          window.notifications.error('Failed to delete account');
+        }
+      }
+    }
+
+    // Event listeners
+    document.getElementById('saveProfile').addEventListener('click', saveProfile);
+
+    // Auto-save on changes (optional)
+    const inputs = document.querySelectorAll('.profile-input, .profile-textarea');
+    let saveTimeout;
+
+    inputs.forEach(input => {
+      input.addEventListener('input', () => {
+        clearTimeout(saveTimeout);
+        saveTimeout = setTimeout(() => {
+          if (window.notifications) {
+            window.notifications.info('Auto-saving...', 1000);
+          }
+          saveProfile();
+        }, 2000);
+      });
+    });
+
+    // Welcome message
+    if (window.notifications) {
+      setTimeout(() => {
+        window.notifications.info('Profile loaded successfully!', 3000);
+      }, 1000);
+    }
+  </script>
+</body>
+</html>

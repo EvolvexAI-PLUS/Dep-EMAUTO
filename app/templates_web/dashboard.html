@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>User Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
+  <style>
+    /* Enhanced but compatible styles */
+    :root {
+      --primary: #2563eb;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --error: #ef4444;
+      --surface: #111827;
+      --text-primary: #f9fafb;
+      --text-muted: #9ca3af;
+      --border: #1f2937;
+      --radius-md: 8px;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+    }
+
+    .metric-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-lg);
+      margin-bottom: var(--space-lg);
+      padding: var(--space-lg);
+      background: var(--surface);
+      border-radius: var(--radius-md);
+    }
+
+    .metric-card {
+      background: rgba(255, 255, 255, 0.05);
+      padding: var(--space-lg);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      text-align: center;
+      transition: transform 0.2s ease;
+    }
+
+    .metric-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .metric-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .metric-label {
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .status-badge {
+      padding: 0.25rem 0.75rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .status-sent { background: rgba(16, 185, 129, 0.2); color: var(--success); }
+    .status-failed { background: rgba(239, 68, 68, 0.2); color: var(--error); }
+    .status-pending { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+
+    .btn-enhanced {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-enhanced:hover {
+      background: #1d4ed8;
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+<body>
+  <div id="appShell" class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" aria-label="Sidebar">
+      <div class="sb-top">
+        <button id="collapseBtn" class="icon-btn" aria-label="Toggle sidebar" aria-expanded="true" title="Collapse sidebar">☰</button>
+      </div>
+
+      <div class="user-block">{{ user_email or 'User' }}</div>
+
+      <nav class="sidebar-list">
+        <div class="sidebar-list-item active">
+          <a href="#" aria-current="page" data-label="My Replies">
+            <span class="icon" aria-hidden="true"> <img src="{{ url_for('static', filename='logos/mail_send.svg') }}" alt="" width="24" height="24"></span>
+            <span class="label">My Replies</span>
+          </a>
+        </div>
+        <div class="sidebar-list-item">
+          <a href="/pending" data-label="Pending">
+            <span class="icon" aria-hidden="true">
+              <img src="{{ url_for('static', filename='logos/pending_mails.svg') }}" alt="" width="24" height="24">
+            </span>
+            <span class="label">Pending</span>
+          </a>
+        </div>
+        <div class="sidebar-list-item">
+          <a href="/profile" data-label="Profile">
+            <span class="icon" aria-hidden="true"> <img src="{{ url_for('static', filename='logos/user.svg') }}" alt="" width="24" height="24"></span>
+            <span class="label">Profile</span>
+          </a>
+        </div>
+        {% if role in ('admin', 'superuser') %}
+        <div class="sidebar-list-item">
+          <a href="/admin" data-label="Admin">
+            <span class="icon" aria-hidden="true">⚙️</span>
+            <span class="label">Admin</span>
+          </a>
+        </div>
+        {% endif %}
+        <div class="sidebar-list-item">
+          <a href="/logout" data-label="Logout">
+            <span class="icon" aria-hidden="true"><img src="{{ url_for('static', filename='logos/logout-rounded.gif') }}" alt="" width="24" height="24"></span>
+            <span class="label">Logout</span>
+          </a>
+        </div>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="app-content" role="main">
+      <!-- Enhanced Header -->
+      <div class="app-content-header" role="region" aria-label="Filters and actions">
+        <h1 class="app-content-headerText">
+          <img src="{{ url_for('static', filename='logos/checked_mails.svg') }}" alt="" width="18" height="18">
+          Email AI Dashboard
+        </h1>
+
+        <div class="header-actions">
+          <input id="search" class="search-input" type="search" placeholder="Search by recipient, subject or status…" aria-label="Search replies" />
+          <select id="statusFilter" class="search-input" aria-label="Filter by status">
+            <option value="">All statuses</option>
+            <option value="sent">Sent</option>
+            <option value="failed">Failed</option>
+            <option value="pending">Pending</option>
+            <option value="ready_to_send">Ready to send</option>
+          </select>
+
+          <a class="action-button" href="/pending" aria-label="Go to pending review queue">Review pending</a>
+          <button id="refresh" type="button" class="action-button" aria-label="Refresh list">Refresh</button>
+
+          <span class="pill count-pill" id="visibleCount">0 shown</span>
+
+          <span class="pill" title="When On, safe drafts are auto-sent without manual approval.">
+            Auto-send drafts: <strong>{{ 'On' if auto_send else 'Off' }}</strong>
+          </span>
+          <button id="toggleAutoSend" type="button" class="action-button" aria-label="Toggle auto-send">Toggle</button>
+        </div>
+      </div>
+
+      <!-- Metrics Overview -->
+      <div class="metric-cards">
+        <div class="metric-card">
+          <div class="metric-value">{{ total_emails if total_emails is defined else 0 }}</div>
+          <div class="metric-label">Total Emails Processed</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">{{ ai_accuracy if ai_accuracy is defined else 0 }}%</div>
+          <div class="metric-label">AI Response Accuracy</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">{{ pending_reviews if pending_reviews is defined else 0 }}</div>
+          <div class="metric-label">Pending Reviews</div>
+        </div>
+        <div class="metric-card">
+          <div class="metric-value">2.3m</div>
+          <div class="metric-label">Avg Response Time</div>
+        </div>
+      </div>
+
+      <!-- Enhanced Email List -->
+      <section class="products-area-wrapper tableView" aria-live="polite">
+        <div class="products-header" role="row">
+          <div class="product-cell sortable" tabindex="0" data-sort="recipient" role="columnheader" aria-sort="none">Recipient</div>
+          <div class="product-cell sortable" tabindex="0" data-sort="subject" role="columnheader" aria-sort="none">Subject</div>
+          <div class="product-cell sortable" tabindex="0" data-sort="status" role="columnheader" aria-sort="none">Status</div>
+          <div class="product-cell sortable col-time" tabindex="0" data-sort="timestamp" role="columnheader" aria-sort="descending">Timestamp</div>
+        </div>
+
+        {% if not replies or replies|length == 0 %}
+          <div class="products-empty">
+            No replies yet. They'll appear here once sent.
+            <div style="margin-top:10px">
+              <a class="action-button" href="/pending">Go to Pending</a>
+            </div>
+          </div>
+        {% else %}
+          {% for r in replies %}
+          <div class="products-row" role="row">
+            <div class="product-cell" data-field="recipient" title="{{ (r.recipient or '') | e }}">{{ (r.recipient or '') | e }}</div>
+            <div class="product-cell" data-field="subject" title="{{ (r.subject or '') | e }}">{{ (r.subject or '') | e }}</div>
+            <div class="product-cell" data-field="status">
+              <span class="status-badge status-{{ (r.status or 'unknown') | lower | replace(' ', '_') | replace('-', '_') }}">
+                {{ (r.status or 'unknown') | e }}
+              </span>
+            </div>
+            <div class="product-cell col-time" data-field="timestamp" title="{{ (r.timestamp or '') | e }}">{{ (r.timestamp or '') | e }}</div>
+          </div>
+          {% endfor %}
+        {% endif %}
+      </section>
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+  <script>
+    // Collapsible sidebar functionality
+    const shell = document.getElementById('appShell');
+    const collapseBtn = document.getElementById('collapseBtn');
+
+    function setCollapsed(on) {
+      shell.classList.toggle('collapsed', on);
+      if (collapseBtn) collapseBtn.setAttribute('aria-expanded', on ? 'false' : 'true');
+      localStorage.setItem('sb-collapsed', on ? '1' : '0');
+    }
+
+    if (shell && collapseBtn) {
+      const saved = localStorage.getItem('sb-collapsed');
+      const prefersCollapsed = window.matchMedia('(max-width: 960px)').matches;
+      setCollapsed(saved === '1' || (saved === null && prefersCollapsed));
+
+      collapseBtn.addEventListener('click', () => {
+        setCollapsed(!shell.classList.contains('collapsed'));
+      });
+
+      const mq = window.matchMedia('(max-width: 960px)');
+      const onChange = e => {
+        if (localStorage.getItem('sb-collapsed') === null) setCollapsed(e.matches);
+      };
+      if (mq.addEventListener) mq.addEventListener('change', onChange);
+      else mq.addListener(onChange);
+    }
+
+    // Enhanced filtering and interactions
+    const searchInput = document.getElementById('search');
+    const statusFilter = document.getElementById('statusFilter');
+    const refreshBtn = document.getElementById('refresh');
+    const toggleBtn = document.getElementById('toggleAutoSend');
+    const rows = Array.from(document.querySelectorAll('.products-row'));
+    const countPill = document.getElementById('visibleCount');
+
+    function normalize(s) { return (s || '').toString().toLowerCase(); }
+    function getCellText(row, field) {
+      const el = row.querySelector(`[data-field="${field}"]`);
+      return el ? el.textContent.trim() : '';
+    }
+
+    function updateCount() {
+      const visible = rows.filter(r => r.style.display !== 'none').length;
+      if (countPill) countPill.textContent = `${visible} shown`;
+    }
+
+    function applyFilter() {
+      const q = normalize(searchInput?.value || '');
+      const statusQ = normalize(statusFilter?.value || '');
+
+      rows.forEach(row => {
+        // Get all cell data for better searching
+        const recipient = normalize(getCellText(row, 'recipient'));
+        const subject = normalize(getCellText(row, 'subject'));
+        const status = normalize(row.querySelector('.status-badge')?.textContent || '');
+        const timestamp = normalize(getCellText(row, 'timestamp'));
+
+        // Enhanced search logic - search across all fields
+        const searchableText = `${recipient} ${subject} ${status} ${timestamp}`;
+        const matchesSearch = !q || searchableText.includes(q);
+
+        // Status filtering with better matching
+        const matchesStatus = !statusQ || status.toLowerCase().includes(statusQ.toLowerCase()) || statusQ === 'all';
+
+        // Apply filter
+        row.style.display = matchesSearch && matchesStatus ? '' : 'none';
+      });
+      updateCount();
+
+      // Show notification when no results found
+      const visibleCount = rows.filter(r => r.style.display !== 'none').length;
+      if (q && visibleCount === 0) {
+        if (window.notifications) {
+          window.notifications.info('No emails match your search criteria');
+        }
+      }
+    }
+
+    // Enhanced refresh with notifications
+    async function refreshDashboard() {
+      if (!refreshBtn) return;
+
+      const originalText = refreshBtn.innerHTML;
+      refreshBtn.innerHTML = '🔄 Refreshing...';
+      refreshBtn.disabled = true;
+
+      try {
+        if (window.notifications) {
+          window.notifications.info('Refreshing dashboard...', 2000);
+        }
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        window.location.reload();
+      } catch (error) {
+        console.error('Refresh failed:', error);
+        if (window.notifications) {
+          window.notifications.error('Failed to refresh dashboard');
+        }
+      } finally {
+        refreshBtn.innerHTML = originalText;
+        refreshBtn.disabled = false;
+      }
+    }
+
+    // Enhanced auto-send toggle
+    async function toggleAutoSend() {
+      if (!toggleBtn) return;
+
+      const originalText = toggleBtn.innerHTML;
+      toggleBtn.innerHTML = '🔄 Toggling...';
+      toggleBtn.disabled = true;
+
+      try {
+        const res = await fetch('/prefs/auto_send', { method: 'POST' });
+        if (res.ok) {
+          if (window.notifications) {
+            window.notifications.success('Auto-send preference updated successfully');
+          }
+          setTimeout(() => window.location.reload(), 1000);
+        } else {
+          throw new Error('Failed to update');
+        }
+      } catch (error) {
+        console.error('Toggle failed:', error);
+        if (window.notifications) {
+          window.notifications.error('Failed to update auto-send preference');
+        }
+      } finally {
+        toggleBtn.innerHTML = originalText;
+        toggleBtn.disabled = false;
+      }
+    }
+
+    // Event listeners
+    searchInput?.addEventListener('input', applyFilter);
+    statusFilter?.addEventListener('change', applyFilter);
+    refreshBtn?.addEventListener('click', refreshDashboard);
+    toggleBtn?.addEventListener('click', toggleAutoSend);
+
+    // Initialize
+    applyFilter();
+
+    // Welcome message
+    if (window.notifications) {
+      setTimeout(() => {
+        window.notifications.info('Dashboard loaded successfully!', 3000);
+      }, 1000);
+    }
+  </script>
+</body>
+</html>

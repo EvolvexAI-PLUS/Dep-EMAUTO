@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+  <div class="login-container">
+    <h2>User Login</h2>
+
+    <a class="btn google" href="/login/google">
+      <img src="{{ url_for('static', filename='logos/google.svg') }}" alt="Google logo">
+      Continue with Google
+    </a>
+
+    <a class="btn outlook" href="/login/outlook">
+      <img src="{{ url_for('static', filename='logos/outlook.svg') }}" alt="Outlook logo">
+      Continue with Outlook
+    </a>
+
+    <a class="btn yahoo" href="/login/yahoo">
+      <img src="{{ url_for('static', filename='logos/yahoo.svg') }}" alt="Yahoo logo">
+      Continue with Yahoo
+    </a>
+
+    <div style="margin-top: 24px; font-size: 0.9em; color: #666; text-align: center;">
+      By continuing, you agree to our Terms and Privacy Policy.
+    </div>
+  </div>
+</body>
+</html>

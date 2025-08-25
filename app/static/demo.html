@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Email AI UI Improvements Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    :root {
+      --primary: #2563eb;
+      --surface: #111827;
+      --text-primary: #f9fafb;
+      --text-muted: #9ca3af;
+      --border: #1f2937;
+      --radius-lg: 0.75rem;
+      --space-xl: 2rem;
+      --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-family);
+      background: linear-gradient(135deg, #0b101a 0%, #1f2937 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: var(--space-xl);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: var(--space-xl);
+    }
+
+    .title {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      background: linear-gradient(135deg, var(--primary), #3b82f6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .subtitle {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      margin-bottom: 2rem;
+    }
+
+    .improvements-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .improvement-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      transition: all 0.3s ease;
+    }
+
+    .improvement-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+      border-color: var(--primary);
+    }
+
+    .improvement-icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .improvement-title {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: var(--text-primary);
+    }
+
+    .improvement-description {
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+
+    .improvement-features {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .improvement-features li {
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+      padding-left: 1rem;
+      position: relative;
+    }
+
+    .improvement-features li::before {
+      content: "✓";
+      color: var(--primary);
+      font-weight: bold;
+      position: absolute;
+      left: 0;
+    }
+
+    .demo-section {
+      background: rgba(17, 24, 39, 0.8);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+    }
+
+    .demo-title {
+      font-size: 1.75rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      color: var(--text-primary);
+    }
+
+    .code-example {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin: 1rem 0;
+      font-family: 'Monaco', 'Consolas', monospace;
+      font-size: 0.9rem;
+      overflow-x: auto;
+    }
+
+    .code-example code {
+      color: #e5e7eb;
+    }
+
+    .keyword { color: #3b82f6; }
+    .string { color: #10b981; }
+    .comment { color: var(--text-muted); }
+
+    .cta-section {
+      text-align: center;
+      padding: var(--space-xl);
+      background: linear-gradient(135deg, var(--primary), #3b82f6);
+      border-radius: var(--radius-lg);
+      margin-top: var(--space-xl);
+    }
+
+    .cta-title {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: white;
+    }
+
+    .cta-description {
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 1rem 2rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 0.5rem;
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .cta-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="title">🎨 Email AI UI Overhaul</h1>
+      <p class="subtitle">Transforming your email automation system into a modern, delightful user experience</p>
+    </header>
+
+    <section class="improvements-grid">
+      <div class="improvement-card">
+        <div class="improvement-icon">🎨</div>
+        <h3 class="improvement-title">Unified Design System</h3>
+        <p class="improvement-description">Comprehensive design tokens and CSS variables for consistent, maintainable styling across the entire application.</p>
+        <ul class="improvement-features">
+          <li>Centralized color palette and spacing system</li>
+          <li>Typography scale with consistent sizing</li>
+          <li>Border radius and shadow standards</li>
+          <li>Component-based CSS architecture</li>
+        </ul>
+      </div>
+
+      <div class="improvement-card">
+        <div class="improvement-icon">📊</div>
+        <h3 class="improvement-title">Modern Dashboard Layout</h3>
+        <p class="improvement-description">Card-based dashboard with visual metrics and improved information hierarchy.</p>
+        <ul class="improvement-features">
+          <li>Interactive metrics cards with hover effects</li>
+          <li>Real-time activity indicators</li>
+          <li>Enhanced data visualization</li>
+          <li>Responsive grid layout</li>
+        </ul>
+      </div>
+
+      <div class="improvement-card">
+        <div class="improvement-icon">🔔</div>
+        <h3 class="improvement-title">Toast Notifications</h3>
+        <p class="improvement-description">Comprehensive notification system for user feedback and system status updates.</p>
+        <ul class="improvement-features">
+          <li>Success, error, warning, and info types</li>
+          <li>Smooth animations and auto-dismissal</li>
+          <li>Non-intrusive positioning</li>
+          <li>Accessible design with ARIA labels</li>
+        </ul>
+      </div>
+
+      <div class="improvement-card">
+        <div class="improvement-icon">📱</div>
+        <h3 class="improvement-title">Enhanced Mobile Experience</h3>
+        <p class="improvement-description">Touch-friendly interactions and responsive design for all device sizes.</p>
+        <ul class="improvement-features">
+          <li>Larger touch targets (44px minimum)</li>
+          <li>Improved mobile navigation</li>
+          <li>Responsive table layouts</li>
+          <li>Touch gesture support</li>
+        </ul>
+      </div>
+
+      <div class="improvement-card">
+        <div class="improvement-icon">⚡</div>
+        <h3 class="improvement-title">Loading States & Feedback</h3>
+        <p class="improvement-description">Visual feedback for all user actions and system operations.</p>
+        <ul class="improvement-features">
+          <li>Button loading indicators</li>
+          <li>Progress animations</li>
+          <li>Error state handling</li>
+          <li>User-friendly error messages</li>
+        </ul>
+      </div>
+
+      <div class="improvement-card">
+        <div class="improvement-icon">🎭</div>
+        <h3 class="improvement-title">Micro-interactions</h3>
+        <p class="improvement-description">Subtle animations and transitions that enhance user experience without being distracting.</p>
+        <ul class="improvement-features">
+          <li>Hover and focus animations</li>
+          <li>Smooth state transitions</li>
+          <li>Interactive feedback</li>
+          <li>Delightful user moments</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="demo-section">
+      <h2 class="demo-title">🚀 Key Code Improvements</h2>
+
+      <h3>Design System Implementation</h3>
+      <div class="code-example">
+        <code>
+<span class="comment">/* Enhanced CSS Variables */</span>
+:root {
+  <span class="keyword">--primary</span>: <span class="string">#2563eb</span>;
+  <span class="keyword">--surface</span>: <span class="string">#111827</span>;
+  <span class="keyword">--text-primary</span>: <span class="string">#f9fafb</span>;
+  <span class="keyword">--space-lg</span>: <span class="string">1.5rem</span>;
+  <span class="keyword">--radius-xl</span>: <span class="string">1rem</span>;
+}
+        </code>
+      </div>
+
+      <h3>Toast Notification System</h3>
+      <div class="code-example">
+        <code>
+<span class="comment">// Modern notification system</span>
+const notifications = <span class="keyword">new</span> NotificationManager();
+
+<span class="comment">// Usage examples</span>
+notifications.success(<span class="string">'Email sent successfully!'</span>);
+notifications.error(<span class="string">'Failed to connect to email server'</span>);
+notifications.info(<span class="string">'Processing 5 new emails...'</span>);
+        </code>
+      </div>
+
+      <h3>Enhanced Button Component</h3>
+      <div class="code-example">
+        <code>
+<span class="comment">/* Modern button with loading states */</span>
+.btn {
+  <span class="keyword">display</span>: <span class="string">inline-flex</span>;
+  <span class="keyword">align-items</span>: <span class="string">center</span>;
+  <span class="keyword">gap</span>: <span class="string">var(--space-sm)</span>;
+  <span class="keyword">padding</span>: <span class="string">var(--space-sm) var(--space-lg)</span>;
+  <span class="keyword">border-radius</span>: <span class="string">var(--radius-lg)</span>;
+  <span class="keyword">transition</span>: <span class="string">all 0.2s ease</span>;
+}
+
+.btn:hover {
+  <span class="keyword">transform</span>: <span class="string">translateY(-1px)</span>;
+  <span class="keyword">box-shadow</span>: <span class="string">var(--shadow-md)</span>;
+}
+        </code>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <h2 class="cta-title">✨ Experience the Difference</h2>
+      <p class="cta-description">
+        These UI improvements transform your email automation system from a functional tool into a modern, delightful user experience that users love to interact with.
+      </p>
+      <a href="/dashboard" class="cta-button">
+        <span>🚀</span>
+        View Live Dashboard
+      </a>
+    </section>
+  </div>
+</body>
+</html>

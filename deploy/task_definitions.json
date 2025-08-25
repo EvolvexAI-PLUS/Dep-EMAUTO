@@ -1,0 +1,47 @@
+{
+  "family": "email-automation-task",
+  "networkMode": "awsvpc",
+  "executionRoleArn": "arn:aws:iam::YOUR_ACCOUNT_ID:role/ecsTaskExecutionRole",
+  "taskRoleArn": "arn:aws:iam::YOUR_ACCOUNT_ID:role/emailAutomationTaskRole",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "containerDefinitions": [
+    {
+      "name": "email-automation",
+      "image": "YOUR_ECR_IMAGE_URL",  
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "hostPort": 8000,
+          "protocol": "tcp"
+        }
+      ],
+      "environment": [
+        {"name": "FLASK_SECRET_KEY", "value": "your-secret-key"},
+        {"name": "AWS_REGION", "value": "ap-south-1"},
+        {"name": "REPLIES_TABLE", "value": "EmailReplies"},
+        {"name": "EMAIL_QUEUE_TABLE", "value": "EmailQueue"},
+        {"name": "BEDROCK_CLAUDE_MODEL", "value": "anthropic.claude-3-sonnet-20240229-v1:0"},
+
+        {"name": "GOOGLE_CLIENT_ID", "value": "your-google-client-id"},
+        {"name": "GOOGLE_CLIENT_SECRET", "value": "your-google-secret"},
+
+        {"name": "OUTLOOK_CLIENT_ID", "value": "your-outlook-client-id"},
+        {"name": "OUTLOOK_CLIENT_SECRET", "value": "your-outlook-secret"},
+
+        {"name": "YAHOO_CLIENT_ID", "value": "your-yahoo-client-id"},
+        {"name": "YAHOO_CLIENT_SECRET", "value": "your-yahoo-secret"}
+      ],
+      "essential": true,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/email-automation",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
+    }
+  ]
+}

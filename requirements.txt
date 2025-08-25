@@ -1,0 +1,10 @@
+flask
+requests
+boto3
+authlib
+python-dotenv
+pyjwt
+msal
+google-auth
+imapclient
+cryptography

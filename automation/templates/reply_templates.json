@@ -1,0 +1,50 @@
+[
+  {
+    "keyword": "invoice",
+    "template": "Thank you for your invoice. Our finance team has received it and will process the payment shortly.",
+    "intent": "billing",
+    "reply_needed": true
+  },
+  {
+    "keyword": "meeting",
+    "template": "Thank you for reaching out. I'm available to schedule a meeting next week. Please let me know your preferred time slots.",
+    "intent": "scheduling",
+    "reply_needed": true
+  },
+  {
+    "keyword": "follow up",
+    "template": "Just following up on our previous conversation. Kindly let me know if there's anything else needed from my side.",
+    "intent": "followup",
+    "reply_needed": true
+  },
+  {
+    "keyword": "delay",
+    "template": "I apologize for the delay. We're currently reviewing your request and will get back to you as soon as possible.",
+    "intent": "apology",
+    "reply_needed": true
+  },
+  {
+    "keyword": "thank you",
+    "template": "You're very welcome! If you need any further help, feel free to reach out.",
+    "intent": "gratitude",
+    "reply_needed": false
+  },
+  {
+    "keyword": "invite",
+    "template": "Thank you for the invitation. I'm currently unavailable today, but happy to reschedule for tomorrow.",
+    "intent": "event",
+    "reply_needed": true
+  },
+  {
+    "keyword": "newsletter",
+    "template": "Thank you for sharing this newsletter. I'll review the content and stay updated.",
+    "intent": "information",
+    "reply_needed": false
+  },
+  {
+    "keyword": "receipt",
+    "template": "We’ve received your payment receipt. No further action is needed at this time.",
+    "intent": "confirmation",
+    "reply_needed": false
+  }
+]
