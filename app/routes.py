@@ -21,9 +21,7 @@ import boto3
 import os
 import datetime
 import uuid
-import base64
 import secrets
-import hashlib
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token as google_id_token
 from functools import wraps
@@ -215,6 +213,93 @@ def index():
 @routes.route("/login")
 def login():
     return render_template("login.html")
+
+@routes.route("/login/imap", methods=["GET", "POST"])
+def login_imap():
+    """IMAP authentication route"""
+    if request.method == "GET":
+        return render_template("login_imap.html")
+
+    # POST request - handle IMAP authentication
+    try:
+        email = request.form.get("email", "").strip()
+        password = request.form.get("password", "").strip()
+        imap_server = request.form.get("imap_server", "").strip()
+        imap_port = int(request.form.get("imap_port", 993))
+        smtp_server = request.form.get("smtp_server", "").strip()
+        smtp_port = int(request.form.get("smtp_port", 587))
+        use_ssl = request.form.get("use_ssl") == "on"
+
+        # Validate required fields
+        if not all([email, password, imap_server, smtp_server]):
+            return render_template("login_imap.html",
+                                 error="All fields are required")
+
+        # Test IMAP connection
+        test_credentials = {
+            'email': email,
+            'imap_server': imap_server,
+            'imap_port': imap_port,
+            'smtp_server': smtp_server,
+            'smtp_port': smtp_port,
+            'password': password,  # Plaintext for testing
+            'use_ssl': use_ssl
+        }
+
+        from automation.clients.imap_client import test_imap_connection
+        connection_success = test_imap_connection(test_credentials)
+
+        if not connection_success:
+            return render_template("login_imap.html",
+                                 error="Failed to connect to email server. Please check your settings.")
+
+        # Connection successful - create user account
+        from database.memory_manager_dynamo import get_user_profile, set_user_profile
+        from automation.clients.imap_client import hash_password
+
+        # Check if user exists
+        user = get_user(email)
+        if not user:
+            # Create new user
+            users_table().put_item(Item={
+                "email": email,
+                "provider": "imap",
+                "plan": "trial",
+                "token_limit": 100,
+                "used_tokens": 0,
+                "is_admin": False,
+                "role": "user",
+                "created_at": datetime.datetime.utcnow().isoformat(),
+                "reset_date": (datetime.datetime.utcnow() + datetime.timedelta(days=30)).isoformat()
+            })
+
+        # Store IMAP configuration (with hashed password)
+        profile = get_user_profile(email) or {}
+        profile.update({
+            'imap_server': imap_server,
+            'imap_port': imap_port,
+            'smtp_server': smtp_server,
+            'smtp_port': smtp_port,
+            'imap_password_hash': hash_password(password),
+            'use_ssl': use_ssl,
+            'imap_configured': True
+        })
+        set_user_profile(email, profile)
+
+        # Create session and JWT
+        session_uuid = create_user_session(email)
+        role = get_user_role(email) or "user"
+        jwt_token = generate_jwt(email, role)
+
+        resp = make_response(redirect("/dashboard"))
+        set_auth_cookies(resp, jwt_token, session_uuid, email)
+
+        return resp
+
+    except Exception as e:
+        print(f"❌ IMAP login error: {e}")
+        return render_template("login_imap.html",
+                             error="Login failed. Please try again.")
 
 @routes.route("/login/<provider>")
 def start_oauth_login(provider):

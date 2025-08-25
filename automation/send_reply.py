@@ -40,6 +40,27 @@ def get_email_client(provider, token, email):
         return YahooClient({"access_token": token["access_token"], "email": email})
     elif provider == "custom":
         return CustomEmailClient(token)
+    elif provider == "imap":
+        # For IMAP, we need to get user credentials from database
+        from database.memory_manager_dynamo import get_user_profile
+        user_profile = get_user_profile(email) or {}
+
+        if not user_profile.get('imap_server'):
+            raise ValueError(f"IMAP configuration not found for {email}")
+
+        # Get IMAP credentials
+        credentials = {
+            'email': email,
+            'imap_server': user_profile.get('imap_server'),
+            'imap_port': user_profile.get('imap_port', 993),
+            'smtp_server': user_profile.get('smtp_server'),
+            'smtp_port': user_profile.get('smtp_port', 587),
+            'password_hash': user_profile.get('imap_password_hash'),
+            'use_ssl': user_profile.get('use_ssl', True)
+        }
+
+        from automation.clients.imap_client import IMAPClient
+        return IMAPClient(credentials)
     else:
         raise ValueError(f"[ERROR] Unsupported provider: {provider}")
 

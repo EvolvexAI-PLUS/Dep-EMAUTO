@@ -8,3 +8,4 @@ msal==1.28.0
 google-auth
 imapclient
 cryptography
+bcrypt  # For secure IMAP password hashing
