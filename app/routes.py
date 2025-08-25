@@ -30,7 +30,17 @@ from typing import Optional, Tuple, Dict, Any
 routes = Blueprint("routes", __name__)
 JWT_SECRET = os.getenv("JWT_SECRET", "super-secret-jwt")
 REGION = os.getenv("AWS_REGION", "ap-south-1")
-REDIRECT_URI = os.getenv("OUTLOOK_REDIRECT_URI", "http://localhost:8000/callback/outlook")
+
+# Get Railway domain for Outlook OAuth redirect
+railway_domain = os.getenv("RAILWAY_STATIC_URL")
+if not railway_domain:
+    # Fallback: construct from Railway variables
+    railway_domain = f"https://{os.getenv('RAILWAY_PROJECT_NAME', 'dep-emauto-production')}.up.railway.app"
+if not railway_domain.startswith('https://'):
+    railway_domain = f"https://{railway_domain}"
+
+REDIRECT_URI = os.getenv("OUTLOOK_REDIRECT_URI", f"{railway_domain}/callback/outlook")
+print(f"🔗 Outlook redirect URI: {REDIRECT_URI}")
 USERS_TABLE_NAME = os.getenv("USERS_TABLE", "Users")
 REPLIES_TABLE_NAME = os.getenv("REPLIES_TABLE", "EmailReplies")
 ENV = os.getenv("FLASK_ENV", "development")

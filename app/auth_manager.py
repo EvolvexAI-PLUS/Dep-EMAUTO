@@ -44,17 +44,18 @@ def init_oauth(app: Flask):
     )
 
     # === Yahoo Mail ===
-    oauth.register(
-        name='yahoo',
-        client_id=os.getenv("YAHOO_CLIENT_ID"),
-        client_secret=os.getenv("YAHOO_CLIENT_SECRET"),
-        authorize_url='https://api.login.yahoo.com/oauth2/request_auth',
-        access_token_url='https://api.login.yahoo.com/oauth2/get_token',
-        redirect_uri=f"{railway_domain}/callback/yahoo",
-        client_kwargs={
-            'scope': 'mail-w'
-        }
-    )
+    if os.getenv("YAHOO_CLIENT_ID") and os.getenv("YAHOO_CLIENT_SECRET"):
+        oauth.register(
+            name='yahoo',
+            client_id=os.getenv("YAHOO_CLIENT_ID"),
+            client_secret=os.getenv("YAHOO_CLIENT_SECRET"),
+            authorize_url='https://api.login.yahoo.com/oauth2/request_auth',
+            access_token_url='https://api.login.yahoo.com/oauth2/get_token',
+            redirect_uri=f"{railway_domain}/callback/yahoo",
+            client_kwargs={
+                'scope': 'mail-w'
+            }
+        )
 
     print("✅ OAuth providers registered: Google, Yahoo (Outlook via MSAL)")
     print(f"🔗 OAuth redirect domain: {railway_domain}")
