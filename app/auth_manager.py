@@ -8,12 +8,8 @@ load_dotenv("secret.env")
 
 oauth = OAuth()
 
-# MSAL app for Outlook (Microsoft Login)
-msal_app = msal.ConfidentialClientApplication(
-    client_id=os.getenv("OUTLOOK_CLIENT_ID"),
-    client_credential=os.getenv("OUTLOOK_CLIENT_SECRET"),
-    authority="https://login.microsoftonline.com/common"
-)
+# MSAL app will be created in init_oauth with proper redirect URI
+msal_app = None
 
 def init_oauth(app: Flask):
     oauth.init_app(app)
@@ -25,6 +21,15 @@ def init_oauth(app: Flask):
         railway_domain = f"https://{os.getenv('RAILWAY_PROJECT_NAME', 'dep-emauto-production')}.up.railway.app"
     if not railway_domain.startswith('https://'):
         railway_domain = f"https://{railway_domain}"
+
+    # === Microsoft Outlook (MSAL) ===
+    global msal_app
+    if os.getenv("OUTLOOK_CLIENT_ID") and os.getenv("OUTLOOK_CLIENT_SECRET"):
+        msal_app = msal.ConfidentialClientApplication(
+            client_id=os.getenv("OUTLOOK_CLIENT_ID"),
+            client_credential=os.getenv("OUTLOOK_CLIENT_SECRET"),
+            authority="https://login.microsoftonline.com/common"
+        )
 
     # === Google (Gmail) ===
     oauth.register(
