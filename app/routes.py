@@ -215,9 +215,9 @@ def start_oauth_login(provider):
         )
         return redirect(auth_url)
 
-    redirect_uri = url_for("routes.auth_callback", provider=provider, _external=True)
+    # OAuth redirect URI is now set explicitly in auth_manager.py
     client = oauth.create_client(provider)
-    return client.authorize_redirect(redirect_uri)
+    return client.authorize_redirect()
 
 @routes.route("/callback/<provider>")
 def auth_callback(provider):

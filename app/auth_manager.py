@@ -18,12 +18,16 @@ msal_app = msal.ConfidentialClientApplication(
 def init_oauth(app: Flask):
     oauth.init_app(app)
 
+    # Get Railway domain for OAuth redirects
+    railway_domain = os.getenv("RAILWAY_STATIC_URL", "https://dep-emauto-production.up.railway.app")
+
     # === Google (Gmail) ===
     oauth.register(
         name='google',
         client_id=os.getenv("GOOGLE_CLIENT_ID"),
         client_secret=os.getenv("GOOGLE_CLIENT_SECRET"),
         server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',
+        redirect_uri=f"{railway_domain}/callback/google",
         client_kwargs={
             'scope': (
                 'openid email profile '
@@ -41,9 +45,11 @@ def init_oauth(app: Flask):
         client_secret=os.getenv("YAHOO_CLIENT_SECRET"),
         authorize_url='https://api.login.yahoo.com/oauth2/request_auth',
         access_token_url='https://api.login.yahoo.com/oauth2/get_token',
+        redirect_uri=f"{railway_domain}/callback/yahoo",
         client_kwargs={
             'scope': 'mail-w'
         }
     )
 
     print("✅ OAuth providers registered: Google, Yahoo (Outlook via MSAL)")
+    print(f"🔗 OAuth redirect domain: {railway_domain}")
