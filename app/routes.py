@@ -1,5 +1,5 @@
 from flask import Blueprint, Flask, render_template, render_template_string, request, redirect, url_for, session, make_response
-from app.auth_manager import init_oauth, oauth, msal_app
+from app.auth_manager import init_oauth, oauth
 from database.memory_manager_dynamo import (
     get_conversation_history,
     create_user_session,
@@ -216,6 +216,9 @@ def login():
 @routes.route("/login/<provider>")
 def start_oauth_login(provider):
     if provider == "outlook":
+        # Import MSAL app locally to get the updated reference
+        from app.auth_manager import msal_app
+
         if msal_app is None:
             print("❌ MSAL app not initialized - check OUTLOOK_CLIENT_ID and OUTLOOK_CLIENT_SECRET")
             return "Outlook OAuth not configured. Please check your environment variables.", 500
