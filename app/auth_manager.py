@@ -36,10 +36,8 @@ def init_oauth(app: Flask):
             client_id=outlook_client_id,
             client_credential=outlook_client_secret,
             authority="https://login.microsoftonline.com/common",
-            # Enable PKCE for cross-origin requests
-            client_capabilities=["llt", "xms_cc"],
         )
-        print("✅ MSAL app initialized successfully with PKCE support")
+        print("✅ MSAL app initialized successfully")
     else:
         print("❌ MSAL app not initialized - missing Outlook credentials")
         msal_app = None
