@@ -242,6 +242,9 @@ def auth_callback(provider):
     token = None
 
     if provider == "outlook":
+        # Import MSAL app locally to get the updated reference
+        from app.auth_manager import msal_app
+
         if request.args.get("state") != session.get("state"):
             return "State mismatch", 400
         code = request.args.get("code")
