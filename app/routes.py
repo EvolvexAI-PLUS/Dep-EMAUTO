@@ -23,6 +23,7 @@ import datetime
 import uuid
 import base64
 import secrets
+import hashlib
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token as google_id_token
 from functools import wraps
@@ -229,10 +230,9 @@ def start_oauth_login(provider):
         session["state"] = state
 
         # Use explicit PKCE parameters for cross-origin requests
-        import secrets
         code_verifier = secrets.token_urlsafe(64)
         code_challenge = base64.urlsafe_b64encode(
-            secrets.sha256(code_verifier.encode()).digest()
+            hashlib.sha256(code_verifier.encode()).digest()
         ).decode().rstrip('=')
 
         session["code_verifier"] = code_verifier
