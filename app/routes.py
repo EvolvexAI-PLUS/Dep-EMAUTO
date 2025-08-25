@@ -21,6 +21,8 @@ import boto3
 import os
 import datetime
 import uuid
+import base64
+import secrets
 from google.auth.transport import requests as google_requests
 from google.oauth2 import id_token as google_id_token
 from functools import wraps
@@ -225,10 +227,22 @@ def start_oauth_login(provider):
 
         state = str(uuid.uuid4())
         session["state"] = state
+
+        # Use explicit PKCE parameters for cross-origin requests
+        import secrets
+        code_verifier = secrets.token_urlsafe(64)
+        code_challenge = base64.urlsafe_b64encode(
+            secrets.sha256(code_verifier.encode()).digest()
+        ).decode().rstrip('=')
+
+        session["code_verifier"] = code_verifier
+
         auth_url = msal_app.get_authorization_request_url(
             scopes=["User.Read", "Mail.ReadWrite", "Mail.Send"],
             state=state,
-            redirect_uri=REDIRECT_URI
+            redirect_uri=REDIRECT_URI,
+            code_challenge=code_challenge,
+            code_challenge_method="S256"
         )
         return redirect(auth_url)
 
@@ -250,10 +264,14 @@ def auth_callback(provider):
         code = request.args.get("code")
         if not code:
             return "Missing authorization code", 400
+
+        # Use the code_verifier from session for PKCE
+        code_verifier = session.get("code_verifier")
         result = msal_app.acquire_token_by_authorization_code(
             code,
             scopes=["User.Read", "Mail.ReadWrite", "Mail.Send"],
-            redirect_uri=REDIRECT_URI
+            redirect_uri=REDIRECT_URI,
+            code_verifier=code_verifier
         )
         if "error" in result:
             return f"MSAL Error: {result.get('error_description') or result.get('error')}", 400
