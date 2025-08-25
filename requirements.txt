@@ -4,7 +4,7 @@ boto3
 authlib
 python-dotenv
 pyjwt
-msal
+msal==1.28.0
 google-auth
 imapclient
 cryptography

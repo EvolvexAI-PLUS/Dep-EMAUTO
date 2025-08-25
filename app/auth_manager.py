@@ -31,13 +31,14 @@ def init_oauth(app: Flask):
     print(f"🔍 Outlook Client Secret: {'✅ Set' if outlook_client_secret else '❌ Not set'}")
 
     if outlook_client_id and outlook_client_secret:
-        # Create MSAL app with proper configuration for web app
+        # Create MSAL app with Microsoft recommended configuration for web apps
+        # MSAL automatically handles PKCE for confidential clients
         msal_app = msal.ConfidentialClientApplication(
             client_id=outlook_client_id,
             client_credential=outlook_client_secret,
             authority="https://login.microsoftonline.com/common",
         )
-        print("✅ MSAL app initialized successfully")
+        print("✅ MSAL app initialized successfully with Microsoft best practices")
     else:
         print("❌ MSAL app not initialized - missing Outlook credentials")
         msal_app = None

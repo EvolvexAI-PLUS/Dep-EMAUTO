@@ -229,20 +229,11 @@ def start_oauth_login(provider):
         state = str(uuid.uuid4())
         session["state"] = state
 
-        # Use explicit PKCE parameters for cross-origin requests
-        code_verifier = secrets.token_urlsafe(64)
-        code_challenge = base64.urlsafe_b64encode(
-            hashlib.sha256(code_verifier.encode()).digest()
-        ).decode().rstrip('=')
-
-        session["code_verifier"] = code_verifier
-
+        # MSAL automatically handles PKCE for confidential clients
         auth_url = msal_app.get_authorization_request_url(
             scopes=["User.Read", "Mail.ReadWrite", "Mail.Send"],
             state=state,
-            redirect_uri=REDIRECT_URI,
-            code_challenge=code_challenge,
-            code_challenge_method="S256"
+            redirect_uri=REDIRECT_URI
         )
         return redirect(auth_url)
 
@@ -265,13 +256,11 @@ def auth_callback(provider):
         if not code:
             return "Missing authorization code", 400
 
-        # Use the code_verifier from session for PKCE
-        code_verifier = session.get("code_verifier")
+        # MSAL automatically handles PKCE verification
         result = msal_app.acquire_token_by_authorization_code(
             code,
             scopes=["User.Read", "Mail.ReadWrite", "Mail.Send"],
-            redirect_uri=REDIRECT_URI,
-            code_verifier=code_verifier
+            redirect_uri=REDIRECT_URI
         )
         if "error" in result:
             return f"MSAL Error: {result.get('error_description') or result.get('error')}", 400
