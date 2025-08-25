@@ -24,12 +24,22 @@ def init_oauth(app: Flask):
 
     # === Microsoft Outlook (MSAL) ===
     global msal_app
-    if os.getenv("OUTLOOK_CLIENT_ID") and os.getenv("OUTLOOK_CLIENT_SECRET"):
+    outlook_client_id = os.getenv("OUTLOOK_CLIENT_ID")
+    outlook_client_secret = os.getenv("OUTLOOK_CLIENT_SECRET")
+
+    print(f"🔍 Outlook Client ID: {'✅ Set' if outlook_client_id else '❌ Not set'}")
+    print(f"🔍 Outlook Client Secret: {'✅ Set' if outlook_client_secret else '❌ Not set'}")
+
+    if outlook_client_id and outlook_client_secret:
         msal_app = msal.ConfidentialClientApplication(
-            client_id=os.getenv("OUTLOOK_CLIENT_ID"),
-            client_credential=os.getenv("OUTLOOK_CLIENT_SECRET"),
+            client_id=outlook_client_id,
+            client_credential=outlook_client_secret,
             authority="https://login.microsoftonline.com/common"
         )
+        print("✅ MSAL app initialized successfully")
+    else:
+        print("❌ MSAL app not initialized - missing Outlook credentials")
+        msal_app = None
 
     # === Google (Gmail) ===
     oauth.register(

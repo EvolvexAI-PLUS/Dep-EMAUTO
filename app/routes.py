@@ -216,6 +216,10 @@ def login():
 @routes.route("/login/<provider>")
 def start_oauth_login(provider):
     if provider == "outlook":
+        if msal_app is None:
+            print("❌ MSAL app not initialized - check OUTLOOK_CLIENT_ID and OUTLOOK_CLIENT_SECRET")
+            return "Outlook OAuth not configured. Please check your environment variables.", 500
+
         state = str(uuid.uuid4())
         session["state"] = state
         auth_url = msal_app.get_authorization_request_url(
