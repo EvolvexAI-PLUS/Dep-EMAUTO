@@ -9,481 +9,226 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='pending.css') }}">
   <style>
     :root {
-      /* Colors */
       --primary: #6366f1;
       --primary-hover: #4f46e5;
       --primary-light: #a5b4fc;
-      --secondary: #64748b;
-      --secondary-hover: #475569;
+      --secondary: #06b6d4;
       --success: #10b981;
+      --success-bg: rgba(16, 185, 129, 0.1);
       --warning: #f59e0b;
+      --warning-bg: rgba(245, 158, 11, 0.1);
       --error: #ef4444;
-      --info: #06b6d4;
-
-      /* Backgrounds */
-      --bg-primary: #0f172a;
-      --bg-secondary: #1e293b;
-      --bg-tertiary: #334155;
-      --bg-glass: rgba(15, 23, 42, 0.8);
-      --bg-overlay: rgba(9, 12, 20, 0.35);
-
-      /* Text */
+      --error-bg: rgba(239, 68, 68, 0.1);
+      --surface: #0f172a;
+      --surface-hover: #1e293b;
+      --surface-active: #334155;
       --text-primary: #f8fafc;
       --text-secondary: #e2e8f0;
       --text-muted: #94a3b8;
-      --text-accent: #a5b4fc;
-
-      /* Borders */
       --border: #334155;
       --border-hover: #475569;
-      --border-glass: rgba(255, 255, 255, 0.1);
-      --border-focus: rgba(99, 102, 241, 0.5);
-
-      /* Spacing */
+      --glass-bg: rgba(15, 23, 42, 0.8);
+      --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --radius-sm: 0.375rem;
+      --radius: 0.5rem;
+      --radius-lg: 0.75rem;
+      --radius-xl: 1rem;
       --space-xs: 0.25rem;
       --space-sm: 0.5rem;
       --space-md: 1rem;
       --space-lg: 1.5rem;
       --space-xl: 2rem;
       --space-2xl: 3rem;
-
-      /* Layout */
-      --max-width: 1600px;
-      --header-height: 80px;
-      --filters-height: 60px;
-      --border-radius: 0.75rem;
-      --border-radius-sm: 0.5rem;
-      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
 
-    /* Base Layout */
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: var(--bg-primary);
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #0f172a 100%);
       color: var(--text-primary);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       overflow-x: hidden;
     }
 
-    .page {
+    #appShell {
       min-height: 100vh;
       display: flex;
-      flex-direction: column;
-      background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 25%, var(--bg-primary) 100%);
-      position: relative;
+      flex-direction: row;
+      min-height: 100vh;
     }
 
-    .page::before {
-      content: '';
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background:
-        radial-gradient(1200px 600px at 30% -10%, rgba(99, 102, 241, 0.1), transparent 60%),
-        radial-gradient(1000px 500px at 100% 0%, rgba(6, 182, 212, 0.08), transparent 60%);
-      pointer-events: none;
-      z-index: -1;
+    .sidebar {
+      flex: 0 0 220px;
+      min-width: 220px;
+      max-width: 220px;
+      transition: all 0.3s ease;
     }
 
-    .container-width {
-      width: 100%;
-      max-width: var(--max-width);
-      margin: 0 auto;
-      padding: 0 var(--space-md);
+    #appShell.collapsed .sidebar {
+      flex: 0 0 60px;
+      min-width: 60px;
+      max-width: 60px;
     }
 
-    /* Utility Classes */
-    .glass {
-      background: var(--bg-glass);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: var(--border-glass);
-      border-radius: var(--border-radius);
-    }
-
-
-    /* Modern Header */
-    .app-header {
-      background: var(--bg-glass);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: var(--border-glass);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .header-content {
-      padding: var(--space-lg) 0;
-    }
-
-    .header-main {
+    .app-content {
+      flex: 1;
+      min-width: 0;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--space-xl);
+      flex-direction: column;
+      padding: 0 var(--space-md);
+      overflow-y: auto;
+      min-height: 100vh;
     }
 
-    .header-brand {
+    .products-area-wrapper {
       flex: 1;
     }
 
-    .page-title {
-      margin: 0 0 var(--space-xs) 0;
-      font-size: clamp(1.75rem, 3vw, 2.25rem);
-      font-weight: 700;
-      background: linear-gradient(135deg, var(--text-accent) 0%, var(--primary-light) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      line-height: 1.2;
+
+    /* Enhanced Sidebar */
+    .sidebar {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      border-right: 1px solid var(--border);
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     }
 
-    .page-subtitle {
-      margin: 0;
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      font-weight: 400;
-    }
-
-    .header-stats {
-      flex-shrink: 0;
-    }
-
-    .stat-item {
-      text-align: center;
-    }
-
-    .stat-number {
-      display: block;
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--primary);
-      line-height: 1;
-    }
-
-    .stat-label {
-      display: block;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    /* Header Actions */
-    .header-actions {
-      display: flex;
-      align-items: center;
-      gap: var(--space-lg);
-      flex-wrap: wrap;
-    }
-
-    .action-group {
-      display: flex;
-      align-items: center;
-      gap: var(--space-sm);
-    }
-
-    /* Modern Buttons */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: var(--space-sm);
-      padding: var(--space-sm) var(--space-lg);
-      border-radius: var(--border-radius);
+    .user-block {
+      background: linear-gradient(135deg, #334155 0%, #475569 100%);
       border: 1px solid var(--border);
-      font-size: 0.9rem;
+      color: var(--text-primary);
       font-weight: 600;
-      text-decoration: none;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      white-space: nowrap;
-      position: relative;
-      overflow: hidden;
-      min-height: 40px;
+    }
+
+    .sidebar-list-item.active a {
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      color: white;
+      border-radius: var(--radius);
+      margin: 0 var(--space-sm);
+      box-shadow: var(--shadow-md);
+    }
+
+    .sidebar-list-item a:hover {
+      background: rgba(99, 102, 241, 0.2);
+      color: var(--text-primary);
+      border-radius: var(--radius);
+      margin: 0 var(--space-sm);
+    }
+
+    /* Enhanced Main Content */
+    .app-content {
+      background: var(--surface);
+      overflow-x: hidden;
+      padding-bottom: 2rem;
+    }
+
+    .app-content-header {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      border-bottom: 1px solid var(--border);
       box-shadow: var(--shadow-sm);
     }
 
-    .btn-icon {
-      font-size: 1rem;
-      line-height: 1;
+    .app-content-headerText {
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 1.5rem;
     }
 
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none !important;
-    }
-
-    /* Primary Button */
-    .btn-primary {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
-      color: white;
-      border-color: var(--primary);
-    }
-
-    .btn-primary:hover:not(:disabled) {
-      background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary) 100%);
-      transform: translateY(-1px);
-      box-shadow: var(--shadow-md);
-    }
-
-    /* Secondary Button */
-    .btn-secondary {
-      background: var(--bg-secondary);
-      color: var(--text-secondary);
-      border-color: var(--border);
-    }
-
-    .btn-secondary:hover:not(:disabled) {
-      background: var(--bg-tertiary);
-      border-color: var(--border-hover);
-      transform: translateY(-1px);
-      box-shadow: var(--shadow-md);
-    }
-
-    /* Danger Button */
-    .btn-danger {
-      background: linear-gradient(135deg, var(--error) 0%, #dc2626 100%);
-      color: white;
-      border-color: var(--error);
-    }
-
-    .btn-danger:hover:not(:disabled) {
-      background: linear-gradient(135deg, #dc2626 0%, var(--error) 100%);
-      transform: translateY(-1px);
-      box-shadow: var(--shadow-md);
-    }
-
-    /* Dropdown Menus */
-    .dropdown-wrap {
-      position: relative;
-    }
-
-    .dropdown {
-      position: absolute;
-      right: 0;
-      top: calc(100% + var(--space-sm));
-      background: var(--bg-glass);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border: var(--border-glass);
-      border-radius: var(--border-radius);
-      box-shadow: var(--shadow-lg);
-      display: none;
-      min-width: 240px;
-      z-index: 200;
-      padding: var(--space-sm);
-    }
-
-    .dropdown.open {
-      display: block;
+    /* Enhanced Header Actions */
+    .header-actions {
+      display: flex;
+      gap: var(--space-md);
+      align-items: center;
+      flex-wrap: wrap;
     }
 
     /* Filters Section */
     .filters-section {
-      background: var(--bg-secondary);
-      border-bottom: var(--border-glass);
-      position: sticky;
-      top: 0;
-      z-index: 90;
-    }
-
-    .filters-content {
-      padding: var(--space-md) 0;
-    }
-
-    .filters-main {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      border-bottom: 1px solid var(--border);
+      padding: var(--space-lg) 0;
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--space-xl);
-    }
-
-    .search-group {
-      flex: 1;
-      max-width: 500px;
-    }
-
-    .search-input-wrapper {
-      position: relative;
-    }
-
-    .search-icon {
-      position: absolute;
-      left: var(--space-md);
-      top: 50%;
-      transform: translateY(-50%);
-      color: var(--text-muted);
-      font-size: 1.1rem;
-      pointer-events: none;
-    }
-
-    .search-input {
-      width: 100%;
-      padding: var(--space-sm) var(--space-md) var(--space-sm) calc(var(--space-md) * 2.5);
-      border: 2px solid var(--border);
-      border-radius: var(--border-radius);
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      font-size: 0.95rem;
-      transition: all 0.2s ease;
-    }
-
-    .search-input:focus {
-      outline: none;
-      border-color: var(--primary);
-      background: var(--bg-secondary);
-      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
-    }
-
-    .filter-group {
-      display: flex;
-      align-items: center;
       gap: var(--space-md);
-    }
-
-    .filter-select {
-      padding: var(--space-sm) var(--space-md);
-      border: 2px solid var(--border);
-      border-radius: var(--border-radius);
-      background: var(--bg-primary);
-      color: var(--text-primary);
-      font-size: 0.9rem;
-      min-width: 160px;
-      transition: all 0.2s ease;
-    }
-
-    .filter-select:focus {
-      outline: none;
-      border-color: var(--primary);
-      background: var(--bg-secondary);
-    }
-
-    .filters-stats {
-      flex-shrink: 0;
-    }
-
-    .results-count {
-      display: flex;
       align-items: center;
-      gap: var(--space-sm);
-      padding: var(--space-sm) var(--space-lg);
-      background: var(--bg-tertiary);
-      border: var(--border-glass);
-      border-radius: var(--border-radius);
+      flex-wrap: wrap;
     }
 
-    .count-number {
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: var(--primary);
-    }
-
-    .count-label {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    /* Main Content */
-    .main-content {
-      flex: 1;
-      min-height: calc(100vh - var(--header-height) - var(--filters-height));
+    /* Enhanced Table */
+    .products-area-wrapper {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
       overflow: hidden;
-    }
-
-    .content-container {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-
-    .table-section {
+      margin: var(--space-md) var(--space-sm);
+      box-shadow: var(--shadow-sm);
       flex: 1;
-      display: flex;
-      flex-direction: column;
-      background: var(--bg-glass);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: var(--border-glass);
-      border-radius: var(--border-radius);
-      overflow: hidden;
-      min-height: 400px;
-    }
-
-    .table-wrap {
-      flex: 1;
-      overflow: auto;
-      background: var(--bg-overlay);
       min-height: 300px;
+      max-height: calc(100vh - 350px);
+      overflow-y: auto;
     }
 
-    /* Modern Table Styling */
+    .tableView {
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Enhanced Table Styling */
     table {
       width: 100%;
       border-collapse: collapse;
       table-layout: fixed;
-      border-radius: var(--border-radius);
+      border-radius: var(--radius);
       overflow: hidden;
-      background: var(--bg-primary);
-      margin: 0;
+      background: var(--surface);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     }
 
     thead th {
       position: sticky;
       top: 0;
       z-index: 10;
-      background: var(--bg-secondary);
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border-bottom: var(--border-glass);
-      padding: var(--space-md) var(--space-sm);
-      height: 48px;
+      border-bottom: 2px solid var(--border);
+      padding: 16px 12px;
+      height: 56px;
       text-align: left;
       font-weight: 700;
-      font-size: 0.8rem;
+      font-size: 0.875rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      color: var(--text-secondary);
+      color: var(--text-primary);
       background-clip: padding-box;
       white-space: nowrap;
     }
 
     tbody td {
-      border-bottom: var(--border-glass);
-      padding: var(--space-sm);
+      border-bottom: 1px solid var(--border);
+      padding: 12px 8px;
       vertical-align: middle;
-      font-size: 0.85rem;
+      font-size: 0.95rem;
       color: var(--text-secondary);
       overflow: hidden;
       text-overflow: ellipsis;
       background: transparent;
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
       line-height: 1.4;
     }
 
     tbody tr {
-      transition: all 0.2s ease;
+      transition: all 0.3s ease;
       cursor: pointer;
-      border-radius: var(--border-radius-sm);
+      border-radius: var(--radius-sm);
     }
 
     tbody tr:hover {
-      background: rgba(99, 102, 241, 0.05);
-      transform: translateY(-1px);
+      background: var(--surface-hover);
+      transform: scale(1.01);
     }
 
     tbody tr:hover td {
-      color: var(--text-primary);
+      color: #ffffff;
       font-weight: 500;
     }
 
@@ -529,209 +274,125 @@
     }
 
     .email-preview {
-      font-size: 0.8rem;
-      color: var(--text-muted);
+      font-size: 0.85rem;
+      color: #94a3b8;
       line-height: 1.4;
     }
 
     .email-sender {
       font-weight: 600;
-      color: var(--text-secondary);
+      color: #e2e8f0;
     }
 
     .email-snippet {
       font-style: italic;
-      color: var(--text-muted);
+      color: #cbd5e1;
       margin-top: 2px;
     }
-
-    td > * {
-      margin: 0;
-    } /* prevent inner margins from shifting rows */
+    td > * { margin: 0; } /* prevent inner margins from shifting rows */
 
     /* Column widths */
-    th.col-select, td.col-select { width: 48px; text-align: center; }
-    th.col-actions, td.col-actions { width: 200px; }
-    th.col-created { width: 160px; }
-    th.col-attachments { width: 100px; text-align: center; }
-    th.col-sensitivity { width: 110px; }
-    th.col-recipients { width: 280px; }
-    th.col-subject { width: 320px; }
-    th.col-preview { width: 380px; }
+    th.col-select, td.col-select { width: 52px; text-align: center; }
+    th.col-actions, td.col-actions { width: 220px; }
+    th.col-created { width: 180px; }
+    th.col-attachments { width: 110px; text-align: center; }
+    th.col-sensitivity { width: 120px; }
+    th.col-recipients { width: 300px; }
+    th.col-subject { width: 350px; }
+    th.col-preview { width: 400px; }
 
     .chip {
       display: inline-block;
-      padding: var(--space-xs) var(--space-sm);
-      border-radius: 10px;
-      background: rgba(245, 158, 11, 0.1);
-      color: var(--warning);
-      font-size: 0.7rem;
-      font-weight: 600;
-      border: var(--border-glass);
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(255, 193, 7, 0.15);
+      color: #ffd166;
+      font-size: 0.78rem;
+      border: 1px solid rgba(255, 193, 7, 0.35);
     }
-
-    .actions {
-      display: flex;
-      gap: var(--space-sm);
-      align-items: center;
-      flex-wrap: wrap;
-    }
-
+    .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
     .empty {
-      padding: var(--space-2xl);
+      padding: 48px 24px;
       text-align: center;
-      color: var(--text-muted);
-      background: var(--bg-overlay);
-      border-radius: var(--border-radius);
-      border: var(--border-glass);
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: var(--radius-md);
+      border: 1px dashed rgba(255, 255, 255, 0.1);
     }
 
     .empty-icon {
       font-size: 3rem;
-      margin-bottom: var(--space-md);
+      margin-bottom: 1rem;
       opacity: 0.5;
     }
 
     .empty-title {
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       font-weight: 600;
       color: var(--text-primary);
-      margin-bottom: var(--space-sm);
+      margin-bottom: 0.5rem;
     }
 
     .empty-description {
       font-size: 0.9rem;
       color: var(--text-muted);
-      margin-bottom: var(--space-lg);
+      margin-bottom: 1.5rem;
       max-width: 400px;
       margin-left: auto;
       margin-right: auto;
     }
 
-    /* Responsive Design */
-    @media (max-width: 1024px) {
-      .header-main {
-        flex-direction: column;
-        gap: var(--space-lg);
-        text-align: center;
-      }
-
-      .header-actions {
-        justify-content: center;
-      }
-
-      .filters-main {
-        flex-direction: column;
-        gap: var(--space-md);
-      }
-
-      .filter-group {
-        justify-content: center;
-      }
-
-      th.col-recipients { width: 250px; }
-      th.col-subject { width: 280px; }
-      th.col-preview { width: 320px; }
-    }
-
+    /* Responsive Enhancements */
     @media (max-width: 768px) {
-      .container-width {
-        padding: 0 var(--space-sm);
+      .metric-cards {
+        grid-template-columns: 1fr;
+        gap: var(--space-md);
+        padding: 0 var(--space-md);
+        margin: var(--space-lg) 0;
       }
 
-      .header-content {
-        padding: var(--space-md) 0;
+      .metric-value {
+        font-size: 2.5rem;
       }
 
-      .filters-content {
-        padding: var(--space-sm) 0;
-      }
-
-      .page-title {
-        font-size: clamp(1.5rem, 4vw, 2rem);
-      }
-
-      .search-group {
-        max-width: none;
-      }
-
-      /* Hide less important columns on mobile */
-      th.col-created, td.col-created { display: none; }
-      th.col-attachments, td.col-attachments { display: none; }
-
-      th.col-recipients { width: 200px; }
-      th.col-subject { width: 240px; }
-      th.col-preview { width: 280px; }
-      th.col-actions, td.col-actions { width: 160px; }
-
-      .actions {
-        flex-direction: column;
-        gap: var(--space-xs);
-      }
-
-      .btn {
-        padding: var(--space-xs) var(--space-md);
-        font-size: 0.85rem;
-      }
-    }
-
-    @media (max-width: 480px) {
       .header-actions {
         flex-direction: column;
+        align-items: stretch;
         gap: var(--space-sm);
       }
 
-      .action-group {
-        flex-direction: column;
-        width: 100%;
-      }
-
-      .btn {
-        width: 100%;
+      .action-button {
         justify-content: center;
-      }
-
-      /* Show only essential columns on very small screens */
-      th.col-preview, td.col-preview { display: none; }
-      th.col-sensitivity { width: 90px; }
-
-      .table-section {
-        border-radius: 0;
-      }
-
-      .content-container {
-        padding: var(--space-sm) 0;
+        width: 100%;
       }
     }
 
-    /* High email count optimization */
-    @media (max-height: 800px) {
-      .table-section {
-        min-height: calc(100vh - var(--header-height) - var(--filters-height) - var(--space-xl));
-      }
-
-      tbody td {
-        padding: var(--space-xs);
-        font-size: 0.8rem;
-      }
-
-      .header-content {
-        padding: var(--space-sm) 0;
-      }
-
-      .filters-content {
-        padding: var(--space-sm) 0;
+    /* Ensure proper scrolling when sidebar is open */
+    @media (min-width: 769px) {
+      .products-area-wrapper {
+        max-height: calc(100vh - 300px);
       }
     }
 
-    /* Very small screens */
-    @media (max-height: 600px) {
-      .table-wrap {
-        min-height: 150px;
+    /* Extra small screens */
+    @media (max-width: 480px) {
+      .metric-cards {
+        margin: var(--space-md) 0;
+        padding: 0 var(--space-sm);
       }
 
-      .main-content {
-        min-height: calc(100vh - var(--header-height) - var(--filters-height));
+      .products-area-wrapper {
+        margin: var(--space-sm);
+        max-height: calc(100vh - 200px);
+      }
+    }
+
+    /* Dark Mode Optimizations */
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --surface: #0a0f1c;
+        --surface-hover: #141b2d;
+        --surface-active: #1e2538;
       }
     }
 
@@ -768,84 +429,108 @@
   </style>
 </head>
 <body>
- <div class="page">
-   <!-- Modern Header -->
-   <header class="app-header">
-     <div class="header-content container-width">
-       <div class="header-main">
-         <div class="header-brand">
-           <h1 class="page-title">📬 Pending Emails</h1>
-           <p class="page-subtitle">Review and send AI-generated responses</p>
-         </div>
-         <div class="header-stats">
-           <div class="stat-item">
-             <span class="stat-number" id="headerCount">{{ items|length if items else 0 }}</span>
-             <span class="stat-label">Pending</span>
-           </div>
-         </div>
-       </div>
-       <nav class="header-actions">
-         <div class="action-group">
-           <button id="sendSelected" class="btn btn-primary" type="button" disabled>
-             <span class="btn-icon">📤</span>
-             Send Selected
-           </button>
-           <button id="cancelSelected" class="btn btn-danger" type="button" disabled>
-             <span class="btn-icon">🗑️</span>
-             Cancel Selected
-           </button>
-         </div>
-         <div class="action-group">
-           <a class="btn btn-secondary" href="/dashboard">
-             <span class="btn-icon">📊</span>
-             Dashboard
-           </a>
-           <a class="btn btn-secondary" href="/logout">
-             <span class="btn-icon">🚪</span>
-             Logout
-           </a>
-         </div>
-       </nav>
+ <div id="appShell" class="app-container">
+   <!-- Sidebar -->
+   <aside class="sidebar" aria-label="Sidebar">
+     <div class="sb-top">
+       <button id="collapseBtn" class="icon-btn" aria-label="Toggle sidebar" aria-expanded="true" title="Collapse sidebar">☰</button>
      </div>
-   </header>
 
-   <!-- Filters Bar -->
-   <section class="filters-section">
-     <div class="filters-content container-width">
-       <div class="filters-main">
-         <div class="search-group">
-           <div class="search-input-wrapper">
-             <span class="search-icon">🔍</span>
-             <input id="search" class="search-input" type="search" placeholder="Search by subject, recipient, or content…" aria-label="Search pending emails" />
-           </div>
-         </div>
-         <div class="filter-group">
-           <select id="statusFilter" class="filter-select" aria-label="Filter by status">
-             <option value="">All Statuses</option>
-             <option value="PENDING">⏳ Pending</option>
-             <option value="DRAFT">📝 Draft</option>
-           </select>
-           <select id="sensitivityFilter" class="filter-select" aria-label="Filter by sensitivity">
-             <option value="">All Sensitivity</option>
-             <option value="normal">🟢 Normal</option>
-             <option value="sensitive">🟡 Sensitive</option>
-             <option value="high">🔴 High</option>
-           </select>
-         </div>
+     <div class="user-block">{{ user_email or 'User' }}</div>
+
+     <nav class="sidebar-list">
+       <div class="sidebar-list-item">
+         <a href="/dashboard" data-label="Dashboard">
+           <span class="icon" aria-hidden="true">
+             <img src="{{ url_for('static', filename='logos/mail_send.svg') }}" alt="" width="24" height="24">
+           </span>
+           <span class="label">Dashboard</span>
+         </a>
        </div>
-       <div class="filters-stats">
-         <div class="results-count">
-           <span class="count-number" id="rowCount">{{ items|length if items else 0 }}</span>
-           <span class="count-label">emails</span>
-         </div>
+       <div class="sidebar-list-item active">
+         <a href="#" aria-current="page" data-label="Pending Emails">
+           <span class="icon" aria-hidden="true">
+             <img src="{{ url_for('static', filename='logos/pending_mails.svg') }}" alt="" width="24" height="24">
+           </span>
+           <span class="label">Pending</span>
+         </a>
        </div>
-     </div>
-   </section>
+       <div class="sidebar-list-item">
+         <a href="/profile" data-label="Profile">
+           <span class="icon" aria-hidden="true">
+             <img src="{{ url_for('static', filename='logos/user.svg') }}" alt="" width="24" height="24">
+           </span>
+           <span class="label">Profile</span>
+         </a>
+       </div>
+       {% if role in ('admin', 'superuser') %}
+       <div class="sidebar-list-item">
+         <a href="/admin" data-label="Admin">
+           <span class="icon" aria-hidden="true">⚙️</span>
+           <span class="label">Admin</span>
+         </a>
+       </div>
+       {% endif %}
+       <div class="sidebar-list-item">
+         <a href="/logout" data-label="Logout">
+           <span class="icon" aria-hidden="true">
+             <img src="{{ url_for('static', filename='logos/logout-rounded.gif') }}" alt="" width="24" height="24">
+           </span>
+           <span class="label">Logout</span>
+         </a>
+       </div>
+     </nav>
+   </aside>
 
    <!-- Main Content -->
-   <main class="main-content">
-     <div class="content-container container-width">
-       <div class="table-section" role="region" aria-label="Pending emails table">
+   <main class="app-content" role="main">
+     <!-- Enhanced Header -->
+     <div class="app-content-header" role="region" aria-label="Filters and actions">
+       <h1 class="app-content-headerText">
+         <img src="{{ url_for('static', filename='logos/pending_mails.svg') }}" alt="" width="18" height="18">
+         Pending Emails Review
+       </h1>
+
+       <div class="header-actions">
+         <button id="sendSelected" class="action-button" type="button" disabled>
+           <span class="btn-icon">📤</span>
+           Send Selected
+         </button>
+         <button id="cancelSelected" class="action-button" type="button" disabled style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
+           <span class="btn-icon">🗑️</span>
+           Cancel Selected
+         </button>
+         <a class="action-button" href="/dashboard" style="background: linear-gradient(135deg, #64748b 0%, #475569 100%);">
+           <span class="btn-icon">📊</span>
+           Dashboard
+         </a>
+         <a class="action-button" href="/logout" style="background: linear-gradient(135deg, #64748b 0%, #475569 100%);">
+           <span class="btn-icon">🚪</span>
+           Logout
+         </a>
+
+         <span class="pill count-pill" id="visibleCount">0 shown</span>
+       </div>
+     </div>
+
+     <!-- Filters and Search -->
+     <div class="filters-section">
+       <input id="search" class="search-input" type="search" placeholder="Search by recipient, subject or content…" aria-label="Search pending emails" />
+       <select id="statusFilter" class="search-input" aria-label="Filter by status" style="margin-left: var(--space-sm);">
+         <option value="">All statuses</option>
+         <option value="PENDING">⏳ Pending</option>
+         <option value="DRAFT">📝 Draft</option>
+       </select>
+       <select id="sensitivityFilter" class="search-input" aria-label="Filter by sensitivity" style="margin-left: var(--space-sm);">
+         <option value="">All sensitivity</option>
+         <option value="normal">🟢 Normal</option>
+         <option value="sensitive">🟡 Sensitive</option>
+         <option value="high">🔴 High</option>
+       </select>
+     </div>
+
+     <!-- Enhanced Email List -->
+     <section class="products-area-wrapper tableView" aria-live="polite">
       <div class="table-shell">
         <!-- Fixed cloned header host -->
         <div class="table-header-fixed glass container-width" id="tableHeaderFixed" aria-hidden="true"></div>
@@ -918,7 +603,7 @@
           {% endif %}
         </div>
         <div id="tableHelp" class="sr-only" aria-hidden="true">Use the search and filters above to narrow the list. Table supports horizontal scrolling on small screens.</div>
-      </div>
+      </section>
     </main>
   </div>
 
