@@ -428,8 +428,9 @@
                             {% endif %}
                           </div>
                         {% endif %}
-                        {% if orig.get('snippet') %}
-                          <div class="email-snippet">{{ orig.snippet[:120] }}{% if orig.snippet|length > 120 %}...{% endif }}</div>
+                        {% set snippet_text = orig.get('snippet', '') %}
+                        {% if snippet_text %}
+                          <div class="email-snippet">{{ snippet_text[:120] }}{% if snippet_text|length > 120 %}...{% endif }}</div>
                         {% endif %}
                       </div>
                     {% else %}
