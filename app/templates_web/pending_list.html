@@ -5,9 +5,7 @@
   <title>Pending Emails - Email AI Assistant</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Review and manage pending AI-generated email responses">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='admin_dashboard.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='pending.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='ui-enhancements.css') }}">
 
 </head>
 <body class="pending-page">
@@ -34,50 +32,50 @@
     </header>
 
     <!-- Filters Section -->
-    <section class="pending-filters" role="region" aria-label="Filters and search">
-      <div class="pending-filters-grid">
-        <input type="text" class="pending-search" id="search" placeholder="Search emails by subject, recipient, or content..." aria-label="Search pending emails" />
+    <div style="padding: var(--spacing-xl); border-bottom: 1px solid var(--border-light);">
+      <div style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: var(--spacing-md); align-items: center;">
+        <input type="text" class="search-input" id="search" placeholder="Search emails by subject, recipient, or content..." aria-label="Search pending emails" />
 
-        <select class="pending-filter-select" id="statusFilter" aria-label="Filter by status">
+        <select class="form-input" id="statusFilter" aria-label="Filter by status">
           <option value="">All Statuses</option>
           <option value="PENDING">⏳ Pending</option>
           <option value="DRAFT">📝 Draft</option>
         </select>
 
-        <select class="pending-filter-select" id="sensitivityFilter" aria-label="Filter by sensitivity">
+        <select class="form-input" id="sensitivityFilter" aria-label="Filter by sensitivity">
           <option value="">All Sensitivity</option>
           <option value="normal">🟢 Normal</option>
           <option value="sensitive">🟡 Sensitive</option>
           <option value="high">🔴 High</option>
         </select>
 
-        <div style="display: flex; gap: var(--space-sm);">
-          <button class="pending-btn primary" id="sendSelected" disabled>
+        <div style="display: flex; gap: var(--spacing-sm);">
+          <button class="action-button" id="sendSelected" disabled>
             📤 Send Selected
           </button>
-          <button class="pending-btn danger" id="cancelSelected" disabled>
+          <button class="action-button" id="cancelSelected" disabled style="background: #dc2626;">
             🗑️ Cancel Selected
           </button>
         </div>
       </div>
-    </section>
+    </div>
 
     <!-- Table Section -->
-    <main class="pending-table-section" role="main">
-      <div class="pending-table-container">
-        <table class="pending-table" id="emailsTable" aria-describedby="tableHelp">
+    <main style="padding: var(--spacing-xl);">
+      <div style="overflow-x: auto; border-radius: var(--border-radius-lg); border: 1px solid var(--border-light);">
+        <table class="reply-table" id="emailsTable" aria-describedby="tableHelp">
           <thead>
             <tr>
-              <th class="pending-col-select" scope="col">
+              <th style="width: 60px; text-align: center;">
                 <input type="checkbox" id="selectAll" aria-label="Select all emails" />
               </th>
-              <th class="pending-col-created" scope="col">Created</th>
-              <th class="pending-col-recipients" scope="col">Recipients</th>
-              <th class="pending-col-subject" scope="col">Subject</th>
-              <th class="pending-col-preview" scope="col">Email Preview</th>
-              <th class="pending-col-sensitivity" scope="col">Sensitivity</th>
-              <th class="pending-col-attachments" scope="col">Attachments</th>
-              <th class="pending-col-actions" scope="col">Actions</th>
+              <th style="width: 180px;">Created</th>
+              <th style="min-width: 250px;">Recipients</th>
+              <th style="min-width: 300px;">Subject</th>
+              <th style="min-width: 350px;">Email Preview</th>
+              <th style="width: 120px;">Sensitivity</th>
+              <th style="width: 110px; text-align: center;">Attachments</th>
+              <th style="width: 220px;">Actions</th>
             </tr>
           </thead>
           <tbody id="emailsBody">
@@ -85,32 +83,32 @@
               {% set status = item.get('status', 'PENDING') %}
               {% if status in ['PENDING', 'DRAFT'] %}
                 <tr data-id="{{ item.get('id', '') }}" data-status="{{ status }}" data-sensitivity="{{ item.get('sensitivity', 'normal') }}">
-                  <td class="pending-col-select">
+                  <td style="text-align: center;">
                     <input type="checkbox" class="rowCheck" aria-label="Select this email" />
                   </td>
-                  <td class="pending-col-created">
+                  <td>
                     <time datetime="{{ item.get('created_at', '') }}">{{ item.get('created_at', '') }}</time>
                   </td>
-                  <td class="pending-col-recipients">
+                  <td>
                     {% set recipients = item.get('recipients', []) %}
                     {% if recipients %}
                       {% for recipient in recipients %}
-                        <div class="pending-recipient-item">{{ recipient }}</div>
+                        <div style="margin-bottom: 2px; font-size: 0.9rem;">{{ recipient }}</div>
                       {% endfor %}
                     {% else %}
                       <em style="color: var(--text-muted);">No recipients</em>
                     {% endif %}
                   </td>
-                  <td class="pending-col-subject">
+                  <td>
                     <strong title="{{ item.get('subject', '-') }}">{{ item.get('subject', '-') }}</strong>
                   </td>
-                  <td class="pending-col-preview">
+                  <td>
                     {% set original_email = item.get('original_email', {}) %}
                     {% if original_email %}
-                      <div class="pending-email-preview">
+                      <div style="font-size: 0.9rem;">
                         {% set sender = original_email.get('sender', {}) %}
                         {% if sender %}
-                          <div class="pending-email-sender">
+                          <div style="font-weight: 600; color: var(--text-secondary); margin-bottom: 4px;">
                             {% if isinstance(sender, dict) and sender.get('emailAddress') %}
                               📧 {{ sender.emailAddress.get('address', 'Unknown sender') }}
                             {% else %}
@@ -120,17 +118,17 @@
                         {% endif %}
                         {% set snippet = original_email.get('snippet', '') %}
                         {% if snippet %}
-                          <div class="pending-email-snippet">{{ snippet }}</div>
+                          <div style="font-style: italic; color: var(--text-muted); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-clamp: 2; overflow: hidden;">{{ snippet }}</div>
                         {% endif %}
                       </div>
                     {% else %}
                       <em style="color: var(--text-muted); font-size: 0.85rem;">Preview not available</em>
                     {% endif %}
                   </td>
-                  <td class="pending-col-sensitivity">
-                    <span class="pending-chip {{ item.get('sensitivity', 'normal') }}">{{ item.get('sensitivity', 'normal') }}</span>
+                  <td>
+                    <span style="font-size: 0.8rem; padding: 4px 8px; border-radius: 12px; font-weight: 600; text-transform: uppercase; background: rgba(245, 158, 11, 0.1); color: #d97706;">{{ item.get('sensitivity', 'normal') }}</span>
                   </td>
-                  <td class="pending-col-attachments">
+                  <td style="text-align: center;">
                     {% set attachments = item.get('attachments', []) %}
                     {% if attachments %}
                       📎 {{ attachments|length }}
@@ -138,13 +136,13 @@
                       <span style="color: var(--text-muted);">-</span>
                     {% endif %}
                   </td>
-                  <td class="pending-col-actions">
-                    <div class="pending-actions">
-                      <a class="pending-btn primary" href="{{ url_for('routes.pending_edit', pid=item.get('id', '')) }}">
+                  <td>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                      <a class="action-button" href="{{ url_for('routes.pending_edit', pid=item.get('id', '')) }}" style="padding: 8px 12px; font-size: 0.85rem;">
                         👁️ Review
                       </a>
                       <form method="POST" action="{{ url_for('routes.pending_cancel', pid=item.get('id', '')) }}" style="display: inline;">
-                        <button class="pending-btn" type="submit" onclick="return confirm('Cancel this email?')">
+                        <button class="action-button" type="submit" onclick="return confirm('Cancel this email?')" style="background: #dc2626; padding: 8px 12px; font-size: 0.85rem;">
                           ❌ Cancel
                         </button>
                       </form>
@@ -157,17 +155,17 @@
         </table>
 
         {% if not items or items|length == 0 %}
-          <div class="pending-empty" id="emptyState">
-            <div class="pending-empty-icon">📭</div>
-            <div class="pending-empty-title">No Pending Emails</div>
-            <div class="pending-empty-description">
+          <div id="emptyState" style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+            <div style="font-size: 4rem; margin-bottom: 20px; opacity: 0.5;">📭</div>
+            <div style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary); margin-bottom: 10px;">No Pending Emails</div>
+            <div style="max-width: 400px; margin: 0 auto;">
               All caught up! New emails requiring review will appear here automatically.
             </div>
           </div>
         {% endif %}
       </div>
 
-      <div id="tableHelp" class="pending-sr-only">
+      <div id="tableHelp" style="position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;">
         Use the search and filters above to narrow the list. Table supports horizontal scrolling on small screens.
       </div>
     </main>
