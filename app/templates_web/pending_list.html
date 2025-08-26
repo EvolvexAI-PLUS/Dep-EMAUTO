@@ -4,21 +4,13 @@
   <meta charset="UTF-8">
   <title>Pending Emails</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='admin_dashboard.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='pending.css') }}">
   <style>
     :root {
       --primary: #6366f1;
       --primary-hover: #4f46e5;
-      --primary-light: #a5b4fc;
-      --secondary: #06b6d4;
       --success: #10b981;
-      --success-bg: rgba(16, 185, 129, 0.1);
       --warning: #f59e0b;
-      --warning-bg: rgba(245, 158, 11, 0.1);
       --error: #ef4444;
-      --error-bg: rgba(239, 68, 68, 0.1);
       --surface: #0f172a;
       --surface-hover: #1e293b;
       --surface-active: #334155;
@@ -26,711 +18,463 @@
       --text-secondary: #e2e8f0;
       --text-muted: #94a3b8;
       --border: #334155;
-      --border-hover: #475569;
-      --glass-bg: rgba(15, 23, 42, 0.8);
-      --glass-border: 1px solid rgba(255, 255, 255, 0.1);
-      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-      --radius-sm: 0.375rem;
+      --border-glass: rgba(255, 255, 255, 0.1);
       --radius: 0.5rem;
       --radius-lg: 0.75rem;
-      --radius-xl: 1rem;
-      --space-xs: 0.25rem;
       --space-sm: 0.5rem;
       --space-md: 1rem;
       --space-lg: 1.5rem;
       --space-xl: 2rem;
-      --space-2xl: 3rem;
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #0f172a 100%);
       color: var(--text-primary);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      overflow-x: hidden;
+      line-height: 1.6;
     }
 
-    #appShell {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: row;
-      min-height: 100vh;
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: var(--space-md);
     }
 
-    .sidebar {
-      flex: 0 0 220px;
-      min-width: 220px;
-      max-width: 220px;
-      transition: all 0.3s ease;
-    }
-
-    #appShell.collapsed .sidebar {
-      flex: 0 0 60px;
-      min-width: 60px;
-      max-width: 60px;
-    }
-
-    .app-content {
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      padding: 0 var(--space-md);
-      overflow-y: auto;
-      min-height: 100vh;
-    }
-
-    .products-area-wrapper {
-      flex: 1;
-    }
-
-
-    /* Enhanced Sidebar */
-    .sidebar {
-      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-      border-right: 1px solid var(--border);
-      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-    }
-
-    .user-block {
-      background: linear-gradient(135deg, #334155 0%, #475569 100%);
-      border: 1px solid var(--border);
-      color: var(--text-primary);
-      font-weight: 600;
-    }
-
-    .sidebar-list-item.active a {
-      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-      color: white;
-      border-radius: var(--radius);
-      margin: 0 var(--space-sm);
-      box-shadow: var(--shadow-md);
-    }
-
-    .sidebar-list-item a:hover {
-      background: rgba(99, 102, 241, 0.2);
-      color: var(--text-primary);
-      border-radius: var(--radius);
-      margin: 0 var(--space-sm);
-    }
-
-    /* Enhanced Main Content */
-    .app-content {
+    .page-header {
       background: var(--surface);
-      overflow-x: hidden;
-      padding-bottom: 2rem;
+      border-radius: var(--radius-lg);
+      padding: var(--space-xl);
+      margin-bottom: var(--space-xl);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
-    .app-content-header {
-      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-      border-bottom: 1px solid var(--border);
-      box-shadow: var(--shadow-sm);
-    }
-
-    .app-content-headerText {
-      color: var(--text-primary);
+    .page-title {
+      font-size: 2.5rem;
       font-weight: 700;
-      font-size: 1.5rem;
+      margin: 0 0 var(--space-md) 0;
+      background: linear-gradient(135deg, var(--primary) 0%, #a5b4fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    /* Enhanced Header Actions */
-    .header-actions {
-      display: flex;
-      gap: var(--space-md);
-      align-items: center;
-      flex-wrap: wrap;
+    .page-subtitle {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      margin: 0 0 var(--space-lg) 0;
     }
 
-    /* Filters Section */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-lg);
+    }
+
+    .stat-card {
+      background: var(--surface-hover);
+      padding: var(--space-lg);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: var(--space-sm);
+    }
+
+    .stat-label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
     .filters-section {
-      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-      border-bottom: 1px solid var(--border);
-      padding: var(--space-lg) 0;
-      display: flex;
-      gap: var(--space-md);
-      align-items: center;
-      flex-wrap: wrap;
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: var(--space-lg);
+      margin-bottom: var(--space-xl);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
 
-    /* Enhanced Table */
-    .products-area-wrapper {
+    .filters-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr auto;
+      gap: var(--space-md);
+      align-items: center;
+    }
+
+    .search-input, .filter-select {
+      padding: var(--space-sm) var(--space-md);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface-hover);
+      color: var(--text-primary);
+      font-size: 0.95rem;
+    }
+
+    .search-input:focus, .filter-select:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+      padding: var(--space-sm) var(--space-lg);
+      border-radius: var(--radius);
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      min-height: 40px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+      color: white;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--surface-hover);
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--surface-active);
+      border-color: var(--border-glass);
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, var(--error) 0%, #dc2626 100%);
+      color: white;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .table-section {
       background: var(--surface);
       border-radius: var(--radius-lg);
       overflow: hidden;
-      margin: var(--space-md) var(--space-sm);
-      box-shadow: var(--shadow-sm);
-      flex: 1;
-      min-height: 300px;
-      max-height: calc(100vh - 350px);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .table-container {
+      overflow-x: auto;
+      max-height: 70vh;
       overflow-y: auto;
     }
 
-    .tableView {
-      min-height: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Enhanced Table Styling */
     table {
       width: 100%;
       border-collapse: collapse;
-      table-layout: fixed;
-      border-radius: var(--radius);
-      overflow: hidden;
-      background: var(--surface);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      font-size: 0.9rem;
     }
 
-    thead th {
+    thead {
       position: sticky;
       top: 0;
       z-index: 10;
-      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 2px solid var(--border);
-      padding: 16px 12px;
-      height: 56px;
-      text-align: left;
-      font-weight: 700;
-      font-size: 0.875rem;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-primary);
-      background-clip: padding-box;
-      white-space: nowrap;
     }
 
-    tbody td {
+    th {
+      background: var(--surface-active);
+      color: var(--text-primary);
+      padding: var(--space-md);
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 2px solid var(--border);
+    }
+
+    td {
+      padding: var(--space-md);
       border-bottom: 1px solid var(--border);
-      padding: 12px 8px;
-      vertical-align: middle;
-      font-size: 0.95rem;
       color: var(--text-secondary);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      background: transparent;
-      transition: all 0.3s ease;
-      line-height: 1.4;
     }
 
     tbody tr {
-      transition: all 0.3s ease;
-      cursor: pointer;
-      border-radius: var(--radius-sm);
+      transition: background-color 0.2s ease;
     }
 
     tbody tr:hover {
       background: var(--surface-hover);
-      transform: scale(1.01);
     }
 
-    tbody tr:hover td {
-      color: #ffffff;
-      font-weight: 500;
-    }
+    .col-select { width: 50px; text-align: center; }
+    .col-actions { width: 200px; }
+    .col-created { width: 160px; }
+    .col-sensitivity { width: 120px; }
+    .col-recipients { min-width: 250px; }
+    .col-subject { min-width: 300px; }
+    .col-preview { min-width: 350px; }
 
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      padding: var(--space-xs) var(--space-sm);
+    .chip {
+      display: inline-block;
+      padding: 4px 8px;
       border-radius: 12px;
-      font-size: 0.7rem;
-      font-weight: 700;
+      font-size: 0.75rem;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      border: var(--border-glass);
-      transition: all 0.2s ease;
-    }
-
-    .status-sent {
-      background: rgba(16, 185, 129, 0.1);
-      color: var(--success);
-      border-color: rgba(16, 185, 129, 0.2);
-    }
-
-    .status-failed {
-      background: rgba(239, 68, 68, 0.1);
-      color: var(--error);
-      border-color: rgba(239, 68, 68, 0.2);
-    }
-
-    .status-pending {
-      background: rgba(245, 158, 11, 0.1);
+      background: rgba(245, 158, 11, 0.2);
       color: var(--warning);
-      border-color: rgba(245, 158, 11, 0.2);
-    }
-
-    .status-ready_to_send {
-      background: rgba(99, 102, 241, 0.1);
-      color: var(--primary);
-      border-color: rgba(99, 102, 241, 0.2);
-    }
-
-    .status-badge:hover {
-      transform: translateY(-1px);
     }
 
     .email-preview {
       font-size: 0.85rem;
-      color: #94a3b8;
-      line-height: 1.4;
+      color: var(--text-muted);
     }
 
     .email-sender {
       font-weight: 600;
-      color: #e2e8f0;
+      color: var(--text-secondary);
     }
 
     .email-snippet {
-      font-style: italic;
-      color: #cbd5e1;
       margin-top: 2px;
+      font-style: italic;
     }
-    td > * { margin: 0; } /* prevent inner margins from shifting rows */
 
-    /* Column widths */
-    th.col-select, td.col-select { width: 52px; text-align: center; }
-    th.col-actions, td.col-actions { width: 220px; }
-    th.col-created { width: 180px; }
-    th.col-attachments { width: 110px; text-align: center; }
-    th.col-sensitivity { width: 120px; }
-    th.col-recipients { width: 300px; }
-    th.col-subject { width: 350px; }
-    th.col-preview { width: 400px; }
-
-    .chip {
-      display: inline-block;
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: rgba(255, 193, 7, 0.15);
-      color: #ffd166;
-      font-size: 0.78rem;
-      border: 1px solid rgba(255, 193, 7, 0.35);
+    .actions {
+      display: flex;
+      gap: var(--space-sm);
+      align-items: center;
     }
-    .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
     .empty {
-      padding: 48px 24px;
       text-align: center;
-      color: var(--muted);
-      background: rgba(255, 255, 255, 0.02);
-      border-radius: var(--radius-md);
-      border: 1px dashed rgba(255, 255, 255, 0.1);
+      padding: var(--space-xl);
+      color: var(--text-muted);
     }
 
     .empty-icon {
       font-size: 3rem;
-      margin-bottom: 1rem;
-      opacity: 0.5;
+      margin-bottom: var(--space-md);
     }
 
     .empty-title {
       font-size: 1.2rem;
       font-weight: 600;
       color: var(--text-primary);
-      margin-bottom: 0.5rem;
+      margin-bottom: var(--space-sm);
     }
 
     .empty-description {
       font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-bottom: 1.5rem;
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
     }
 
-    /* Responsive Enhancements */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* Mobile responsive */
     @media (max-width: 768px) {
-      .metric-cards {
+      .container {
+        padding: var(--space-sm);
+      }
+
+      .page-header {
+        padding: var(--space-lg);
+      }
+
+      .page-title {
+        font-size: 2rem;
+      }
+
+      .filters-grid {
         grid-template-columns: 1fr;
-        gap: var(--space-md);
-        padding: 0 var(--space-md);
-        margin: var(--space-lg) 0;
-      }
-
-      .metric-value {
-        font-size: 2.5rem;
-      }
-
-      .header-actions {
-        flex-direction: column;
-        align-items: stretch;
         gap: var(--space-sm);
       }
 
-      .action-button {
-        justify-content: center;
-        width: 100%;
-      }
-    }
-
-    /* Ensure proper scrolling when sidebar is open */
-    @media (min-width: 769px) {
-      .products-area-wrapper {
-        max-height: calc(100vh - 300px);
-      }
-    }
-
-    /* Extra small screens */
-    @media (max-width: 480px) {
-      .metric-cards {
-        margin: var(--space-md) 0;
-        padding: 0 var(--space-sm);
+      .stats-grid {
+        grid-template-columns: 1fr;
       }
 
-      .products-area-wrapper {
-        margin: var(--space-sm);
-        max-height: calc(100vh - 200px);
+      .col-created, .col-sensitivity {
+        display: none;
       }
-    }
 
-    /* Dark Mode Optimizations */
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --surface: #0a0f1c;
-        --surface-hover: #141b2d;
-        --surface-active: #1e2538;
+      .col-recipients, .col-subject, .col-preview {
+        min-width: 200px;
       }
-    }
 
-    /* Fixed (cloned) header host bar */
-    .table-header-fixed {
-      position: sticky;
-      top: 0;
-      z-index: 120;
-      display: none;      /* toggled by JS */
-      border-radius: 12px 12px 0 0;
-      overflow: hidden;
-      background: var(--th-bg);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.14);
-      border-bottom: none; /* avoid double border against table header */
-      width: 100%;
-    }
-    .table-header-fixed table {
-      width: 100%;
-      border-collapse: collapse;
-      table-layout: fixed;
-    }
-    .table-header-fixed thead th {
-      text-align: left;
-      font-weight: 600;
-      color: var(--th-fg);
-      border-bottom: 1px solid rgba(255,255,255,0.14);
-      padding: 12px 10px;
-      height: 46px;
-      white-space: nowrap;
-      background-clip: padding-box;
+      .table-container {
+        max-height: 60vh;
+      }
+
+      .btn {
+        padding: var(--space-sm);
+        font-size: 0.85rem;
+      }
     }
   </style>
 </head>
 <body>
- <div id="appShell" class="app-container">
-   <!-- Sidebar -->
-   <aside class="sidebar" aria-label="Sidebar">
-     <div class="sb-top">
-       <button id="collapseBtn" class="icon-btn" aria-label="Toggle sidebar" aria-expanded="true" title="Collapse sidebar">☰</button>
-     </div>
+  <div class="container">
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">📬 Pending Emails</h1>
+      <p class="page-subtitle">Review and send AI-generated responses</p>
 
-     <div class="user-block">{{ user_email or 'User' }}</div>
-
-     <nav class="sidebar-list">
-       <div class="sidebar-list-item">
-         <a href="/dashboard" data-label="Dashboard">
-           <span class="icon" aria-hidden="true">
-             <img src="{{ url_for('static', filename='logos/mail_send.svg') }}" alt="" width="24" height="24">
-           </span>
-           <span class="label">Dashboard</span>
-         </a>
-       </div>
-       <div class="sidebar-list-item active">
-         <a href="#" aria-current="page" data-label="Pending Emails">
-           <span class="icon" aria-hidden="true">
-             <img src="{{ url_for('static', filename='logos/pending_mails.svg') }}" alt="" width="24" height="24">
-           </span>
-           <span class="label">Pending</span>
-         </a>
-       </div>
-       <div class="sidebar-list-item">
-         <a href="/profile" data-label="Profile">
-           <span class="icon" aria-hidden="true">
-             <img src="{{ url_for('static', filename='logos/user.svg') }}" alt="" width="24" height="24">
-           </span>
-           <span class="label">Profile</span>
-         </a>
-       </div>
-       {% if role in ('admin', 'superuser') %}
-       <div class="sidebar-list-item">
-         <a href="/admin" data-label="Admin">
-           <span class="icon" aria-hidden="true">⚙️</span>
-           <span class="label">Admin</span>
-         </a>
-       </div>
-       {% endif %}
-       <div class="sidebar-list-item">
-         <a href="/logout" data-label="Logout">
-           <span class="icon" aria-hidden="true">
-             <img src="{{ url_for('static', filename='logos/logout-rounded.gif') }}" alt="" width="24" height="24">
-           </span>
-           <span class="label">Logout</span>
-         </a>
-       </div>
-     </nav>
-   </aside>
-
-   <!-- Main Content -->
-   <main class="app-content" role="main">
-     <!-- Enhanced Header -->
-     <div class="app-content-header" role="region" aria-label="Filters and actions">
-       <h1 class="app-content-headerText">
-         <img src="{{ url_for('static', filename='logos/pending_mails.svg') }}" alt="" width="18" height="18">
-         Pending Emails Review
-       </h1>
-
-       <div class="header-actions">
-         <button id="sendSelected" class="action-button" type="button" disabled>
-           <span class="btn-icon">📤</span>
-           Send Selected
-         </button>
-         <button id="cancelSelected" class="action-button" type="button" disabled style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);">
-           <span class="btn-icon">🗑️</span>
-           Cancel Selected
-         </button>
-         <a class="action-button" href="/dashboard" style="background: linear-gradient(135deg, #64748b 0%, #475569 100%);">
-           <span class="btn-icon">📊</span>
-           Dashboard
-         </a>
-         <a class="action-button" href="/logout" style="background: linear-gradient(135deg, #64748b 0%, #475569 100%);">
-           <span class="btn-icon">🚪</span>
-           Logout
-         </a>
-
-         <span class="pill count-pill" id="visibleCount">0 shown</span>
-       </div>
-     </div>
-
-     <!-- Filters and Search -->
-     <div class="filters-section">
-       <input id="search" class="search-input" type="search" placeholder="Search by recipient, subject or content…" aria-label="Search pending emails" />
-       <select id="statusFilter" class="search-input" aria-label="Filter by status" style="margin-left: var(--space-sm);">
-         <option value="">All statuses</option>
-         <option value="PENDING">⏳ Pending</option>
-         <option value="DRAFT">📝 Draft</option>
-       </select>
-       <select id="sensitivityFilter" class="search-input" aria-label="Filter by sensitivity" style="margin-left: var(--space-sm);">
-         <option value="">All sensitivity</option>
-         <option value="normal">🟢 Normal</option>
-         <option value="sensitive">🟡 Sensitive</option>
-         <option value="high">🔴 High</option>
-       </select>
-     </div>
-
-     <!-- Enhanced Email List -->
-     <section class="products-area-wrapper tableView" aria-live="polite">
-      <div class="table-shell">
-        <!-- Fixed cloned header host -->
-        <div class="table-header-fixed glass container-width" id="tableHeaderFixed" aria-hidden="true"></div>
-
-        <div class="table-wrap" id="tableWrap">
-          <table id="pendingTable" aria-describedby="tableHelp">
-            <thead>
-              <tr>
-                <th class="col-select" scope="col"><input type="checkbox" id="selectAll" aria-label="Select all" /></th>
-                <th class="col-created nowrap" scope="col">Created</th>
-                <th class="col-recipients" scope="col">Recipients</th>
-                <th class="col-subject" scope="col">Subject</th>
-                <th class="col-preview" scope="col">Email Preview</th>
-                <th class="col-sensitivity" scope="col">Sensitivity</th>
-                <th class="col-attachments nowrap" scope="col">Attachments</th>
-                <th class="col-actions" scope="col">Actions</th>
-              </tr>
-            </thead>
-            <tbody id="pendingBody">
-              {% set visible_count = 0 %}
-              {% for it in items %}
-                {% set st = (it.status or 'PENDING') %}
-                {% if st in ['PENDING', 'DRAFT'] %}
-                  {% set _ = (visible_count.__add__(1)) %}
-                  <tr data-id="{{ it.id }}" data-status="{{ st }}" data-sensitivity="{{ it.sensitivity or 'normal' }}">
-                    <td class="col-select"><input type="checkbox" class="rowCheck" aria-label="Select row" /></td>
-                    <td class="col-created nowrap" title="{{ it.created_at or '' }}">{{ it.created_at or '' }}</td>
-                    <td class="col-recipients" title="{{ (it.recipients or []) | join(', ') }}">{{ (it.recipients or []) | join(", ") }}</td>
-                    <td class="col-subject" title="{{ it.subject or '-' }}">{{ it.subject or "-" }}</td>
-                    <td class="col-preview">
-                      {% if it.original_email %}
-                        {% set orig = it.original_email %}
-                        <div class="email-preview">
-                          {% if orig.sender %}
-                            <div class="email-sender">
-                              {% if orig.sender.emailAddress %}
-                                📧 {{ orig.sender.emailAddress.address }}
-                              {% else %}
-                                📧 {{ orig.sender }}
-                              {% endif %}
-                            </div>
-                          {% endif %}
-                          {% if orig.snippet %}
-                            <div class="email-snippet">{{ orig.snippet[:120] }}{% if orig.snippet|length > 120 %}...{% endif %}</div>
-                          {% endif %}
-                        </div>
-                      {% else %}
-                        <em style="color: #64748b; font-size: 0.85rem;">Preview not available</em>
-                      {% endif %}
-                    </td>
-                    <td class="col-sensitivity"><span class="chip">{{ it.sensitivity or "normal" }}</span></td>
-                    <td class="col-attachments nowrap">{{ (it.attachments or []) | length }}</td>
-                    <td class="col-actions actions">
-                      <a class="btn btn-primary" href="{{ url_for('routes.pending_edit', pid=it.id) }}">Review</a>
-                      <form method="POST" action="{{ url_for('routes.pending_cancel', pid=it.id) }}" style="display:inline;">
-                        <button class="btn btn-secondary" type="submit">Cancel</button>
-                      </form>
-                    </td>
-                  </tr>
-                {% endif %}
-              {% endfor %}
-            </tbody>
-          </table>
-          {% if not items or visible_count == 0 %}
-            <div class="empty" id="emptyState">
-              <div class="empty-icon">📭</div>
-              <div class="empty-title">No Pending Emails</div>
-              <div class="empty-description">All caught up! New emails requiring review will appear here automatically.</div>
-            </div>
-          {% endif %}
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number" id="totalCount">{{ items|length if items else 0 }}</div>
+          <div class="stat-label">Total Pending</div>
         </div>
-        <div id="tableHelp" class="sr-only" aria-hidden="true">Use the search and filters above to narrow the list. Table supports horizontal scrolling on small screens.</div>
-      </section>
-    </main>
+        <div class="stat-card">
+          <div class="stat-number" id="selectedCount">0</div>
+          <div class="stat-label">Selected</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-section">
+      <div class="filters-grid">
+        <input type="text" class="search-input" id="search" placeholder="Search emails..." />
+        <select class="filter-select" id="statusFilter">
+          <option value="">All Statuses</option>
+          <option value="PENDING">Pending</option>
+          <option value="DRAFT">Draft</option>
+        </select>
+        <select class="filter-select" id="sensitivityFilter">
+          <option value="">All Sensitivity</option>
+          <option value="normal">Normal</option>
+          <option value="sensitive">Sensitive</option>
+          <option value="high">High</option>
+        </select>
+        <div style="display: flex; gap: var(--space-sm);">
+          <button class="btn btn-primary" id="sendSelected" disabled>
+            📤 Send Selected
+          </button>
+          <button class="btn btn-danger" id="cancelSelected" disabled>
+            🗑️ Cancel Selected
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table Section -->
+    <div class="table-section">
+      <div class="table-container">
+        <table id="emailsTable">
+          <thead>
+            <tr>
+              <th class="col-select">
+                <input type="checkbox" id="selectAll" />
+              </th>
+              <th class="col-created">Created</th>
+              <th class="col-recipients">Recipients</th>
+              <th class="col-subject">Subject</th>
+              <th class="col-preview">Preview</th>
+              <th class="col-sensitivity">Sensitivity</th>
+              <th class="col-actions">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="emailsBody">
+            {% set visible_count = 0 %}
+            {% for it in items %}
+              {% set st = (it.status or 'PENDING') %}
+              {% if st in ['PENDING', 'DRAFT'] %}
+                {% set _ = (visible_count.__add__(1)) %}
+                <tr data-id="{{ it.id }}" data-status="{{ st }}" data-sensitivity="{{ it.sensitivity or 'normal' }}">
+                  <td class="col-select"><input type="checkbox" class="rowCheck" aria-label="Select row" /></td>
+                  <td class="col-created nowrap" title="{{ it.created_at or '' }}">{{ it.created_at or '' }}</td>
+                  <td class="col-recipients" title="{{ (it.recipients or []) | join(', ') }}">{{ (it.recipients or []) | join(", ") }}</td>
+                  <td class="col-subject" title="{{ it.subject or '-' }}">{{ it.subject or "-" }}</td>
+                  <td class="col-preview">
+                    {% if it.original_email %}
+                      {% set orig = it.original_email %}
+                      <div class="email-preview">
+                        {% if orig.sender %}
+                          <div class="email-sender">
+                            {% if orig.sender.emailAddress %}
+                              📧 {{ orig.sender.emailAddress.address }}
+                            {% else %}
+                              📧 {{ orig.sender }}
+                            {% endif %}
+                          </div>
+                        {% endif %}
+                        {% if orig.snippet %}
+                          <div class="email-snippet">{{ orig.snippet[:120] }}{% if orig.snippet|length > 120 %}...{% endif }}</div>
+                        {% endif %}
+                      </div>
+                    {% else %}
+                      <em style="color: #64748b; font-size: 0.85rem;">Preview not available</em>
+                    {% endif %}
+                  </td>
+                  <td class="col-sensitivity"><span class="chip">{{ it.sensitivity or "normal" }}</span></td>
+                  <td class="col-actions actions">
+                    <a class="btn btn-primary" href="{{ url_for('routes.pending_edit', pid=it.id) }}">Review</a>
+                    <form method="POST" action="{{ url_for('routes.pending_cancel', pid=it.id) }}" style="display:inline;">
+                      <button class="btn btn-secondary" type="submit">Cancel</button>
+                    </form>
+                  </td>
+                </tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+        {% if not items or visible_count == 0 %}
+          <div class="empty" id="emptyState">
+            <div class="empty-icon">📭</div>
+            <div class="empty-title">No Pending Emails</div>
+            <div class="empty-description">All caught up! New emails requiring review will appear here automatically.</div>
+          </div>
+        {% endif %}
+      </div>
+      <div id="tableHelp" class="sr-only" aria-hidden="true">Use the search and filters above to narrow the list. Table supports horizontal scrolling on small screens.</div>
+    </div>
   </div>
 
   <script>
     (function() {
-      // Inline filters (wide screens)
       const searchInput = document.getElementById('search');
       const statusFilter = document.getElementById('statusFilter');
       const sensitivityFilter = document.getElementById('sensitivityFilter');
-
-      // Header dropdown filters (narrow screens)
-      const searchHdr = document.getElementById('search_hdr');
-      const statusFilterHdr = document.getElementById('statusFilter_hdr');
-      const sensitivityFilterHdr = document.getElementById('sensitivityFilter_hdr');
-      const applyFiltersHdr = document.getElementById('applyFilters_hdr');
-      const resetFiltersHdr = document.getElementById('resetFilters_hdr');
-
-      const rowCount = document.getElementById('rowCount');
-      const headerCount = document.getElementById('headerCount');
       const selectAll = document.getElementById('selectAll');
       const sendSelectedBtn = document.getElementById('sendSelected');
       const cancelSelectedBtn = document.getElementById('cancelSelected');
-      const sendSelectedMore = document.getElementById('sendSelectedMore');
-      const cancelSelectedMore = document.getElementById('cancelSelectedMore');
-
-      const moreBtn = document.getElementById('moreBtn');
-      const moreMenu = document.getElementById('moreMenu');
-
-      const filtersPanel = document.getElementById('filtersPanel');
-      const filtersBtnHdr = document.getElementById('filtersBtn_hdr');
-      const filtersMenuHdr = document.getElementById('filtersMenu_hdr');
-
-      const tbody = document.getElementById('pendingBody');
+      const tbody = document.getElementById('emailsBody');
       const emptyState = document.getElementById('emptyState');
-      const headerPanel = document.querySelector('.header-panel');
-      const tableWrap = document.getElementById('tableWrap');
-      const table = document.getElementById('pendingTable');
+      const totalCount = document.getElementById('totalCount');
+      const selectedCount = document.getElementById('selectedCount');
 
       function normalize(s) { return (s || '').toString().toLowerCase(); }
-      function isInlineFiltersVisible() {
-        return !!(filtersPanel && window.getComputedStyle(filtersPanel).display !== 'none');
-      }
 
-      // FIXED (CLONED) HEADER SETUP
-      const fixedHost = document.getElementById('tableHeaderFixed');
-      let fixedTable, clonedThead, realThead;
-
-      function buildFixedHeader() {
-        if (!fixedHost || !table) return;
-        realThead = table.querySelector('thead');
-        if (!realThead || fixedTable) return;
-
-        fixedTable = document.createElement('table');
-        fixedTable.setAttribute('aria-hidden', 'true');
-        clonedThead = realThead.cloneNode(true);
-        fixedTable.appendChild(clonedThead);
-        fixedHost.innerHTML = '';
-        fixedHost.appendChild(fixedTable);
-      }
-
-      function globalTopOffset() {
-        // With the new layout, the fixed header should just be at the top of the content area
-        // No need for complex calculations since we're not using sticky positioning anymore
-        return 0;
-      }
-
-      function applyFixedHeaderTop() {
-        if (!fixedHost) return;
-        const top = globalTopOffset();
-        fixedHost.style.top = top + 'px';
-
-        // Ensure rows aren’t hidden below the fixed header when you jump
-        const hdrHeight = Math.ceil((clonedThead?.getBoundingClientRect().height) || 46);
-        tableWrap.style.scrollPaddingTop = (top + hdrHeight) + 'px';
-      }
-
-      function syncWidths() {
-        if (!fixedTable || !table) return;
-
-        table.style.tableLayout = 'fixed';
-        fixedTable.style.tableLayout = 'fixed';
-
-        const realHeaderRow = table.querySelector('thead tr');
-        const fixedHeaderRow = fixedTable.querySelector('thead tr');
-        if (!realHeaderRow || !fixedHeaderRow) return;
-
-        const realThs = Array.from(realHeaderRow.children);
-        const fixedThs = Array.from(fixedHeaderRow.children);
-        const count = Math.min(realThs.length, fixedThs.length);
-
-        // Touch layout to ensure accurate widths
-        void table.getBoundingClientRect();
-
-        for (let i = 0; i < count; i++) {
-          const w = Math.ceil(realThs[i].getBoundingClientRect().width);
-          fixedThs[i].style.width = w + 'px';
-          fixedThs[i].style.minWidth = w + 'px';
-          fixedThs[i].style.maxWidth = w + 'px';
-        }
-
-        const tw = Math.ceil(table.getBoundingClientRect().width);
-        fixedTable.style.width = tw + 'px';
-      }
-
-      function syncHorizontalScroll() {
-        if (!fixedTable) return;
-        fixedTable.style.transform = 'translateX(' + (-tableWrap.scrollLeft) + 'px)';
-      }
-
-      function updateFixedHeaderVisibility() {
-        if (!realThead) return;
-        const thRect = realThead.getBoundingClientRect();
-        const hostTop = fixedHost.getBoundingClientRect().top;
-        const shouldShow = thRect.bottom <= hostTop;
-        fixedHost.style.display = shouldShow ? 'block' : 'none';
-        realThead.style.visibility = shouldShow ? 'hidden' : 'visible';
-      }
-
-      function refreshFixedHeader() {
-        buildFixedHeader();
-        applyFixedHeaderTop();
-        syncWidths();
-        updateFixedHeaderVisibility();
-        syncHorizontalScroll();
-      }
-
-      // FILTERING + TABLE BEHAVIOR
       function getRows() { return Array.from(tbody.querySelectorAll('tr')); }
 
       function rowText(row) {
@@ -740,55 +484,35 @@
         return normalize(subject + ' ' + recipients + ' ' + preview);
       }
 
-      function updateCountsAndEmpty() {
-        const rows = getRows();
-        const visible = rows.reduce((n, r) => n + (r.style.display !== 'none' ? 1 : 0), 0);
-        if (rowCount) rowCount.textContent = visible;
-        if (headerCount) headerCount.textContent = `${visible} pending`;
-        if (emptyState) emptyState.style.display = visible === 0 ? '' : 'none';
-      }
-
-      function getActiveFilters() {
-        if (isInlineFiltersVisible()) {
-          return {
-            q: normalize(searchInput?.value || ''),
-            st: normalize(statusFilter?.value || ''),
-            sens: normalize(sensitivityFilter?.value || '')
-          };
-        }
-        return {
-          q: normalize(searchHdr?.value || ''),
-          st: normalize(statusFilterHdr?.value || ''),
-          sens: normalize(sensitivityFilterHdr?.value || '')
-        };
-      }
-
-      function mirrorFiltersToBothUIs(q, st, sens) {
-        if (searchInput) searchInput.value = q;
-        if (statusFilter) statusFilter.value = st.toUpperCase();
-        if (sensitivityFilter) sensitivityFilter.value = sens;
-
-        if (searchHdr) searchHdr.value = q;
-        if (statusFilterHdr) statusFilterHdr.value = st.toUpperCase();
-        if (sensitivityFilterHdr) sensitivityFilterHdr.value = sens;
-      }
-
       function applyFilter() {
-        const { q, st, sens } = getActiveFilters();
+        const searchTerm = normalize(searchInput?.value || '');
+        const statusValue = normalize(statusFilter?.value || '');
+        const sensitivityValue = normalize(sensitivityFilter?.value || '');
 
         getRows().forEach(row => {
           const text = rowText(row);
-          const rowSt = normalize(row.getAttribute('data-status') || '');
-          const rowSens = normalize(row.getAttribute('data-sensitivity') || 'normal');
-          const matchesSearch = !q || text.includes(q);
-          const matchesStatus = !st || rowSt === st;
-          const matchesSens = !sens || rowSens === sens;
-          row.style.display = (matchesSearch && matchesStatus && matchesSens) ? '' : 'none';
+          const rowStatus = normalize(row.getAttribute('data-status') || '');
+          const rowSensitivity = normalize(row.getAttribute('data-sensitivity') || 'normal');
+
+          const matchesSearch = !searchTerm || text.includes(searchTerm);
+          const matchesStatus = !statusValue || rowStatus === statusValue;
+          const matchesSensitivity = !sensitivityValue || rowSensitivity === sensitivityValue;
+
+          row.style.display = (matchesSearch && matchesStatus && matchesSensitivity) ? '' : 'none';
         });
 
-        updateCountsAndEmpty();
+        updateCounts();
         updateBatchButtons();
-        requestAnimationFrame(refreshFixedHeader);
+      }
+
+      function updateCounts() {
+        const rows = getRows();
+        const visible = rows.filter(r => r.style.display !== 'none').length;
+        const selected = rows.filter(r => r.style.display !== 'none' && r.querySelector('.rowCheck')?.checked).length;
+
+        if (totalCount) totalCount.textContent = visible;
+        if (selectedCount) selectedCount.textContent = selected;
+        if (emptyState) emptyState.style.display = visible === 0 ? '' : 'none';
       }
 
       function getSelectedIds() {
@@ -801,12 +525,15 @@
 
       function updateBatchButtons() {
         const hasSelection = getSelectedIds().length > 0;
-        [sendSelectedBtn, cancelSelectedBtn, sendSelectedMore, cancelSelectedMore].forEach(b => { if (b) b.disabled = !hasSelection; });
+        [sendSelectedBtn, cancelSelectedBtn].forEach(btn => {
+          if (btn) btn.disabled = !hasSelection;
+        });
       }
 
       function toggleAll(checked) {
         getRows().filter(r => r.style.display !== 'none').forEach(r => {
-          const cb = r.querySelector('.rowCheck'); if (cb) cb.checked = checked;
+          const cb = r.querySelector('.rowCheck');
+          if (cb) cb.checked = checked;
         });
         updateBatchButtons();
       }
@@ -825,65 +552,46 @@
       }
 
       async function batchSend() {
-        const ids = getSelectedIds(); if (ids.length === 0) return;
-        [sendSelectedBtn, cancelSelectedBtn, sendSelectedMore, cancelSelectedMore].forEach(b => b && (b.disabled = true));
-        try { await postJSON('/pending/batch/send', { ids }); window.location.reload(); }
-        catch (e) { alert('Failed to send selected: ' + e.message); }
-        finally { [sendSelectedBtn, cancelSelectedBtn, sendSelectedMore, cancelSelectedMore].forEach(b => b && (b.disabled = false)); }
+        const ids = getSelectedIds();
+        if (ids.length === 0) return;
+
+        [sendSelectedBtn, cancelSelectedBtn].forEach(btn => btn && (btn.disabled = true));
+        try {
+          await postJSON('/pending/batch/send', { ids });
+          window.location.reload();
+        } catch (e) {
+          alert('Failed to send selected: ' + e.message);
+        } finally {
+          [sendSelectedBtn, cancelSelectedBtn].forEach(btn => btn && (btn.disabled = false));
+        }
       }
 
       async function batchCancel() {
-        const ids = getSelectedIds(); if (ids.length === 0) return;
+        const ids = getSelectedIds();
+        if (ids.length === 0) return;
+
         if (!confirm('Cancel ' + ids.length + ' pending draft(s)?')) return;
-        [sendSelectedBtn, cancelSelectedBtn, sendSelectedMore, cancelSelectedMore].forEach(b => b && (b.disabled = true));
-        try { await postJSON('/pending/batch/cancel', { ids }); window.location.reload(); }
-        catch (e) { alert('Failed to cancel selected: ' + e.message); }
-        finally { [sendSelectedBtn, cancelSelectedBtn, sendSelectedMore, cancelSelectedMore].forEach(b => b && (b.disabled = false)); }
+
+        [sendSelectedBtn, cancelSelectedBtn].forEach(btn => btn && (btn.disabled = true));
+        try {
+          await postJSON('/pending/batch/cancel', { ids });
+          window.location.reload();
+        } catch (e) {
+          alert('Failed to cancel selected: ' + e.message);
+        } finally {
+          [sendSelectedBtn, cancelSelectedBtn].forEach(btn => btn && (btn.disabled = false));
+        }
       }
 
-      // Dropdown helpers
-      function closeMenu(menuEl, btnEl) {
-        if (!menuEl) return;
-        menuEl.classList.remove('open');
-        if (btnEl) btnEl.setAttribute('aria-expanded', 'false');
-        requestAnimationFrame(refreshFixedHeader);
-      }
-      function toggleMenu(menuEl, btnEl) {
-        if (!menuEl) return;
-        const opened = menuEl.classList.toggle('open');
-        if (btnEl) btnEl.setAttribute('aria-expanded', opened ? 'true' : 'false');
-        requestAnimationFrame(refreshFixedHeader);
-      }
-
-      // Wire up events
-      searchInput && searchInput.addEventListener('input', () => { mirrorFiltersToBothUIs(searchInput.value, statusFilter.value, sensitivityFilter.value); applyFilter(); });
-      statusFilter && statusFilter.addEventListener('change', () => { mirrorFiltersToBothUIs(searchInput.value, statusFilter.value, sensitivityFilter.value); applyFilter(); });
-      sensitivityFilter && sensitivityFilter.addEventListener('change', () => { mirrorFiltersToBothUIs(searchInput.value, statusFilter.value, sensitivityFilter.value); applyFilter(); });
-
-      applyFiltersHdr && applyFiltersHdr.addEventListener('click', () => {
-        mirrorFiltersToBothUIs(searchHdr?.value || '', statusFilterHdr?.value || '', sensitivityFilterHdr?.value || '');
-        closeMenu(filtersMenuHdr, filtersBtnHdr);
-        applyFilter();
-      });
-      resetFiltersHdr && resetFiltersHdr.addEventListener('click', () => {
-        mirrorFiltersToBothUIs('', '', '');
-        applyFilter();
-      });
-
-      moreBtn && moreBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(moreMenu, moreBtn); });
-      const onDocClick = (e) => {
-        if (moreMenu && !moreMenu.contains(e.target) && e.target !== moreBtn) closeMenu(moreMenu, moreBtn);
-        if (filtersMenuHdr && !filtersMenuHdr.contains(e.target) && e.target !== filtersBtnHdr) closeMenu(filtersMenuHdr, filtersBtnHdr);
-      };
-      document.addEventListener('click', onDocClick);
-      window.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeMenu(moreMenu, moreBtn); closeMenu(filtersMenuHdr, filtersBtnHdr); }});
-      filtersBtnHdr && filtersBtnHdr.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(filtersMenuHdr, filtersBtnHdr); });
+      // Event listeners
+      searchInput && searchInput.addEventListener('input', applyFilter);
+      statusFilter && statusFilter.addEventListener('change', applyFilter);
+      sensitivityFilter && sensitivityFilter.addEventListener('change', applyFilter);
 
       selectAll && selectAll.addEventListener('change', (e) => toggleAll(e.target.checked));
+
       sendSelectedBtn && sendSelectedBtn.addEventListener('click', batchSend);
       cancelSelectedBtn && cancelSelectedBtn.addEventListener('click', batchCancel);
-      sendSelectedMore && sendSelectedMore.addEventListener('click', () => { closeMenu(moreMenu, moreBtn); batchSend(); });
-      cancelSelectedMore && cancelSelectedMore.addEventListener('click', () => { closeMenu(moreMenu, moreBtn); batchCancel(); });
 
       tbody.addEventListener('change', (e) => {
         if (e.target && e.target.classList.contains('rowCheck')) {
@@ -894,21 +602,9 @@
         }
       });
 
-      // Build and init fixed header
- buildFixedHeader();
-  mirrorFiltersToBothUIs(searchInput?.value || '', statusFilter?.value || '', sensitivityFilter?.value || '');
-  applyFilter(); // triggers refreshFixedHeader via rAF
-
-  // Scroll/resize/fonts handlers
-  tableWrap.addEventListener('scroll', () => { updateFixedHeaderVisibility(); syncHorizontalScroll(); }, { passive: true });
-
-  let timer;
-  function debounce(fn, ms) { clearTimeout(timer); timer = setTimeout(fn, ms); }
-  window.addEventListener('resize', () => debounce(refreshFixedHeader, 80));
-  window.addEventListener('load', refreshFixedHeader);
-  setTimeout(refreshFixedHeader, 30);
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(() => setTimeout(refreshFixedHeader, 30));
-  }
-})();
-</script>
+      // Initialize
+      applyFilter();
+    })();
+  </script>
+</body>
+</html>
