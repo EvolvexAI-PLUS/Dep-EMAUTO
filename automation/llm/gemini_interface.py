@@ -13,7 +13,7 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(
 
 # --- Env ---
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
-GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
 
 # Fallback to Claude if Gemini not configured
 USE_GEMINI = bool(GEMINI_API_KEY and GEMINI_API_KEY != "your-gemini-api-key")
@@ -46,10 +46,16 @@ def safe_get_sender_string(sender: Any) -> str:
 # --- Gemini API helpers ---
 def _gemini_generate_content(prompt: str, system_prompt: str = "", max_tokens: int = MAX_TOKENS, temperature: float = TEMPERATURE) -> str:
     """Generate content using Gemini API"""
+    print(f"[GEMINI] USE_GEMINI: {USE_GEMINI}")
+    print(f"[GEMINI] GEMINI_API_KEY: {'Set' if GEMINI_API_KEY else 'Not set'}")
+
     if not USE_GEMINI:
+        print("[GEMINI] Falling back to Claude - Gemini not configured")
         # Fallback to Claude if Gemini not configured
         from .claude_interface import generate_reply_text
         return generate_reply_text(prompt, max_tokens, None)
+
+    print(f"[GEMINI] Using Gemini API with model: {GEMINI_MODEL}")
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{GEMINI_MODEL}:generateContent?key={GEMINI_API_KEY}"
 
@@ -74,11 +80,16 @@ def _gemini_generate_content(prompt: str, system_prompt: str = "", max_tokens: i
             response.raise_for_status()
 
             result = response.json()
+            print(f"[GEMINI] 📡 Raw API Response: {result}")
+
             if "candidates" in result and len(result["candidates"]) > 0:
                 content = result["candidates"][0].get("content", {})
                 if "parts" in content and len(content["parts"]) > 0:
-                    return content["parts"][0].get("text", "").strip()
+                    text_response = content["parts"][0].get("text", "").strip()
+                    print(f"[GEMINI] ✅ Extracted text: {text_response[:200]}...")
+                    return text_response
 
+            print("[GEMINI] ⚠️ No content found in response")
             return ""
 
         except requests.exceptions.RequestException as e:
@@ -91,6 +102,14 @@ def _gemini_generate_content(prompt: str, system_prompt: str = "", max_tokens: i
                 time.sleep(backoff)
             else:
                 logging.error(f"Gemini API failed after {MAX_RETRIES} attempts: {e}")
+                print(f"[GEMINI] ❌ API Error: {e}")
+                print(f"[GEMINI] 📡 Response status: {response.status_code if 'response' in locals() else 'Unknown'}")
+                if 'response' in locals():
+                    try:
+                        error_content = response.json()
+                        print(f"[GEMINI] 📄 Error content: {error_content}")
+                    except:
+                        print(f"[GEMINI] 📄 Raw error: {response.text[:500]}")
                 # Fallback to Claude
                 from .claude_interface import generate_reply_text
                 return generate_reply_text(prompt, max_tokens, None)
@@ -99,34 +118,50 @@ def _gemini_generate_content(prompt: str, system_prompt: str = "", max_tokens: i
 
 def _extract_text_from_gemini_response(response_text: str) -> str:
     """Extract text content from Gemini response"""
+    # Clean the response text
+    cleaned_text = response_text.strip()
+
+    # Handle markdown code blocks
+    if cleaned_text.startswith('```json'):
+        cleaned_text = cleaned_text[7:]  # Remove ```json
+    if cleaned_text.startswith('```'):
+        cleaned_text = cleaned_text[3:]  # Remove ```
+    if cleaned_text.endswith('```'):
+        cleaned_text = cleaned_text[:-3]  # Remove ```
+
+    cleaned_text = cleaned_text.strip()
+
     try:
         # Try to parse as JSON first (for structured responses)
-        result = json.loads(response_text.strip())
+        result = json.loads(cleaned_text)
         if isinstance(result, dict) and "suggested_reply" in result:
             return result.get("suggested_reply", "")
         return response_text.strip()
     except json.JSONDecodeError:
+        print(f"[GEMINI] ❌ JSON parsing failed for: {cleaned_text[:200]}...")
         return response_text.strip()
 
 # --- Prompts ---
-SYSTEM_PROMPT = """You are an email assistant for a busy professional. Your job:
-1) Decide whether to:
-   - AUTO_REPLY: confidently draft and send a reply aligned with the user's preferences and safety rules.
-   - HUMAN_REVIEW: draft a reply but ask for human approval when risk, ambiguity, or policy limits apply.
-   - IGNORE: no reply needed (spam/marketing without opt-in, automated notifications, duplicates, irrelevant).
-2) If AUTO_REPLY or HUMAN_REVIEW, draft a concise, professional reply (neutral-professional tone, no hallucinations, no legal/price commitments). Ask short clarifying questions only if critical info missing.
-3) Safety: avoid spam/phishing, sensitive data, links/attachments. Prefer HUMAN_REVIEW for legal/HR/contracts, sensitive negotiations, upset customers, or uncertainty.
-Return strictly valid JSON only:
+SYSTEM_PROMPT = """You are an email assistant. Analyze the incoming email and decide on action.
+
+Choose one action:
+- AUTO_REPLY: Draft and send a reply (confident, safe responses only)
+- HUMAN_REVIEW: Draft reply but require human approval (uncertain, sensitive, or complex cases)
+- IGNORE: No reply needed (spam, irrelevant, or automated messages)
+
+For AUTO_REPLY or HUMAN_REVIEW, draft a brief, professional reply.
+
+Return only valid JSON:
 {
-  "action": "AUTO_REPLY" | "HUMAN_REVIEW" | "IGNORE",
-  "confidence": 0.0..1.0,
-  "reason": "string",
-  "suggested_subject": "string or empty",
-  "suggested_reply": "string or empty",
+  "action": "AUTO_REPLY"|"HUMAN_REVIEW"|"IGNORE",
+  "confidence": 0.0-1.0,
+  "reason": "brief explanation",
+  "suggested_subject": "Re: original or empty",
+  "suggested_reply": "draft response or empty",
   "metadata": {
-    "needs_clarification": true|false,
-    "topics": ["..."],
-    "risk_flags": ["..."]
+    "needs_clarification": false,
+    "topics": [],
+    "risk_flags": []
   }
 }"""
 
@@ -210,8 +245,21 @@ Return JSON only per schema. Do not include any prose outside the JSON."""
     response_text = _gemini_generate_content(full_user_prompt, combined_system)
 
     try:
-        result = json.loads(response_text)
-    except Exception:
+        # Clean the response text (remove markdown code blocks)
+        cleaned_text = response_text.strip()
+        if cleaned_text.startswith('```json'):
+            cleaned_text = cleaned_text[7:]  # Remove ```json
+        if cleaned_text.startswith('```'):
+            cleaned_text = cleaned_text[3:]  # Remove ```
+        if cleaned_text.endswith('```'):
+            cleaned_text = cleaned_text[:-3]  # Remove ```
+
+        cleaned_text = cleaned_text.strip()
+        result = json.loads(cleaned_text)
+        print(f"[GEMINI] ✅ Successfully parsed JSON response")
+    except Exception as e:
+        print(f"[GEMINI] ❌ Failed to parse JSON response: {e}")
+        print(f"[GEMINI] 📄 Raw response: {response_text[:500]}...")
         result = {
             "action": "HUMAN_REVIEW",
             "confidence": 0.0,
@@ -239,6 +287,23 @@ def generate_reply_text(prompt: str, max_tokens: int = 500, model_id: Optional[s
     """Simple text generation for compatibility"""
     response = _gemini_generate_content(prompt, "", max_tokens, 0.7)
     return response or None
+
+# Test function to verify Gemini integration
+def test_gemini_integration():
+    """Test Gemini API integration"""
+    print("🔍 Testing Gemini Integration...")
+
+    # Test basic content generation
+    test_prompt = "Hello, can you respond to this test email?"
+    print(f"📝 Test prompt: {test_prompt}")
+
+    try:
+        response = _gemini_generate_content(test_prompt)
+        print(f"✅ Gemini Response: {response[:200]}...")
+        return True
+    except Exception as e:
+        print(f"❌ Gemini Test Failed: {e}")
+        return False
 
 # Legacy functions for compatibility
 def triage_email(email_item: Dict[str, Any], user_profile: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
