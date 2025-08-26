@@ -14,7 +14,7 @@ from automation.clients.custom_email_client import CustomEmailClient
 
 # automation/llm/__init__.py
 # Shortcut for generate_reply
-from automation.llm.claude_interface import generate_reply_text
+from automation.llm.gemini_interface import generate_reply_text
 
 # database/__init__.py
 # Shortcut for memory operations

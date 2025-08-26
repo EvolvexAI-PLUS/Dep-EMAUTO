@@ -55,7 +55,7 @@ def get_email_client(provider, token, email):
             'imap_port': user_profile.get('imap_port', 993),
             'smtp_server': user_profile.get('smtp_server'),
             'smtp_port': user_profile.get('smtp_port', 587),
-            'password_hash': user_profile.get('imap_password_hash'),
+            'password_hash': user_profile.get('imap_password_encrypted'),
             'use_ssl': user_profile.get('use_ssl', True)
         }
 

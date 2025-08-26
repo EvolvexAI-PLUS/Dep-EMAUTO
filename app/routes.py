@@ -273,14 +273,15 @@ def login_imap():
                 "reset_date": (datetime.datetime.utcnow() + datetime.timedelta(days=30)).isoformat()
             })
 
-        # Store IMAP configuration (with hashed password)
+        # Store IMAP configuration (with encrypted password)
+        from automation.clients.imap_client import encrypt_password
         profile = get_user_profile(email) or {}
         profile.update({
             'imap_server': imap_server,
             'imap_port': imap_port,
             'smtp_server': smtp_server,
             'smtp_port': smtp_port,
-            'imap_password_hash': hash_password(password),
+            'imap_password_encrypted': encrypt_password(password),
             'use_ssl': use_ssl,
             'imap_configured': True
         })

@@ -5,7 +5,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 from decimal import Decimal
 
-from automation.llm.claude_interface import (
+from automation.llm.gemini_interface import (
     is_invalid_recipient,
     classify_and_draft,
 )

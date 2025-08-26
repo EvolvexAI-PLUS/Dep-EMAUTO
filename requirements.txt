@@ -9,3 +9,4 @@ google-auth
 imapclient
 cryptography
 bcrypt  # For secure IMAP password hashing
+google-generativeai  # For Gemini AI API

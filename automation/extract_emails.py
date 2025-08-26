@@ -7,7 +7,7 @@ from automation.clients.gmail_client import GmailClient
 from automation.clients.outlook_client import OutlookClient
 from automation.clients.yahoo_client import YahooClient
 from automation.clients.custom_email_client import CustomEmailClient
-from automation.llm.claude_interface import is_invalid_recipient
+from automation.llm.gemini_interface import is_invalid_recipient
 
 load_dotenv("secret.env")
 
@@ -40,7 +40,7 @@ def get_email_client(provider: str, token: dict, email: str):
                 'imap_port': user_profile.get('imap_port', 993),
                 'smtp_server': user_profile.get('smtp_server'),
                 'smtp_port': user_profile.get('smtp_port', 587),
-                'password_hash': user_profile.get('imap_password_hash'),
+                'password_hash': user_profile.get('imap_password_encrypted'),
                 'use_ssl': user_profile.get('use_ssl', True)
             }
 

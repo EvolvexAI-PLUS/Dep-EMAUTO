@@ -9,6 +9,20 @@ from email.header import decode_header
 from datetime import datetime
 import bcrypt
 import secrets
+from cryptography.fernet import Fernet
+
+# Encryption key for IMAP passwords (should be from environment variable in production)
+ENCRYPTION_KEY = os.getenv("IMAP_ENCRYPTION_KEY", Fernet.generate_key().decode())
+
+def encrypt_password(password: str) -> str:
+    """Encrypt password for secure storage"""
+    f = Fernet(ENCRYPTION_KEY.encode() if isinstance(ENCRYPTION_KEY, str) else ENCRYPTION_KEY)
+    return f.encrypt(password.encode()).decode()
+
+def decrypt_password(encrypted_password: str) -> str:
+    """Decrypt password for IMAP authentication"""
+    f = Fernet(ENCRYPTION_KEY.encode() if isinstance(ENCRYPTION_KEY, str) else ENCRYPTION_KEY)
+    return f.decrypt(encrypted_password.encode()).decode()
 
 class IMAPClient:
     """
@@ -41,10 +55,8 @@ class IMAPClient:
         self.smtp_client = None
 
     def decrypt_password(self):
-        """Decrypt password from hash (placeholder - implement your decryption logic)"""
-        # In a real implementation, you'd decrypt the password here
-        # For now, this is a placeholder that should be replaced with proper decryption
-        raise NotImplementedError("Password decryption must be implemented securely")
+        """Decrypt password from encrypted storage"""
+        return decrypt_password(self.password_hash)
 
     def get_password(self):
         """Get decrypted password for authentication"""
