@@ -18,6 +18,17 @@
       --th-fg: #c9d4ff;
       --td-fg: #e5ecff;
       --maxw: 1600px;
+      --text-primary: #e5ecff;
+      --text-secondary: #cbd5e1;
+      --text-muted: #8892a6;
+      --border: rgba(255, 255, 255, 0.08);
+      --radius: 12px;
+      --radius-md: 8px;
+      --radius-lg: 16px;
+      --space-sm: 8px;
+      --space-md: 12px;
+      --space-lg: 16px;
+      --space-xl: 24px;
     }
 
     html, body { height: 100%; margin: 0; }
@@ -524,11 +535,11 @@
                 {% set st = (it.status or 'PENDING') %}
                 {% if st in ['PENDING', 'DRAFT'] %}
                   {% set _ = (visible_count.__add__(1)) %}
-                  <tr data-id="{{ it.id }}" data-status="{{ st }}" data-sensitivity="{{ it.sensitivity or 'normal' }}">
+                  <tr data-id="{{ it.get('id', '') }}" data-status="{{ st }}" data-sensitivity="{{ it.get('sensitivity', 'normal') }}">
                     <td class="col-select"><input type="checkbox" class="rowCheck" aria-label="Select row" /></td>
-                    <td class="col-created nowrap" title="{{ it.created_at or '' }}">{{ it.created_at or '' }}</td>
-                    <td class="col-recipients" title="{{ (it.recipients or []) | join(', ') }}">{{ (it.recipients or []) | join(", ") }}</td>
-                    <td class="col-subject" title="{{ it.subject or '-' }}">{{ it.subject or "-" }}</td>
+                    <td class="col-created nowrap" title="{{ it.get('created_at', '') }}">{{ it.get('created_at', '') }}</td>
+                    <td class="col-recipients" title="{{ (it.get('recipients', []) or []) | join(', ') }}">{{ (it.get('recipients', []) or []) | join(", ") }}</td>
+                    <td class="col-subject" title="{{ it.get('subject', '-') }}">{{ it.get('subject', "-") }}</td>
                     <td class="col-preview">
                       {% if it.original_email %}
                         {% set orig = it.original_email %}
