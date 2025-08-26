@@ -9,36 +9,72 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='pending.css') }}">
   <style>
     :root {
-      --gap: 16px;
-      --muted: #94a3b8;
-      --glass-bg: rgba(15, 23, 42, 0.8);
-      --glass-border: 1px solid rgba(255, 255, 255, 0.1);
-      --glass-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-      --th-bg: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-      --th-fg: #f1f5f9;
-      --td-fg: #e2e8f0;
-      --maxw: 1600px;
+      /* Colors */
       --primary: #6366f1;
       --primary-hover: #4f46e5;
+      --primary-light: #a5b4fc;
+      --secondary: #64748b;
+      --secondary-hover: #475569;
       --success: #10b981;
       --warning: #f59e0b;
       --error: #ef4444;
-      --surface: #0f172a;
-      --surface-hover: #1e293b;
+      --info: #06b6d4;
+
+      /* Backgrounds */
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-tertiary: #334155;
+      --bg-glass: rgba(15, 23, 42, 0.8);
+      --bg-overlay: rgba(9, 12, 20, 0.35);
+
+      /* Text */
+      --text-primary: #f8fafc;
+      --text-secondary: #e2e8f0;
+      --text-muted: #94a3b8;
+      --text-accent: #a5b4fc;
+
+      /* Borders */
       --border: #334155;
-      --radius: 0.75rem;
-      --radius-sm: 0.5rem;
+      --border-hover: #475569;
+      --border-glass: rgba(255, 255, 255, 0.1);
+      --border-focus: rgba(99, 102, 241, 0.5);
+
+      /* Spacing */
+      --space-xs: 0.25rem;
+      --space-sm: 0.5rem;
+      --space-md: 1rem;
+      --space-lg: 1.5rem;
+      --space-xl: 2rem;
+      --space-2xl: 3rem;
+
+      /* Layout */
+      --max-width: 1600px;
+      --header-height: 80px;
+      --filters-height: 60px;
+      --border-radius: 0.75rem;
+      --border-radius-sm: 0.5rem;
+      --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
     }
 
-    html, body { height: 100%; margin: 0; }
+    /* Base Layout */
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+    }
 
     .page {
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #0f172a 100%);
+      background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 25%, var(--bg-primary) 100%);
       position: relative;
-      overflow-x: hidden;
     }
 
     .page::before {
@@ -55,451 +91,649 @@
       z-index: -1;
     }
 
-    .container-width { width: 100%; max-width: var(--maxw); margin: 0 auto; }
-
-    .glass {
-      background: var(--glass-bg);
-      border-radius: 16px;
-      box-shadow: var(--glass-shadow);
-      backdrop-filter: blur(9.8px);
-      -webkit-backdrop-filter: blur(9.8px);
-      border: var(--glass-border);
+    .container-width {
+      width: 100%;
+      max-width: var(--max-width);
+      margin: 0 auto;
+      padding: 0 var(--space-md);
     }
 
-    /* Header with responsive actions */
-    .header-panel {
-      padding: 12px 14px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: var(--glass-bg);
+    /* Utility Classes */
+    .glass {
+      background: var(--bg-glass);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      border: var(--glass-border);
-      border-radius: 12px;
+      border: var(--border-glass);
+      border-radius: var(--border-radius);
     }
-    .header-left {
+
+
+    /* Modern Header */
+    .app-header {
+      background: var(--bg-glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: var(--border-glass);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .header-content {
+      padding: var(--space-lg) 0;
+    }
+
+    .header-main {
       display: flex;
-      align-items: baseline;
-      gap: 10px;
-      min-width: 0;
-      flex: 1 1 auto;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-xl);
     }
-    .header-left h2 {
-      margin: 0;
-      font-size: clamp(1.5rem, 4vw, 2rem);
-      line-height: 1.2;
-      color: var(--td-fg);
+
+    .header-brand {
+      flex: 1;
+    }
+
+    .page-title {
+      margin: 0 0 var(--space-xs) 0;
+      font-size: clamp(1.75rem, 3vw, 2.25rem);
       font-weight: 700;
-      background: linear-gradient(135deg, #e5ecff 0%, #93c5fd 100%);
+      background: linear-gradient(135deg, var(--text-accent) 0%, var(--primary-light) 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-    }
-    .subtitle {
-      color: var(--muted);
-      font-size: clamp(0.9rem, 0.5vw + 0.8rem, 1rem);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-top: 0.25rem;
+      line-height: 1.2;
     }
 
-    .count-badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 4px 12px;
-      background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(59, 130, 246, 0.1));
-      border: 1px solid rgba(59, 130, 246, 0.3);
-      border-radius: 20px;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #93c5fd;
-      margin-left: 1rem;
+    .page-subtitle {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      font-weight: 400;
     }
 
-    .header-right {
+    .header-stats {
+      flex-shrink: 0;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-number {
+      display: block;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+    }
+
+    .stat-label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* Header Actions */
+    .header-actions {
       display: flex;
       align-items: center;
-      gap: 8px;
-      flex-wrap: nowrap;
-      flex: 0 0 auto;
+      gap: var(--space-lg);
+      flex-wrap: wrap;
     }
 
+    .action-group {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    /* Modern Buttons */
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
-      height: 44px;
-      padding: 0 16px;
-      border-radius: var(--radius);
-      border: 1px solid rgba(255,255,255,0.1);
-      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-      color: #e2e8f0;
-      cursor: pointer;
-      font-size: 0.95rem;
+      gap: var(--space-sm);
+      padding: var(--space-sm) var(--space-lg);
+      border-radius: var(--border-radius);
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
       font-weight: 600;
       text-decoration: none;
-      transition: all 0.3s ease;
+      cursor: pointer;
+      transition: all 0.2s ease;
       white-space: nowrap;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
+      min-height: 40px;
+      box-shadow: var(--shadow-sm);
     }
 
-    .btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-      transition: left 0.6s ease;
+    .btn-icon {
+      font-size: 1rem;
+      line-height: 1;
     }
 
-    .btn:hover::before {
-      left: 100%;
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
     }
 
-    .btn:hover {
-      background: linear-gradient(135deg, #334155 0%, #475569 100%);
-      border-color: rgba(255,255,255,0.2);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    .btn:active {
-      transform: translateY(0);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    }
-
-    .btn.primary {
-      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-      border-color: rgba(99, 102, 241, 0.3);
+    /* Primary Button */
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
       color: white;
-      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+      border-color: var(--primary);
     }
 
-    .btn.primary:hover {
-      background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
-      box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+    .btn-primary:hover:not(:disabled) {
+      background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary) 100%);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
     }
 
-    .btn.danger {
-      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-      border-color: rgba(239, 68, 68, 0.3);
+    /* Secondary Button */
+    .btn-secondary {
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      border-color: var(--border);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--bg-tertiary);
+      border-color: var(--border-hover);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    /* Danger Button */
+    .btn-danger {
+      background: linear-gradient(135deg, var(--error) 0%, #dc2626 100%);
       color: white;
-      box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+      border-color: var(--error);
     }
 
-    .btn.danger:hover {
-      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-      box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    .btn-danger:hover:not(:disabled) {
+      background: linear-gradient(135deg, #dc2626 0%, var(--error) 100%);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
     }
 
-    /* Menus */
-    .dropdown-wrap { position: relative; }
+    /* Dropdown Menus */
+    .dropdown-wrap {
+      position: relative;
+    }
+
     .dropdown {
       position: absolute;
-      right: 0; top: calc(100% + 8px);
-      background: rgba(17, 24, 39, 0.98);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 12px;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.3);
+      right: 0;
+      top: calc(100% + var(--space-sm));
+      background: var(--bg-glass);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: var(--border-glass);
+      border-radius: var(--border-radius);
+      box-shadow: var(--shadow-lg);
       display: none;
-      min-width: 220px;
+      min-width: 240px;
       z-index: 200;
-      padding: 8px;
+      padding: var(--space-sm);
     }
-    .dropdown.open { display: block; }
 
-    /* Inline filters row (wide screens) */
-    .filters-panel {
-      padding: 10px 14px;
+    .dropdown.open {
+      display: block;
+    }
+
+    /* Filters Section */
+    .filters-section {
+      background: var(--bg-secondary);
+      border-bottom: var(--border-glass);
+      position: sticky;
+      top: 0;
+      z-index: 90;
+    }
+
+    .filters-content {
+      padding: var(--space-md) 0;
+    }
+
+    .filters-main {
       display: flex;
-      gap: 10px;
       align-items: center;
-      flex-wrap: wrap;
-      background: var(--glass-bg);
+      justify-content: space-between;
+      gap: var(--space-xl);
+    }
+
+    .search-group {
+      flex: 1;
+      max-width: 500px;
+    }
+
+    .search-input-wrapper {
+      position: relative;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: var(--space-md);
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      pointer-events: none;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: var(--space-sm) var(--space-md) var(--space-sm) calc(var(--space-md) * 2.5);
+      border: 2px solid var(--border);
+      border-radius: var(--border-radius);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 0.95rem;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: var(--bg-secondary);
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+    }
+
+    .filter-select {
+      padding: var(--space-sm) var(--space-md);
+      border: 2px solid var(--border);
+      border-radius: var(--border-radius);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 0.9rem;
+      min-width: 160px;
+      transition: all 0.2s ease;
+    }
+
+    .filter-select:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: var(--bg-secondary);
+    }
+
+    .filters-stats {
+      flex-shrink: 0;
+    }
+
+    .results-count {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: var(--space-sm) var(--space-lg);
+      background: var(--bg-tertiary);
+      border: var(--border-glass);
+      border-radius: var(--border-radius);
+    }
+
+    .count-number {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .count-label {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Main Content */
+    .main-content {
+      flex: 1;
+      min-height: calc(100vh - var(--header-height) - var(--filters-height));
+      overflow: hidden;
+    }
+
+    .content-container {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .table-section {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background: var(--bg-glass);
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      border: var(--glass-border);
-      border-radius: 12px;
-    }
-    .filters-panel .input, .filters-panel .select {
-      padding: 10px 12px;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 10px;
-      min-width: min(260px, 48vw);
-      background: rgba(10, 14, 22, 0.6);
-      color: #e5ecff;
-      height: 40px;
-      flex: 1 1 240px;
-    }
-    .badge {
-      font-size: 0.9rem;
-      padding: 6px 12px;
-      border-radius: 999px;
-      background: rgba(30, 41, 59, 0.65);
-      color: #e5ecff;
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-    .count { font-weight: 600; }
-
-    /* Content area */
-    .content-panel {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
+      border: var(--border-glass);
+      border-radius: var(--border-radius);
+      overflow: hidden;
       min-height: 400px;
-      overflow: hidden;
-      padding: 8px;
-      min-height: calc(100vh - 200px);
     }
-    .table-shell {
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-      overflow: hidden;
-      flex: 1;
-      height: 100%;
-    }
+
     .table-wrap {
-      overflow: auto;
-      border-radius: 12px;
       flex: 1;
-      background: rgba(9,12,20,0.35);
-      position: relative; /* stable stacking for inner elements */
-      height: 100%;
+      overflow: auto;
+      background: var(--bg-overlay);
       min-height: 300px;
     }
 
-    /* Enhanced Table Styling */
+    /* Modern Table Styling */
     table {
       width: 100%;
       border-collapse: collapse;
       table-layout: fixed;
-      border-radius: var(--radius);
+      border-radius: var(--border-radius);
       overflow: hidden;
-      background: var(--surface);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      margin-bottom: 0;
+      background: var(--bg-primary);
+      margin: 0;
     }
 
     thead th {
       position: sticky;
       top: 0;
       z-index: 10;
-      background: var(--th-bg);
+      background: var(--bg-secondary);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border-bottom: 2px solid var(--border);
-      padding: 16px 12px;
-      height: 56px;
+      border-bottom: var(--border-glass);
+      padding: var(--space-md) var(--space-sm);
+      height: 48px;
       text-align: left;
       font-weight: 700;
-      font-size: 0.875rem;
+      font-size: 0.8rem;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      color: var(--th-fg);
+      color: var(--text-secondary);
       background-clip: padding-box;
       white-space: nowrap;
     }
 
     tbody td {
-      border-bottom: 1px solid var(--border);
-      padding: 12px 8px;
+      border-bottom: var(--border-glass);
+      padding: var(--space-sm);
       vertical-align: middle;
-      font-size: 0.875rem;
-      color: var(--td-fg);
+      font-size: 0.85rem;
+      color: var(--text-secondary);
       overflow: hidden;
       text-overflow: ellipsis;
       background: transparent;
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
       line-height: 1.4;
     }
 
     tbody tr {
-      transition: all 0.3s ease;
+      transition: all 0.2s ease;
       cursor: pointer;
-      border-radius: var(--radius-sm);
+      border-radius: var(--border-radius-sm);
     }
 
     tbody tr:hover {
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(6, 182, 212, 0.05) 100%);
-      transform: scale(1.01);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      background: rgba(99, 102, 241, 0.05);
+      transform: translateY(-1px);
     }
 
     tbody tr:hover td {
-      color: #ffffff;
+      color: var(--text-primary);
       font-weight: 500;
     }
 
     .status-badge {
       display: inline-flex;
       align-items: center;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 0.75rem;
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: 12px;
+      font-size: 0.7rem;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      border: 1px solid transparent;
-      transition: all 0.3s ease;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      border: var(--border-glass);
+      transition: all 0.2s ease;
     }
 
     .status-sent {
-      background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.1) 100%);
-      color: #10b981;
-      border-color: rgba(16, 185, 129, 0.3);
+      background: rgba(16, 185, 129, 0.1);
+      color: var(--success);
+      border-color: rgba(16, 185, 129, 0.2);
     }
 
     .status-failed {
-      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(239, 68, 68, 0.1) 100%);
-      color: #ef4444;
-      border-color: rgba(239, 68, 68, 0.3);
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--error);
+      border-color: rgba(239, 68, 68, 0.2);
     }
 
     .status-pending {
-      background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(245, 158, 11, 0.1) 100%);
-      color: #f59e0b;
-      border-color: rgba(245, 158, 11, 0.3);
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+      border-color: rgba(245, 158, 11, 0.2);
     }
 
     .status-ready_to_send {
-      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0.1) 100%);
-      color: #6366f1;
-      border-color: rgba(99, 102, 241, 0.3);
+      background: rgba(99, 102, 241, 0.1);
+      color: var(--primary);
+      border-color: rgba(99, 102, 241, 0.2);
     }
 
     .status-badge:hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     }
 
     .email-preview {
-      font-size: 0.85rem;
-      color: #94a3b8;
+      font-size: 0.8rem;
+      color: var(--text-muted);
       line-height: 1.4;
     }
 
     .email-sender {
       font-weight: 600;
-      color: #e2e8f0;
+      color: var(--text-secondary);
     }
 
     .email-snippet {
       font-style: italic;
-      color: #cbd5e1;
+      color: var(--text-muted);
       margin-top: 2px;
     }
-    td > * { margin: 0; } /* prevent inner margins from shifting rows */
+
+    td > * {
+      margin: 0;
+    } /* prevent inner margins from shifting rows */
 
     /* Column widths */
-    th.col-select, td.col-select { width: 52px; text-align: center; }
-    th.col-actions, td.col-actions { width: 220px; }
-    th.col-created { width: 180px; }
-    th.col-attachments { width: 110px; text-align: center; }
-    th.col-sensitivity { width: 120px; }
-    th.col-recipients { width: 300px; }
-    th.col-subject { width: 350px; }
-    th.col-preview { width: 400px; }
+    th.col-select, td.col-select { width: 48px; text-align: center; }
+    th.col-actions, td.col-actions { width: 200px; }
+    th.col-created { width: 160px; }
+    th.col-attachments { width: 100px; text-align: center; }
+    th.col-sensitivity { width: 110px; }
+    th.col-recipients { width: 280px; }
+    th.col-subject { width: 320px; }
+    th.col-preview { width: 380px; }
 
     .chip {
       display: inline-block;
-      padding: 3px 8px;
-      border-radius: 999px;
-      background: rgba(255, 193, 7, 0.15);
-      color: #ffd166;
-      font-size: 0.78rem;
-      border: 1px solid rgba(255, 193, 7, 0.35);
+      padding: var(--space-xs) var(--space-sm);
+      border-radius: 10px;
+      background: rgba(245, 158, 11, 0.1);
+      color: var(--warning);
+      font-size: 0.7rem;
+      font-weight: 600;
+      border: var(--border-glass);
     }
-    .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+    .actions {
+      display: flex;
+      gap: var(--space-sm);
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
     .empty {
-      padding: 48px 24px;
+      padding: var(--space-2xl);
       text-align: center;
-      color: var(--muted);
-      background: rgba(255, 255, 255, 0.02);
-      border-radius: var(--radius-md);
-      border: 1px dashed rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      background: var(--bg-overlay);
+      border-radius: var(--border-radius);
+      border: var(--border-glass);
     }
 
     .empty-icon {
       font-size: 3rem;
-      margin-bottom: 1rem;
+      margin-bottom: var(--space-md);
       opacity: 0.5;
     }
 
     .empty-title {
-      font-size: 1.2rem;
+      font-size: 1.25rem;
       font-weight: 600;
       color: var(--text-primary);
-      margin-bottom: 0.5rem;
+      margin-bottom: var(--space-sm);
     }
 
     .empty-description {
       font-size: 0.9rem;
       color: var(--text-muted);
-      margin-bottom: 1.5rem;
+      margin-bottom: var(--space-lg);
       max-width: 400px;
       margin-left: auto;
       margin-right: auto;
     }
 
-    /* Responsive: move Filters into header next to More on narrow screens */
-    @media (max-width: 860px) {
-      .header-right .collapse-on-narrow { display: none; }
-      .header-right .dropdown-wrap { display: inline-flex; }
-      .filters-panel { display: none; }
-    }
-    @media (min-width: 861px) {
-      .header-right .dropdown-wrap { display: none; }
-      .header-right .collapse-on-narrow { display: inline-flex; }
-    }
-
-    /* Narrow tweaks */
-    @media (max-width: 720px) {
-        .header-panel { flex-wrap: wrap; }
-        td.col-recipients, td.col-subject, td.col-preview { white-space: normal; }
-        th.col-recipients { width: 200px; }
-        th.col-subject { width: 250px; }
-        th.col-preview { width: 300px; }
-        th.col-actions, td.col-actions { width: 170px; }
-        .table-wrap { max-height: calc(100vh - 400px); }
+    /* Responsive Design */
+    @media (max-width: 1024px) {
+      .header-main {
+        flex-direction: column;
+        gap: var(--space-lg);
+        text-align: center;
       }
 
-    /* Many emails optimization */
+      .header-actions {
+        justify-content: center;
+      }
+
+      .filters-main {
+        flex-direction: column;
+        gap: var(--space-md);
+      }
+
+      .filter-group {
+        justify-content: center;
+      }
+
+      th.col-recipients { width: 250px; }
+      th.col-subject { width: 280px; }
+      th.col-preview { width: 320px; }
+    }
+
+    @media (max-width: 768px) {
+      .container-width {
+        padding: 0 var(--space-sm);
+      }
+
+      .header-content {
+        padding: var(--space-md) 0;
+      }
+
+      .filters-content {
+        padding: var(--space-sm) 0;
+      }
+
+      .page-title {
+        font-size: clamp(1.5rem, 4vw, 2rem);
+      }
+
+      .search-group {
+        max-width: none;
+      }
+
+      /* Hide less important columns on mobile */
+      th.col-created, td.col-created { display: none; }
+      th.col-attachments, td.col-attachments { display: none; }
+
+      th.col-recipients { width: 200px; }
+      th.col-subject { width: 240px; }
+      th.col-preview { width: 280px; }
+      th.col-actions, td.col-actions { width: 160px; }
+
+      .actions {
+        flex-direction: column;
+        gap: var(--space-xs);
+      }
+
+      .btn {
+        padding: var(--space-xs) var(--space-md);
+        font-size: 0.85rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .header-actions {
+        flex-direction: column;
+        gap: var(--space-sm);
+      }
+
+      .action-group {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .btn {
+        width: 100%;
+        justify-content: center;
+      }
+
+      /* Show only essential columns on very small screens */
+      th.col-preview, td.col-preview { display: none; }
+      th.col-sensitivity { width: 90px; }
+
+      .table-section {
+        border-radius: 0;
+      }
+
+      .content-container {
+        padding: var(--space-sm) 0;
+      }
+    }
+
+    /* High email count optimization */
     @media (max-height: 800px) {
-      .content-panel { min-height: calc(100vh - 250px); }
-      tbody td { padding: 8px 6px; font-size: 0.8rem; }
-      .header-panel { padding: 8px 12px; }
-      .filters-panel { padding: 8px 12px; }
+      .table-section {
+        min-height: calc(100vh - var(--header-height) - var(--filters-height) - var(--space-xl));
+      }
+
+      tbody td {
+        padding: var(--space-xs);
+        font-size: 0.8rem;
+      }
+
+      .header-content {
+        padding: var(--space-sm) 0;
+      }
+
+      .filters-content {
+        padding: var(--space-sm) 0;
+      }
     }
 
     /* Very small screens */
     @media (max-height: 600px) {
-      .content-panel { min-height: calc(100vh - 300px); }
-      .table-wrap { min-height: 200px; }
-      tbody td { padding: 6px 4px; font-size: 0.75rem; }
-      .header-panel { padding: 6px 10px; }
-      .filters-panel { padding: 6px 10px; }
+      .table-wrap {
+        min-height: 150px;
+      }
+
+      .main-content {
+        min-height: calc(100vh - var(--header-height) - var(--filters-height));
+      }
     }
-    @media (max-width: 520px) {
-       th.col-created, td.col-created { display: none; }
-       th.col-attachments, td.col-attachments { display: none; }
-       th.col-preview, td.col-preview { display: none; }
-       th.col-sensitivity { width: 100px; }
-       .actions { flex-direction: column; align-items: stretch; gap: 6px; }
-       .actions .btn { width: 100%; }
-       .btn { height: 40px; }
-       .header-panel { padding: 12px; }
-     }
 
     /* Fixed (cloned) header host bar */
     .table-header-fixed {
@@ -535,90 +769,83 @@
 </head>
 <body>
  <div class="page">
-   <!-- Header Section -->
-   <div style="padding: 20px 20px 0 20px;">
-     <div class="header-panel glass container-width">
-       <div class="header-left">
-         <h2>Pending Emails</h2>
-         <span class="subtitle">Review and send AI-generated responses</span>
-         <span class="count-badge" id="headerCount">
-           {{ items|length if items else 0 }} pending
-         </span>
-       </div>
-       <div class="header-right">
-         <button id="sendSelected" class="btn primary collapse-on-narrow" type="button" disabled>Send selected</button>
-         <button id="cancelSelected" class="btn danger collapse-on-narrow" type="button" disabled>Cancel selected</button>
-         <a class="btn collapse-on-narrow" href="/dashboard">Dashboard</a>
-         <a class="btn collapse-on-narrow" href="/logout">Logout</a>
-
-         <!-- More dropdown -->
-         <div class="dropdown-wrap">
-           <button id="moreBtn" class="btn" aria-haspopup="true" aria-expanded="false">More ▾</button>
-           <div id="moreMenu" class="dropdown" role="menu" aria-label="More actions">
-             <button id="sendSelectedMore" class="btn primary" type="button" disabled>Send selected</button>
-             <button id="cancelSelectedMore" class="btn danger" type="button" disabled>Cancel selected</button>
-             <a class="btn" href="/dashboard">Dashboard</a>
-             <a class="btn" href="/logout">Logout</a>
+   <!-- Modern Header -->
+   <header class="app-header">
+     <div class="header-content container-width">
+       <div class="header-main">
+         <div class="header-brand">
+           <h1 class="page-title">📬 Pending Emails</h1>
+           <p class="page-subtitle">Review and send AI-generated responses</p>
+         </div>
+         <div class="header-stats">
+           <div class="stat-item">
+             <span class="stat-number" id="headerCount">{{ items|length if items else 0 }}</span>
+             <span class="stat-label">Pending</span>
            </div>
          </div>
+       </div>
+       <nav class="header-actions">
+         <div class="action-group">
+           <button id="sendSelected" class="btn btn-primary" type="button" disabled>
+             <span class="btn-icon">📤</span>
+             Send Selected
+           </button>
+           <button id="cancelSelected" class="btn btn-danger" type="button" disabled>
+             <span class="btn-icon">🗑️</span>
+             Cancel Selected
+           </button>
+         </div>
+         <div class="action-group">
+           <a class="btn btn-secondary" href="/dashboard">
+             <span class="btn-icon">📊</span>
+             Dashboard
+           </a>
+           <a class="btn btn-secondary" href="/logout">
+             <span class="btn-icon">🚪</span>
+             Logout
+           </a>
+         </div>
+       </nav>
+     </div>
+   </header>
 
-         <!-- Filters dropdown (appears next to More on narrow) -->
-         <div class="dropdown-wrap">
-           <button id="filtersBtn_hdr" class="btn" aria-haspopup="true" aria-expanded="false">Filters ▾</button>
-           <div id="filtersMenu_hdr" class="dropdown" role="menu" aria-label="Filters">
-             <div style="display:grid; gap:8px; width:min(320px, 92vw);">
-               <label for="search_hdr" style="font-size:0.85rem; color:var(--muted);">Search</label>
-               <input id="search_hdr" class="input" type="search" placeholder="Search subject or recipient…">
-
-               <label for="statusFilter_hdr" style="font-size:0.85rem; color:var(--muted);">Status</label>
-               <select id="statusFilter_hdr" class="select">
-                 <option value="">All statuses</option>
-                 <option value="PENDING">Pending</option>
-                 <option value="DRAFT">Draft</option>
-               </select>
-
-               <label for="sensitivityFilter_hdr" style="font-size:0.85rem; color:var(--muted);">Sensitivity</label>
-               <select id="sensitivityFilter_hdr" class="select">
-                 <option value="">All sensitivities</option>
-                 <option value="normal">Normal</option>
-                 <option value="sensitive">Sensitive</option>
-                 <option value="high">High</option>
-               </select>
-
-               <div style="display:flex; gap:8px; margin-top:6px;">
-                 <button id="applyFilters_hdr" class="btn primary" type="button">Apply</button>
-                 <button id="resetFilters_hdr" class="btn" type="button">Reset</button>
-               </div>
-             </div>
+   <!-- Filters Bar -->
+   <section class="filters-section">
+     <div class="filters-content container-width">
+       <div class="filters-main">
+         <div class="search-group">
+           <div class="search-input-wrapper">
+             <span class="search-icon">🔍</span>
+             <input id="search" class="search-input" type="search" placeholder="Search by subject, recipient, or content…" aria-label="Search pending emails" />
            </div>
          </div>
-
+         <div class="filter-group">
+           <select id="statusFilter" class="filter-select" aria-label="Filter by status">
+             <option value="">All Statuses</option>
+             <option value="PENDING">⏳ Pending</option>
+             <option value="DRAFT">📝 Draft</option>
+           </select>
+           <select id="sensitivityFilter" class="filter-select" aria-label="Filter by sensitivity">
+             <option value="">All Sensitivity</option>
+             <option value="normal">🟢 Normal</option>
+             <option value="sensitive">🟡 Sensitive</option>
+             <option value="high">🔴 High</option>
+           </select>
+         </div>
+       </div>
+       <div class="filters-stats">
+         <div class="results-count">
+           <span class="count-number" id="rowCount">{{ items|length if items else 0 }}</span>
+           <span class="count-label">emails</span>
+         </div>
        </div>
      </div>
-   </div>
+   </section>
 
-   <!-- Filters Section -->
-   <div style="padding: 10px 20px;">
-     <div class="filters-panel glass container-width" role="region" aria-label="Filters and search" id="filtersPanel">
-       <input id="search" class="input" type="search" placeholder="Search subject or recipient…" aria-label="Search pending" />
-       <select id="statusFilter" class="select" aria-label="Filter by status">
-         <option value="">All statuses</option>
-         <option value="PENDING">Pending</option>
-         <option value="DRAFT">Draft</option>
-       </select>
-       <select id="sensitivityFilter" class="select" aria-label="Filter by sensitivity">
-         <option value="">All sensitivities</option>
-         <option value="normal">Normal</option>
-         <option value="sensitive">Sensitive</option>
-         <option value="high">High</option>
-       </select>
-       <span class="badge">Total: <span id="rowCount" class="count">{{ items|length if items else 0 }}</span></span>
-     </div>
-   </div>
-
-   <!-- Content Section -->
-   <div style="flex: 1; padding: 0 20px 20px 20px; overflow: hidden;">
-     <div class="content-panel glass container-width" role="region" aria-label="Pending table">
+   <!-- Main Content -->
+   <main class="main-content">
+     <div class="content-container container-width">
+       <div class="table-section" role="region" aria-label="Pending emails table">
       <div class="table-shell">
         <!-- Fixed cloned header host -->
         <div class="table-header-fixed glass container-width" id="tableHeaderFixed" aria-hidden="true"></div>
@@ -672,9 +899,9 @@
                     <td class="col-sensitivity"><span class="chip">{{ it.sensitivity or "normal" }}</span></td>
                     <td class="col-attachments nowrap">{{ (it.attachments or []) | length }}</td>
                     <td class="col-actions actions">
-                      <a class="btn primary" href="{{ url_for('routes.pending_edit', pid=it.id) }}">Review</a>
+                      <a class="btn btn-primary" href="{{ url_for('routes.pending_edit', pid=it.id) }}">Review</a>
                       <form method="POST" action="{{ url_for('routes.pending_cancel', pid=it.id) }}" style="display:inline;">
-                        <button class="btn" type="submit">Cancel</button>
+                        <button class="btn btn-secondary" type="submit">Cancel</button>
                       </form>
                     </td>
                   </tr>
@@ -692,8 +919,7 @@
         </div>
         <div id="tableHelp" class="sr-only" aria-hidden="true">Use the search and filters above to narrow the list. Table supports horizontal scrolling on small screens.</div>
       </div>
-    </div>
-   </div>
+    </main>
   </div>
 
   <script>
