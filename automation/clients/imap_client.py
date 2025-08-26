@@ -45,7 +45,8 @@ class IMAPClient:
             'imap_port': 993,
             'smtp_server': 'mail.aljual.ae',
             'smtp_port': 587,
-            'password_hash': 'encrypted_password_hash',
+            'password_hash': 'encrypted_password_hash',  # For production
+            'password': 'plaintext_password',            # For testing only
             'use_ssl': True
         }
         """
@@ -54,16 +55,31 @@ class IMAPClient:
         self.imap_port = credentials.get('imap_port', 993)
         self.smtp_server = credentials.get('smtp_server', f'mail.{self.email.split("@")[1]}')
         self.smtp_port = credentials.get('smtp_port', 587)
-        self.password_hash = credentials['password_hash']
         self.use_ssl = credentials.get('use_ssl', True)
+
+        # Handle both testing (plaintext) and production (encrypted) passwords
+        if 'password' in credentials:
+            # For testing - store plaintext password directly
+            self.password_hash = credentials['password']
+            self.is_encrypted = False
+        elif 'password_hash' in credentials:
+            # For production - store encrypted password
+            self.password_hash = credentials['password_hash']
+            self.is_encrypted = True
+        else:
+            raise ValueError("Either 'password' (for testing) or 'password_hash' (for production) must be provided")
 
         # Connection objects
         self.imap_client = None
         self.smtp_client = None
 
     def decrypt_password(self):
-        """Decrypt password from encrypted storage"""
-        return decrypt_password(self.password_hash)
+        """Decrypt password from encrypted storage or return plaintext for testing"""
+        if self.is_encrypted:
+            return decrypt_password(self.password_hash)
+        else:
+            # For testing - password is already plaintext
+            return self.password_hash
 
     def get_password(self):
         """Get decrypted password for authentication"""
