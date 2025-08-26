@@ -24,7 +24,7 @@ REPLY_QUEUE_TABLE = os.getenv("REPLY_QUEUE_TABLE", "ReplyQueue")
 MAX_RETRIES = int(os.getenv("LLM_MAX_RETRIES", "5"))
 INITIAL_BACKOFF_SECONDS = float(os.getenv("LLM_INITIAL_BACKOFF_SECONDS", "1.0"))
 TEMPERATURE = float(os.getenv("LLM_TEMPERATURE", "0.2"))
-MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", "900"))
+MAX_TOKENS = int(os.getenv("LLM_MAX_TOKENS", "2000"))
 
 # --- Utils ---
 NO_REPLY_REGEX = re.compile(r'(no-?reply|do[\s-]?not[\s-]?reply|donotreply|auto-?reply|mailer-daemon|bounce|bounces?|postmaster|support)', re.IGNORECASE)
