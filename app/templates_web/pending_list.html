@@ -18,25 +18,15 @@
       --th-fg: #c9d4ff;
       --td-fg: #e5ecff;
       --maxw: 1600px;
-      --text-primary: #e5ecff;
-      --text-secondary: #cbd5e1;
-      --text-muted: #8892a6;
-      --border: rgba(255, 255, 255, 0.08);
-      --radius: 12px;
-      --radius-md: 8px;
-      --radius-lg: 16px;
-      --space-sm: 8px;
-      --space-md: 12px;
-      --space-lg: 16px;
-      --space-xl: 24px;
     }
 
     html, body { height: 100%; margin: 0; }
 
     .page {
       min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      grid-template-columns: 1fr;
       gap: var(--gap);
       padding: 12px;
       background: radial-gradient(1200px 600px at 30% -10%, rgba(59,130,246,0.15), transparent 60%),
@@ -57,17 +47,13 @@
 
     /* Header with responsive actions */
     .header-panel {
+      position: sticky;
+      top: 0;
+      z-index: 100;
       padding: 12px 14px;
       display: flex;
       align-items: center;
       gap: 12px;
-      margin-bottom: var(--space-lg);
-      background: var(--glass-bg);
-      border-radius: var(--radius-lg);
-      border: var(--glass-border);
-      box-shadow: var(--glass-shadow);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
     }
     .header-left {
       display: flex;
@@ -175,18 +161,14 @@
 
     /* Inline filters row (wide screens) */
     .filters-panel {
+      position: sticky;
+      top: 0;
+      z-index: 95;
       padding: 10px 14px;
       display: flex;
       gap: 10px;
       align-items: center;
       flex-wrap: wrap;
-      margin-bottom: var(--space-lg);
-      background: var(--glass-bg);
-      border-radius: var(--radius-lg);
-      border: var(--glass-border);
-      box-shadow: var(--glass-shadow);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
     }
     .filters-panel .input, .filters-panel .select {
       padding: 10px 12px;
@@ -215,13 +197,6 @@
       min-height: 0;
       overflow: hidden;
       padding: 8px;
-      flex: 1;
-      background: var(--glass-bg);
-      border-radius: var(--radius-lg);
-      border: var(--glass-border);
-      box-shadow: var(--glass-shadow);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
     }
     .table-shell { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
     .table-wrap {
@@ -549,11 +524,11 @@
                 {% set st = (it.status or 'PENDING') %}
                 {% if st in ['PENDING', 'DRAFT'] %}
                   {% set _ = (visible_count.__add__(1)) %}
-                  <tr data-id="{{ it.get('id', '') }}" data-status="{{ st }}" data-sensitivity="{{ it.get('sensitivity', 'normal') }}">
+                  <tr data-id="{{ it.id }}" data-status="{{ st }}" data-sensitivity="{{ it.sensitivity or 'normal' }}">
                     <td class="col-select"><input type="checkbox" class="rowCheck" aria-label="Select row" /></td>
-                    <td class="col-created nowrap" title="{{ it.get('created_at', '') }}">{{ it.get('created_at', '') }}</td>
-                    <td class="col-recipients" title="{{ (it.get('recipients', []) or []) | join(', ') }}">{{ (it.get('recipients', []) or []) | join(", ") }}</td>
-                    <td class="col-subject" title="{{ it.get('subject', '-') }}">{{ it.get('subject', "-") }}</td>
+                    <td class="col-created nowrap" title="{{ it.created_at or '' }}">{{ it.created_at or '' }}</td>
+                    <td class="col-recipients" title="{{ (it.recipients or []) | join(', ') }}">{{ (it.recipients or []) | join(", ") }}</td>
+                    <td class="col-subject" title="{{ it.subject or '-' }}">{{ it.subject or "-" }}</td>
                     <td class="col-preview">
                       {% if it.original_email %}
                         {% set orig = it.original_email %}
@@ -659,8 +634,17 @@
       }
 
       function globalTopOffset() {
-        // Simplified calculation since we removed sticky positioning
-        return 20; // Just a small offset for visual spacing
+        const hH = Math.ceil(headerPanel?.getBoundingClientRect().height || 0);
+        const filtersVisible = isInlineFiltersVisible();
+        const fH = filtersVisible ? Math.ceil(filtersPanel.getBoundingClientRect().height) : 0;
+
+        // If header filters dropdown open on narrow, include it
+        let hdrDropH = 0;
+        if (!filtersVisible && filtersMenuHdr && filtersMenuHdr.classList.contains('open')) {
+          hdrDropH = Math.ceil(filtersMenuHdr.getBoundingClientRect().height);
+        }
+        const gap = 12;
+        return hH + (fH ? gap + fH : 0) + (hdrDropH ? gap + hdrDropH : 0) + gap;
       }
 
       function applyFixedHeaderTop() {
