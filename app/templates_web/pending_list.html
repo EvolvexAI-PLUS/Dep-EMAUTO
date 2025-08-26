@@ -36,10 +36,9 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      gap: var(--gap);
-      padding: 20px;
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #0f172a 100%);
       position: relative;
+      overflow-x: hidden;
     }
 
     .page::before {
@@ -69,9 +68,6 @@
 
     /* Header with responsive actions */
     .header-panel {
-      position: sticky;
-      top: 20px;
-      z-index: 100;
       padding: 12px 14px;
       display: flex;
       align-items: center;
@@ -81,7 +77,6 @@
       -webkit-backdrop-filter: blur(10px);
       border: var(--glass-border);
       border-radius: 12px;
-      margin-bottom: 8px;
     }
     .header-left {
       display: flex;
@@ -224,9 +219,6 @@
 
     /* Inline filters row (wide screens) */
     .filters-panel {
-      position: sticky;
-      top: 140px;
-      z-index: 95;
       padding: 10px 14px;
       display: flex;
       gap: 10px;
@@ -237,7 +229,6 @@
       -webkit-backdrop-filter: blur(10px);
       border: var(--glass-border);
       border-radius: 12px;
-      margin-bottom: 8px;
     }
     .filters-panel .input, .filters-panel .select {
       padding: 10px 12px;
@@ -267,6 +258,7 @@
       min-height: 400px;
       overflow: hidden;
       padding: 8px;
+      min-height: calc(100vh - 200px);
     }
     .table-shell {
       display: flex;
@@ -274,15 +266,16 @@
       min-height: 0;
       overflow: hidden;
       flex: 1;
+      height: 100%;
     }
     .table-wrap {
       overflow: auto;
       border-radius: 12px;
-      min-height: 200px;
       flex: 1;
       background: rgba(9,12,20,0.35);
       position: relative; /* stable stacking for inner elements */
-      max-height: calc(100vh - 300px);
+      height: 100%;
+      min-height: 300px;
     }
 
     /* Enhanced Table Styling */
@@ -483,10 +476,19 @@
 
     /* Many emails optimization */
     @media (max-height: 800px) {
-      .table-wrap { max-height: calc(100vh - 350px); }
+      .content-panel { min-height: calc(100vh - 250px); }
       tbody td { padding: 8px 6px; font-size: 0.8rem; }
       .header-panel { padding: 8px 12px; }
       .filters-panel { padding: 8px 12px; }
+    }
+
+    /* Very small screens */
+    @media (max-height: 600px) {
+      .content-panel { min-height: calc(100vh - 300px); }
+      .table-wrap { min-height: 200px; }
+      tbody td { padding: 6px 4px; font-size: 0.75rem; }
+      .header-panel { padding: 6px 10px; }
+      .filters-panel { padding: 6px 10px; }
     }
     @media (max-width: 520px) {
        th.col-created, td.col-created { display: none; }
@@ -501,7 +503,7 @@
 
     /* Fixed (cloned) header host bar */
     .table-header-fixed {
-      position: sticky;   /* sticks under page header/filters; JS sets exact top */
+      position: sticky;
       top: 0;
       z-index: 120;
       display: none;      /* toggled by JS */
@@ -512,6 +514,7 @@
       -webkit-backdrop-filter: blur(8px);
       border: 1px solid rgba(255,255,255,0.14);
       border-bottom: none; /* avoid double border against table header */
+      width: 100%;
     }
     .table-header-fixed table {
       width: 100%;
@@ -531,86 +534,91 @@
   </style>
 </head>
 <body>
-  <div class="page">
-    <!-- Header -->
-    <div class="header-panel glass container-width">
-      <div class="header-left">
-        <h2>Pending Emails</h2>
-        <span class="subtitle">Review and send AI-generated responses</span>
-        <span class="count-badge" id="headerCount">
-          {{ items|length if items else 0 }} pending
-        </span>
-      </div>
-      <div class="header-right">
-        <button id="sendSelected" class="btn primary collapse-on-narrow" type="button" disabled>Send selected</button>
-        <button id="cancelSelected" class="btn danger collapse-on-narrow" type="button" disabled>Cancel selected</button>
-        <a class="btn collapse-on-narrow" href="/dashboard">Dashboard</a>
-        <a class="btn collapse-on-narrow" href="/logout">Logout</a>
+ <div class="page">
+   <!-- Header Section -->
+   <div style="padding: 20px 20px 0 20px;">
+     <div class="header-panel glass container-width">
+       <div class="header-left">
+         <h2>Pending Emails</h2>
+         <span class="subtitle">Review and send AI-generated responses</span>
+         <span class="count-badge" id="headerCount">
+           {{ items|length if items else 0 }} pending
+         </span>
+       </div>
+       <div class="header-right">
+         <button id="sendSelected" class="btn primary collapse-on-narrow" type="button" disabled>Send selected</button>
+         <button id="cancelSelected" class="btn danger collapse-on-narrow" type="button" disabled>Cancel selected</button>
+         <a class="btn collapse-on-narrow" href="/dashboard">Dashboard</a>
+         <a class="btn collapse-on-narrow" href="/logout">Logout</a>
 
-        <!-- More dropdown -->
-        <div class="dropdown-wrap">
-          <button id="moreBtn" class="btn" aria-haspopup="true" aria-expanded="false">More ▾</button>
-          <div id="moreMenu" class="dropdown" role="menu" aria-label="More actions">
-            <button id="sendSelectedMore" class="btn primary" type="button" disabled>Send selected</button>
-            <button id="cancelSelectedMore" class="btn danger" type="button" disabled>Cancel selected</button>
-            <a class="btn" href="/dashboard">Dashboard</a>
-            <a class="btn" href="/logout">Logout</a>
-          </div>
-        </div>
+         <!-- More dropdown -->
+         <div class="dropdown-wrap">
+           <button id="moreBtn" class="btn" aria-haspopup="true" aria-expanded="false">More ▾</button>
+           <div id="moreMenu" class="dropdown" role="menu" aria-label="More actions">
+             <button id="sendSelectedMore" class="btn primary" type="button" disabled>Send selected</button>
+             <button id="cancelSelectedMore" class="btn danger" type="button" disabled>Cancel selected</button>
+             <a class="btn" href="/dashboard">Dashboard</a>
+             <a class="btn" href="/logout">Logout</a>
+           </div>
+         </div>
 
-        <!-- Filters dropdown (appears next to More on narrow) -->
-        <div class="dropdown-wrap">
-          <button id="filtersBtn_hdr" class="btn" aria-haspopup="true" aria-expanded="false">Filters ▾</button>
-          <div id="filtersMenu_hdr" class="dropdown" role="menu" aria-label="Filters">
-            <div style="display:grid; gap:8px; width:min(320px, 92vw);">
-              <label for="search_hdr" style="font-size:0.85rem; color:var(--muted);">Search</label>
-              <input id="search_hdr" class="input" type="search" placeholder="Search subject or recipient…">
+         <!-- Filters dropdown (appears next to More on narrow) -->
+         <div class="dropdown-wrap">
+           <button id="filtersBtn_hdr" class="btn" aria-haspopup="true" aria-expanded="false">Filters ▾</button>
+           <div id="filtersMenu_hdr" class="dropdown" role="menu" aria-label="Filters">
+             <div style="display:grid; gap:8px; width:min(320px, 92vw);">
+               <label for="search_hdr" style="font-size:0.85rem; color:var(--muted);">Search</label>
+               <input id="search_hdr" class="input" type="search" placeholder="Search subject or recipient…">
 
-              <label for="statusFilter_hdr" style="font-size:0.85rem; color:var(--muted);">Status</label>
-              <select id="statusFilter_hdr" class="select">
-                <option value="">All statuses</option>
-                <option value="PENDING">Pending</option>
-                <option value="DRAFT">Draft</option>
-              </select>
+               <label for="statusFilter_hdr" style="font-size:0.85rem; color:var(--muted);">Status</label>
+               <select id="statusFilter_hdr" class="select">
+                 <option value="">All statuses</option>
+                 <option value="PENDING">Pending</option>
+                 <option value="DRAFT">Draft</option>
+               </select>
 
-              <label for="sensitivityFilter_hdr" style="font-size:0.85rem; color:var(--muted);">Sensitivity</label>
-              <select id="sensitivityFilter_hdr" class="select">
-                <option value="">All sensitivities</option>
-                <option value="normal">Normal</option>
-                <option value="sensitive">Sensitive</option>
-                <option value="high">High</option>
-              </select>
+               <label for="sensitivityFilter_hdr" style="font-size:0.85rem; color:var(--muted);">Sensitivity</label>
+               <select id="sensitivityFilter_hdr" class="select">
+                 <option value="">All sensitivities</option>
+                 <option value="normal">Normal</option>
+                 <option value="sensitive">Sensitive</option>
+                 <option value="high">High</option>
+               </select>
 
-              <div style="display:flex; gap:8px; margin-top:6px;">
-                <button id="applyFilters_hdr" class="btn primary" type="button">Apply</button>
-                <button id="resetFilters_hdr" class="btn" type="button">Reset</button>
-              </div>
-            </div>
-          </div>
-        </div>
+               <div style="display:flex; gap:8px; margin-top:6px;">
+                 <button id="applyFilters_hdr" class="btn primary" type="button">Apply</button>
+                 <button id="resetFilters_hdr" class="btn" type="button">Reset</button>
+               </div>
+             </div>
+           </div>
+         </div>
 
-      </div>
-    </div>
+       </div>
+     </div>
+   </div>
 
-    <!-- Inline filters row (hidden on narrow by CSS above) -->
-    <div class="filters-panel glass container-width" role="region" aria-label="Filters and search" id="filtersPanel">
-      <input id="search" class="input" type="search" placeholder="Search subject or recipient…" aria-label="Search pending" />
-      <select id="statusFilter" class="select" aria-label="Filter by status">
-        <option value="">All statuses</option>
-        <option value="PENDING">Pending</option>
-        <option value="DRAFT">Draft</option>
-      </select>
-      <select id="sensitivityFilter" class="select" aria-label="Filter by sensitivity">
-        <option value="">All sensitivities</option>
-        <option value="normal">Normal</option>
-        <option value="sensitive">Sensitive</option>
-        <option value="high">High</option>
-      </select>
-      <span class="badge">Total: <span id="rowCount" class="count">{{ items|length if items else 0 }}</span></span>
-    </div>
+   <!-- Filters Section -->
+   <div style="padding: 10px 20px;">
+     <div class="filters-panel glass container-width" role="region" aria-label="Filters and search" id="filtersPanel">
+       <input id="search" class="input" type="search" placeholder="Search subject or recipient…" aria-label="Search pending" />
+       <select id="statusFilter" class="select" aria-label="Filter by status">
+         <option value="">All statuses</option>
+         <option value="PENDING">Pending</option>
+         <option value="DRAFT">Draft</option>
+       </select>
+       <select id="sensitivityFilter" class="select" aria-label="Filter by sensitivity">
+         <option value="">All sensitivities</option>
+         <option value="normal">Normal</option>
+         <option value="sensitive">Sensitive</option>
+         <option value="high">High</option>
+       </select>
+       <span class="badge">Total: <span id="rowCount" class="count">{{ items|length if items else 0 }}</span></span>
+     </div>
+   </div>
 
-    <!-- Content -->
-    <div class="content-panel glass container-width" role="region" aria-label="Pending table">
+   <!-- Content Section -->
+   <div style="flex: 1; padding: 0 20px 20px 20px; overflow: hidden;">
+     <div class="content-panel glass container-width" role="region" aria-label="Pending table">
       <div class="table-shell">
         <!-- Fixed cloned header host -->
         <div class="table-header-fixed glass container-width" id="tableHeaderFixed" aria-hidden="true"></div>
@@ -685,6 +693,7 @@
         <div id="tableHelp" class="sr-only" aria-hidden="true">Use the search and filters above to narrow the list. Table supports horizontal scrolling on small screens.</div>
       </div>
     </div>
+   </div>
   </div>
 
   <script>
@@ -745,19 +754,9 @@
       }
 
       function globalTopOffset() {
-        const hH = Math.ceil(headerPanel?.getBoundingClientRect().height || 0);
-        const filtersVisible = isInlineFiltersVisible();
-        const fH = filtersVisible ? Math.ceil(filtersPanel.getBoundingClientRect().height) : 0;
-
-        // If header filters dropdown open on narrow, include it
-        let hdrDropH = 0;
-        if (!filtersVisible && filtersMenuHdr && filtersMenuHdr.classList.contains('open')) {
-          hdrDropH = Math.ceil(filtersMenuHdr.getBoundingClientRect().height);
-        }
-        const gap = 12;
-        // Account for page padding (20px) and element margins
-        const pagePadding = 20;
-        return pagePadding + hH + (fH ? gap + fH : 0) + (hdrDropH ? gap + hdrDropH : 0) + gap;
+        // With the new layout, the fixed header should just be at the top of the content area
+        // No need for complex calculations since we're not using sticky positioning anymore
+        return 0;
       }
 
       function applyFixedHeaderTop() {
