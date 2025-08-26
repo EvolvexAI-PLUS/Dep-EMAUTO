@@ -410,25 +410,25 @@
               {% set st = (it.status or 'PENDING') %}
               {% if st in ['PENDING', 'DRAFT'] %}
                 {% set _ = (visible_count.__add__(1)) %}
-                <tr data-id="{{ it.id }}" data-status="{{ st }}" data-sensitivity="{{ it.sensitivity or 'normal' }}">
+                <tr data-id="{{ it.id }}" data-status="{{ st }}" data-sensitivity="{{ it.get('sensitivity', 'normal') }}">
                   <td class="col-select"><input type="checkbox" class="rowCheck" aria-label="Select row" /></td>
-                  <td class="col-created nowrap" title="{{ it.created_at or '' }}">{{ it.created_at or '' }}</td>
-                  <td class="col-recipients" title="{{ (it.recipients or []) | join(', ') }}">{{ (it.recipients or []) | join(", ") }}</td>
-                  <td class="col-subject" title="{{ it.subject or '-' }}">{{ it.subject or "-" }}</td>
+                  <td class="col-created nowrap" title="{{ it.get('created_at', '') }}">{{ it.get('created_at', '') }}</td>
+                  <td class="col-recipients" title="{{ (it.get('recipients', []) or []) | join(', ') }}">{{ (it.get('recipients', []) or []) | join(", ") }}</td>
+                  <td class="col-subject" title="{{ it.get('subject', '-') }}">{{ it.get('subject', "-") }}</td>
                   <td class="col-preview">
-                    {% if it.original_email %}
+                    {% if it.get('original_email') %}
                       {% set orig = it.original_email %}
                       <div class="email-preview">
-                        {% if orig.sender %}
+                        {% if orig.get('sender') %}
                           <div class="email-sender">
-                            {% if orig.sender.emailAddress %}
-                              📧 {{ orig.sender.emailAddress.address }}
+                            {% if orig.sender.get('emailAddress') %}
+                              📧 {{ orig.sender.emailAddress.get('address', '') }}
                             {% else %}
                               📧 {{ orig.sender }}
                             {% endif %}
                           </div>
                         {% endif %}
-                        {% if orig.snippet %}
+                        {% if orig.get('snippet') %}
                           <div class="email-snippet">{{ orig.snippet[:120] }}{% if orig.snippet|length > 120 %}...{% endif }}</div>
                         {% endif %}
                       </div>
@@ -436,7 +436,7 @@
                       <em style="color: #64748b; font-size: 0.85rem;">Preview not available</em>
                     {% endif %}
                   </td>
-                  <td class="col-sensitivity"><span class="chip">{{ it.sensitivity or "normal" }}</span></td>
+                  <td class="col-sensitivity"><span class="chip">{{ it.get('sensitivity', 'normal') }}</span></td>
                   <td class="col-actions actions">
                     <a class="btn btn-primary" href="{{ url_for('routes.pending_edit', pid=it.id) }}">Review</a>
                     <form method="POST" action="{{ url_for('routes.pending_cancel', pid=it.id) }}" style="display:inline;">
