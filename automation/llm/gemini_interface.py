@@ -83,7 +83,21 @@ def _gemini_generate_content(prompt: str, system_prompt: str = "", max_tokens: i
             print(f"[GEMINI] 📡 Raw API Response: {result}")
 
             if "candidates" in result and len(result["candidates"]) > 0:
-                content = result["candidates"][0].get("content", {})
+                candidate = result["candidates"][0]
+                finish_reason = candidate.get("finishReason", "")
+
+                # Handle MAX_TOKENS case - response was truncated
+                if finish_reason == "MAX_TOKENS":
+                    print(f"[GEMINI] ⚠️ Response truncated due to MAX_TOKENS limit")
+                    # Still try to extract what we can
+                    content = candidate.get("content", {})
+                    if "parts" in content and len(content["parts"]) > 0:
+                        text_response = content["parts"][0].get("text", "").strip()
+                        print(f"[GEMINI] 📄 Extracted partial text: {text_response[:200]}...")
+                        return text_response
+
+                # Normal case
+                content = candidate.get("content", {})
                 if "parts" in content and len(content["parts"]) > 0:
                     text_response = content["parts"][0].get("text", "").strip()
                     print(f"[GEMINI] ✅ Extracted text: {text_response[:200]}...")
