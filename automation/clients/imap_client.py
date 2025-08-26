@@ -3,6 +3,8 @@ import smtplib
 import email
 import json
 import os
+import socket
+import ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.header import decode_header
@@ -86,31 +88,76 @@ class IMAPClient:
         return self.decrypt_password()
 
     def connect_imap(self):
-        """Establish IMAP connection"""
+        """Establish IMAP connection with enhanced error handling"""
         try:
             if self.imap_client and self.imap_client.state == 'SELECTED':
                 return True
 
             password = self.get_password()
 
+            # Enhanced SSL connection with timeout and better error handling
             if self.use_ssl:
-                self.imap_client = imaplib.IMAP4_SSL(self.imap_server, self.imap_port)
-            else:
-                self.imap_client = imaplib.IMAP4(self.imap_server, self.imap_port)
+                import ssl
+                try:
+                    # Create SSL context with better compatibility
+                    ssl_context = ssl.create_default_context()
+                    ssl_context.check_hostname = False
+                    ssl_context.verify_mode = ssl.CERT_NONE  # For self-signed certificates
 
-            # Login
+                    # Try with custom SSL context first
+                    self.imap_client = imaplib.IMAP4_SSL(
+                        self.imap_server,
+                        self.imap_port,
+                        ssl_context=ssl_context,
+                        timeout=30
+                    )
+                except Exception as ssl_error:
+                    print(f"⚠️  SSL connection failed, trying standard SSL: {ssl_error}")
+                    # Fallback to standard SSL
+                    self.imap_client = imaplib.IMAP4_SSL(
+                        self.imap_server,
+                        self.imap_port,
+                        timeout=30
+                    )
+            else:
+                self.imap_client = imaplib.IMAP4(self.imap_server, self.imap_port, timeout=30)
+
+            # Test connection with NOOP before login
+            try:
+                status, data = self.imap_client.noop()
+                if status != 'OK':
+                    print(f"⚠️  IMAP server response: {data}")
+            except Exception as noop_error:
+                print(f"⚠️  IMAP NOOP test failed: {noop_error}")
+
+            # Login with better error handling
             status, data = self.imap_client.login(self.email, password)
             if status != 'OK':
                 raise Exception(f"IMAP login failed: {data}")
 
+            print(f"✅ IMAP connection successful to {self.imap_server}:{self.imap_port}")
             return True
 
+        except ssl.SSLError as ssl_error:
+            print(f"❌ SSL Connection Error: {ssl_error}")
+            print("💡 Try disabling SSL or check server certificate")
+            return False
+        except socket.timeout as timeout_error:
+            print(f"❌ Connection Timeout: {timeout_error}")
+            print("💡 Check server address, port, and network connectivity")
+            return False
+        except socket.gaierror as dns_error:
+            print(f"❌ DNS Resolution Error: {dns_error}")
+            print("💡 Check server hostname and DNS configuration")
+            return False
         except Exception as e:
             print(f"❌ IMAP connection failed: {e}")
+            print(f"🔍 Server: {self.imap_server}:{self.imap_port}")
+            print(f"🔒 SSL: {'Enabled' if self.use_ssl else 'Disabled'}")
             return False
 
     def connect_smtp(self):
-        """Establish SMTP connection"""
+        """Establish SMTP connection with enhanced error handling"""
         try:
             if self.smtp_client:
                 return True
@@ -118,17 +165,46 @@ class IMAPClient:
             password = self.get_password()
 
             if self.use_ssl:
-                self.smtp_client = smtplib.SMTP_SSL(self.smtp_server, self.smtp_port)
+                try:
+                    # Try SSL connection with timeout
+                    self.smtp_client = smtplib.SMTP_SSL(self.smtp_server, self.smtp_port, timeout=30)
+                except Exception as ssl_error:
+                    print(f"⚠️  SMTP SSL failed, trying without SSL: {ssl_error}")
+                    # Fallback to non-SSL
+                    self.smtp_client = smtplib.SMTP(self.smtp_server, self.smtp_port, timeout=30)
+                    self.smtp_client.starttls()
             else:
-                self.smtp_client = smtplib.SMTP(self.smtp_server, self.smtp_port)
-                self.smtp_client.starttls()
+                self.smtp_client = smtplib.SMTP(self.smtp_server, self.smtp_port, timeout=30)
+                try:
+                    self.smtp_client.starttls()
+                except Exception as tls_error:
+                    print(f"⚠️  STARTTLS failed: {tls_error}")
 
             # Login
             self.smtp_client.login(self.email, password)
+            print(f"✅ SMTP connection successful to {self.smtp_server}:{self.smtp_port}")
             return True
 
+        except smtplib.SMTPAuthenticationError as auth_error:
+            print(f"❌ SMTP Authentication Error: {auth_error}")
+            print("💡 Check email address and password")
+            return False
+        except smtplib.SMTPConnectError as connect_error:
+            print(f"❌ SMTP Connection Error: {connect_error}")
+            print("💡 Check server address and port")
+            return False
+        except socket.timeout as timeout_error:
+            print(f"❌ SMTP Timeout: {timeout_error}")
+            print("💡 Check server address and network connectivity")
+            return False
+        except socket.gaierror as dns_error:
+            print(f"❌ SMTP DNS Error: {dns_error}")
+            print("💡 Check server hostname")
+            return False
         except Exception as e:
             print(f"❌ SMTP connection failed: {e}")
+            print(f"🔍 Server: {self.smtp_server}:{self.smtp_port}")
+            print(f"🔒 SSL: {'Enabled' if self.use_ssl else 'Disabled'}")
             return False
 
     def fetch_unread_emails(self, max_count=5):

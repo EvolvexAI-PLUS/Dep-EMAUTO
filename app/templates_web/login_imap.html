@@ -223,12 +223,46 @@
             <div class="error-message">
                 ⚠️ <strong>Connection Error:</strong><br>
                 {{ error }}
+                <br><br>
+                <strong>🔧 Troubleshooting Steps:</strong>
+                <ul style="margin: 0.5rem 0 0 1rem; padding-left: 1rem;">
+                    <li>Verify your email address and password</li>
+                    <li>Check IMAP/SMTP server settings</li>
+                    <li>For Gmail: Enable 2FA and use app-specific password</li>
+                    <li>For Outlook: Generate app password in account settings</li>
+                    <li>Try toggling SSL/TLS settings</li>
+                    <li>Check if your email provider allows IMAP access</li>
+                </ul>
             </div>
             {% endif %}
 
             <div class="info-banner">
                 🔒 <strong>Secure & Private:</strong> Your credentials are encrypted and never stored in plain text.<br>
-                📧 <strong>Full Support:</strong> Works with Gmail, Outlook, Yahoo, and any custom domain.
+                📧 <strong>Full Support:</strong> Works with Gmail, Outlook, Yahoo, and any custom domain.<br>
+                🔧 <strong>Need Help?</strong> Use app-specific passwords for Gmail, Outlook app passwords for enhanced security.
+            </div>
+
+            <!-- Connection Tips -->
+            <div class="help-section" style="margin-bottom: 1.5rem;">
+                <h4>🔍 Quick Setup Guide</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div>
+                        <h5 style="color: #495057; margin-bottom: 0.5rem;">📧 Gmail Setup</h5>
+                        <ul style="margin: 0; padding-left: 1.2rem;">
+                            <li>Server: imap.gmail.com:993</li>
+                            <li>SMTP: smtp.gmail.com:587</li>
+                            <li>Use app-specific password</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h5 style="color: #495057; margin-bottom: 0.5rem;">📧 Outlook Setup</h5>
+                        <ul style="margin: 0; padding-left: 1.2rem;">
+                            <li>Server: outlook.office365.com:993</li>
+                            <li>SMTP: smtp-mail.outlook.com:587</li>
+                            <li>Use app password</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
 
             <!-- Account Credentials -->
