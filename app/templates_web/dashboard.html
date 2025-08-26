@@ -65,16 +65,16 @@
     }
 
     .sidebar {
-      flex: 0 0 280px;
-      min-width: 280px;
-      max-width: 280px;
+      flex: 0 0 220px;
+      min-width: 220px;
+      max-width: 220px;
       transition: all 0.3s ease;
     }
 
     .app-container.collapsed .sidebar {
-      flex: 0 0 80px;
-      min-width: 80px;
-      max-width: 80px;
+      flex: 0 0 60px;
+      min-width: 60px;
+      max-width: 60px;
     }
 
     .app-content {
@@ -146,22 +146,22 @@
     /* Enhanced Metrics Cards */
     .metric-cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: var(--space-lg);
-      margin: var(--space-xl) 0;
-      padding: 0 var(--space-lg);
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: var(--space-md);
+      margin: var(--space-lg) 0;
+      padding: 0 var(--space-sm);
     }
 
     .metric-card {
       background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-      padding: var(--space-xl);
-      border-radius: var(--radius-xl);
+      padding: var(--space-lg);
+      border-radius: var(--radius-lg);
       border: 1px solid var(--border);
       text-align: center;
       transition: all 0.3s ease;
       position: relative;
       overflow: hidden;
-      box-shadow: var(--shadow-md);
+      box-shadow: var(--shadow-sm);
     }
 
     .metric-card::before {
@@ -181,15 +181,15 @@
     }
 
     .metric-value {
-      font-size: clamp(2.5rem, 5vw, 3.5rem);
-      font-weight: 800;
+      font-size: clamp(2rem, 4vw, 2.5rem);
+      font-weight: 700;
       color: var(--text-primary);
-      margin-bottom: var(--space-sm);
+      margin-bottom: var(--space-xs);
       background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
     }
 
     .metric-label {
@@ -304,11 +304,11 @@
       background: var(--surface);
       border-radius: var(--radius-lg);
       overflow: hidden;
-      margin: var(--space-lg);
+      margin: var(--space-md) var(--space-sm);
       box-shadow: var(--shadow-sm);
       flex: 1;
-      min-height: 400px;
-      max-height: calc(100vh - 400px);
+      min-height: 300px;
+      max-height: calc(100vh - 350px);
       overflow-y: auto;
     }
 
@@ -334,7 +334,7 @@
     }
 
     .product-cell {
-      padding: var(--space-md);
+      padding: var(--space-sm);
       color: var(--text-secondary);
       border-right: 1px solid var(--border);
     }
@@ -347,8 +347,10 @@
       color: var(--text-primary);
       font-weight: 700;
       text-transform: uppercase;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       letter-spacing: 0.5px;
+      padding: var(--space-xs) var(--space-sm);
+      height: 44px;
     }
 
     /* Enhanced Empty State */
