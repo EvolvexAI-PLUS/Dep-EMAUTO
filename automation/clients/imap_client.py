@@ -12,7 +12,14 @@ import secrets
 from cryptography.fernet import Fernet
 
 # Encryption key for IMAP passwords (should be from environment variable in production)
-ENCRYPTION_KEY = os.getenv("IMAP_ENCRYPTION_KEY", Fernet.generate_key().decode())
+IMAP_ENCRYPTION_KEY = os.getenv("IMAP_ENCRYPTION_KEY")
+if IMAP_ENCRYPTION_KEY:
+    ENCRYPTION_KEY = IMAP_ENCRYPTION_KEY
+else:
+    # Generate a proper Fernet key for development/testing
+    ENCRYPTION_KEY = Fernet.generate_key().decode()
+    print(f"⚠️  Using generated encryption key: {ENCRYPTION_KEY}")
+    print("⚠️  Set IMAP_ENCRYPTION_KEY environment variable for production!")
 
 def encrypt_password(password: str) -> str:
     """Encrypt password for secure storage"""

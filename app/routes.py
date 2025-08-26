@@ -255,7 +255,6 @@ def login_imap():
 
         # Connection successful - create user account
         from database.memory_manager_dynamo import get_user_profile, set_user_profile
-        from automation.clients.imap_client import hash_password
 
         # Check if user exists
         user = get_user(email)
