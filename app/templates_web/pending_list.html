@@ -35,9 +35,8 @@
 
     .page {
       min-height: 100vh;
-      display: grid;
-      grid-template-rows: auto auto 1fr;
-      grid-template-columns: 1fr;
+      display: flex;
+      flex-direction: column;
       gap: var(--gap);
       padding: 12px;
       background: radial-gradient(1200px 600px at 30% -10%, rgba(59,130,246,0.15), transparent 60%),
@@ -58,13 +57,17 @@
 
     /* Header with responsive actions */
     .header-panel {
-      position: sticky;
-      top: 0;
-      z-index: 100;
       padding: 12px 14px;
       display: flex;
       align-items: center;
       gap: 12px;
+      margin-bottom: var(--space-lg);
+      background: var(--glass-bg);
+      border-radius: var(--radius-lg);
+      border: var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     .header-left {
       display: flex;
@@ -172,14 +175,18 @@
 
     /* Inline filters row (wide screens) */
     .filters-panel {
-      position: sticky;
-      top: 0;
-      z-index: 95;
       padding: 10px 14px;
       display: flex;
       gap: 10px;
       align-items: center;
       flex-wrap: wrap;
+      margin-bottom: var(--space-lg);
+      background: var(--glass-bg);
+      border-radius: var(--radius-lg);
+      border: var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     .filters-panel .input, .filters-panel .select {
       padding: 10px 12px;
@@ -208,6 +215,13 @@
       min-height: 0;
       overflow: hidden;
       padding: 8px;
+      flex: 1;
+      background: var(--glass-bg);
+      border-radius: var(--radius-lg);
+      border: var(--glass-border);
+      box-shadow: var(--glass-shadow);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
     .table-shell { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
     .table-wrap {
@@ -645,17 +659,8 @@
       }
 
       function globalTopOffset() {
-        const hH = Math.ceil(headerPanel?.getBoundingClientRect().height || 0);
-        const filtersVisible = isInlineFiltersVisible();
-        const fH = filtersVisible ? Math.ceil(filtersPanel.getBoundingClientRect().height) : 0;
-
-        // If header filters dropdown open on narrow, include it
-        let hdrDropH = 0;
-        if (!filtersVisible && filtersMenuHdr && filtersMenuHdr.classList.contains('open')) {
-          hdrDropH = Math.ceil(filtersMenuHdr.getBoundingClientRect().height);
-        }
-        const gap = 12;
-        return hH + (fH ? gap + fH : 0) + (hdrDropH ? gap + hdrDropH : 0) + gap;
+        // Simplified calculation since we removed sticky positioning
+        return 20; // Just a small offset for visual spacing
       }
 
       function applyFixedHeaderTop() {
