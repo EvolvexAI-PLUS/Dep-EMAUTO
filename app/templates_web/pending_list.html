@@ -34,9 +34,8 @@
 
     .page {
       min-height: 100vh;
-      display: grid;
-      grid-template-rows: auto auto 1fr;
-      grid-template-columns: 1fr;
+      display: flex;
+      flex-direction: column;
       gap: var(--gap);
       padding: 20px;
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 25%, #0f172a 100%);
@@ -71,12 +70,18 @@
     /* Header with responsive actions */
     .header-panel {
       position: sticky;
-      top: 0;
+      top: 20px;
       z-index: 100;
       padding: 12px 14px;
       display: flex;
       align-items: center;
       gap: 12px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: var(--glass-border);
+      border-radius: 12px;
+      margin-bottom: 8px;
     }
     .header-left {
       display: flex;
@@ -220,13 +225,19 @@
     /* Inline filters row (wide screens) */
     .filters-panel {
       position: sticky;
-      top: 0;
+      top: 140px;
       z-index: 95;
       padding: 10px 14px;
       display: flex;
       gap: 10px;
       align-items: center;
       flex-wrap: wrap;
+      background: var(--glass-bg);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: var(--glass-border);
+      border-radius: 12px;
+      margin-bottom: 8px;
     }
     .filters-panel .input, .filters-panel .select {
       padding: 10px 12px;
@@ -250,20 +261,28 @@
 
     /* Content area */
     .content-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 400px;
+      overflow: hidden;
+      padding: 8px;
+    }
+    .table-shell {
       display: flex;
       flex-direction: column;
       min-height: 0;
       overflow: hidden;
-      padding: 8px;
+      flex: 1;
     }
-    .table-shell { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
     .table-wrap {
       overflow: auto;
       border-radius: 12px;
-      min-height: 0;
-      flex: 1 1 auto;
+      min-height: 200px;
+      flex: 1;
       background: rgba(9,12,20,0.35);
       position: relative; /* stable stacking for inner elements */
+      max-height: calc(100vh - 300px);
     }
 
     /* Enhanced Table Styling */
@@ -275,6 +294,7 @@
       overflow: hidden;
       background: var(--surface);
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      margin-bottom: 0;
     }
 
     thead th {
@@ -299,14 +319,15 @@
 
     tbody td {
       border-bottom: 1px solid var(--border);
-      padding: 16px 12px;
+      padding: 12px 8px;
       vertical-align: middle;
-      font-size: 0.95rem;
+      font-size: 0.875rem;
       color: var(--td-fg);
       overflow: hidden;
       text-overflow: ellipsis;
       background: transparent;
       transition: all 0.3s ease;
+      line-height: 1.4;
     }
 
     tbody tr {
@@ -451,13 +472,22 @@
 
     /* Narrow tweaks */
     @media (max-width: 720px) {
-       .header-panel { flex-wrap: wrap; }
-       td.col-recipients, td.col-subject, td.col-preview { white-space: normal; }
-       th.col-recipients { width: 200px; }
-       th.col-subject { width: 250px; }
-       th.col-preview { width: 300px; }
-       th.col-actions, td.col-actions { width: 170px; }
-     }
+        .header-panel { flex-wrap: wrap; }
+        td.col-recipients, td.col-subject, td.col-preview { white-space: normal; }
+        th.col-recipients { width: 200px; }
+        th.col-subject { width: 250px; }
+        th.col-preview { width: 300px; }
+        th.col-actions, td.col-actions { width: 170px; }
+        .table-wrap { max-height: calc(100vh - 400px); }
+      }
+
+    /* Many emails optimization */
+    @media (max-height: 800px) {
+      .table-wrap { max-height: calc(100vh - 350px); }
+      tbody td { padding: 8px 6px; font-size: 0.8rem; }
+      .header-panel { padding: 8px 12px; }
+      .filters-panel { padding: 8px 12px; }
+    }
     @media (max-width: 520px) {
        th.col-created, td.col-created { display: none; }
        th.col-attachments, td.col-attachments { display: none; }
@@ -725,7 +755,9 @@
           hdrDropH = Math.ceil(filtersMenuHdr.getBoundingClientRect().height);
         }
         const gap = 12;
-        return hH + (fH ? gap + fH : 0) + (hdrDropH ? gap + hdrDropH : 0) + gap;
+        // Account for page padding (20px) and element margins
+        const pagePadding = 20;
+        return pagePadding + hH + (fH ? gap + fH : 0) + (hdrDropH ? gap + hdrDropH : 0) + gap;
       }
 
       function applyFixedHeaderTop() {
