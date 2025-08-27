@@ -235,7 +235,7 @@
       display: inline-flex;
       align-items: center;
       gap: var(--space-sm);
-      min-height: 44px;
+      min-height: clamp(40px, 10vw, 44px);
       box-shadow: var(--shadow-sm);
     }
 
@@ -256,9 +256,9 @@
       color: var(--text-primary);
       padding: var(--space-sm) var(--space-md);
       border-radius: var(--radius);
-      font-size: 0.95rem;
+      font-size: clamp(14px, 3.5vw, 15px);
       transition: all 0.2s ease;
-      min-height: 44px;
+      min-height: clamp(40px, 10vw, 44px);
     }
 
     .search-input:focus {
@@ -300,6 +300,8 @@
       min-height: 300px;
       max-height: calc(100vh - 350px);
       overflow-y: auto;
+      overflow-x: auto; /* Allow horizontal scrolling on small screens */
+      -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
     }
 
     .tableView {
@@ -337,10 +339,10 @@
       color: var(--text-primary);
       font-weight: 700;
       text-transform: uppercase;
-      font-size: 0.75rem;
+      font-size: clamp(11px, 2vw, 12px);
       letter-spacing: 0.5px;
       padding: var(--space-xs) var(--space-sm);
-      height: 44px;
+      height: clamp(40px, 10vw, 44px);
     }
 
     /* Enhanced Empty State */
@@ -360,6 +362,58 @@
       gap: var(--space-md);
       align-items: center;
       flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    /* Better mobile sidebar handling */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: auto;
+        z-index: 1000;
+        transform: translateY(-100%);
+        transition: transform 0.3s ease;
+      }
+
+      .sidebar.open {
+        transform: translateY(0);
+      }
+
+      .sidebar-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        display: none;
+      }
+
+      .sidebar-overlay.active {
+        display: block;
+      }
+
+      .app-content {
+        margin-top: 0;
+      }
+
+      /* Prevent body scroll when sidebar is open */
+      body.sidebar-open {
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
+      }
+
+      /* Better button spacing on mobile */
+      .icon-btn {
+        padding: var(--space-sm);
+        min-width: clamp(44px, 12vw, 48px);
+        min-height: clamp(44px, 12vw, 48px);
+      }
     }
 
     /* Responsive Enhancements */
@@ -379,11 +433,29 @@
         flex-direction: column;
         align-items: stretch;
         gap: var(--space-sm);
+        width: 100%;
+      }
+
+      .search-input {
+        width: 100%;
+        min-width: auto;
       }
 
       .action-button {
         justify-content: center;
         width: 100%;
+        min-width: auto;
+      }
+
+      .app-content-header {
+        flex-direction: column;
+        gap: var(--space-md);
+        align-items: stretch;
+      }
+
+      .app-content-headerText {
+        text-align: center;
+        justify-content: center;
       }
     }
 
@@ -404,6 +476,65 @@
       .products-area-wrapper {
         margin: var(--space-sm);
         max-height: calc(100vh - 200px);
+      }
+
+      /* Stack pills vertically on very small screens */
+      .pill {
+        display: block;
+        text-align: center;
+        margin-bottom: var(--space-xs);
+      }
+
+      /* Improve touch targets */
+      .action-button, .search-input, .status-badge {
+        min-height: clamp(44px, 11vw, 48px);
+        font-size: clamp(16px, 4vw, 18px); /* Prevent zoom on iOS with responsive sizing */
+      }
+
+      /* Better table layout for mobile */
+      .products-header .product-cell {
+        padding: var(--space-xs) var(--space-sm);
+        font-size: clamp(11px, 3vw, 12px);
+        min-width: clamp(70px, 18vw, 80px);
+      }
+
+      .product-cell {
+        padding: var(--space-xs) var(--space-sm);
+        font-size: clamp(13px, 3.5vw, 14px);
+        word-wrap: break-word;
+      }
+
+      /* Make sidebar more compact on very small screens */
+      .sidebar {
+        padding: var(--space-sm);
+      }
+
+      .user-block {
+        font-size: clamp(13px, 3.5vw, 14px);
+        padding: var(--space-sm);
+      }
+    }
+
+    /* Tablet specific adjustments */
+    @media (min-width: 481px) and (max-width: 768px) {
+      .metric-cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-md);
+      }
+
+      .header-actions {
+        gap: var(--space-sm);
+        flex-wrap: wrap;
+      }
+
+      .search-input {
+        min-width: clamp(180px, 25vw, 200px);
+        flex: 1;
+      }
+
+      /* Better table spacing on tablets */
+      .products-header .product-cell {
+        min-width: clamp(100px, 15vw, 120px);
       }
     }
 
@@ -584,12 +715,39 @@
 
   <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
   <script>
-    // Collapsible sidebar functionality
+    // Enhanced collapsible sidebar functionality
     const shell = document.getElementById('appShell');
     const collapseBtn = document.getElementById('collapseBtn');
+    const sidebar = document.querySelector('.sidebar');
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
 
     function setCollapsed(on) {
-      shell.classList.toggle('collapsed', on);
+      if (isMobile) {
+        // Mobile: use overlay and transform
+        sidebar.classList.toggle('open', !on);
+        document.body.classList.toggle('sidebar-open', !on);
+
+        // Create/remove overlay
+        let overlay = document.querySelector('.sidebar-overlay');
+        if (!on) {
+          if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'sidebar-overlay';
+            overlay.addEventListener('click', () => setCollapsed(true));
+            document.body.appendChild(overlay);
+          }
+          overlay.classList.add('active');
+        } else {
+          if (overlay) {
+            overlay.classList.remove('active');
+            setTimeout(() => overlay.remove(), 300);
+          }
+        }
+      } else {
+        // Desktop: use collapsed class
+        shell.classList.toggle('collapsed', on);
+      }
+
       if (collapseBtn) collapseBtn.setAttribute('aria-expanded', on ? 'false' : 'true');
       localStorage.setItem('sb-collapsed', on ? '1' : '0');
     }
@@ -597,18 +755,35 @@
     if (shell && collapseBtn) {
       const saved = localStorage.getItem('sb-collapsed');
       const prefersCollapsed = window.matchMedia('(max-width: 960px)').matches;
-      setCollapsed(saved === '1' || (saved === null && prefersCollapsed));
+      const shouldCollapse = saved === '1' || (saved === null && prefersCollapsed);
+
+      if (isMobile && !shouldCollapse) {
+        // On mobile, start with sidebar open if not explicitly collapsed
+        setCollapsed(false);
+      } else {
+        setCollapsed(shouldCollapse);
+      }
 
       collapseBtn.addEventListener('click', () => {
-        setCollapsed(!shell.classList.contains('collapsed'));
+        const currentlyCollapsed = isMobile ? !sidebar.classList.contains('open') : shell.classList.contains('collapsed');
+        setCollapsed(!currentlyCollapsed);
       });
 
-      const mq = window.matchMedia('(max-width: 960px)');
-      const onChange = e => {
-        if (localStorage.getItem('sb-collapsed') === null) setCollapsed(e.matches);
+      // Handle responsive changes
+      const mq = window.matchMedia('(max-width: 768px)');
+      const onBreakpointChange = e => {
+        // Close mobile sidebar when switching to desktop
+        if (!e.matches && sidebar.classList.contains('open')) {
+          setCollapsed(true);
+        }
+        // Update mobile state
+        if (e.matches !== isMobile) {
+          location.reload(); // Simple way to reset layout
+        }
       };
-      if (mq.addEventListener) mq.addEventListener('change', onChange);
-      else mq.addListener(onChange);
+
+      if (mq.addEventListener) mq.addEventListener('change', onBreakpointChange);
+      else mq.addListener(onBreakpointChange);
     }
 
     // Enhanced filtering and interactions

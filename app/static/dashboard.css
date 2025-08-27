@@ -108,12 +108,12 @@ body { overflow: hidden; }
 .app-container {
   display: grid;
   grid-template-columns: var(--sidebar-w) 1fr;
-  gap: 16px;
+  gap: clamp(12px, 2vw, 16px);
   width: 100%;
   height: 100vh;
-  max-width: 2000px;
+  max-width: min(2000px, 95vw);
   margin: 0 auto;
-  padding: 16px;
+  padding: clamp(12px, 2vw, 16px);
   transition: grid-template-columns .18s ease;
 }
 .app-container.collapsed {
@@ -167,7 +167,7 @@ body { overflow: hidden; }
   display: flex;
   align-items: center;
   gap: clamp(8px, 1.5vw, 10px);
-  padding: 12px 16px;
+  padding: clamp(10px, 2vw, 12px) clamp(12px, 2.5vw, 16px);
   color: var(--text-secondary);
   text-decoration: none;
   border-radius: var(--radius-md);
@@ -263,11 +263,11 @@ body { overflow: hidden; }
 }
 
 .search-input {
-  padding: 8px 10px;
+  padding: clamp(8px, 2vw, 10px) clamp(10px, 2.5vw, 12px);
   border: 1px solid #2a3347;
   background: #0f172a;
   color: var(--app-content-main-color);
-  border-radius: 6px;
+  border-radius: clamp(6px, 1.5vw, 8px);
   min-width: clamp(200px, 25vw, 220px);
   outline: none;
 }
@@ -292,8 +292,8 @@ body { overflow: hidden; }
 
 /* Buttons and links */
 .action-button, button.action-button {
-  padding: 8px 12px;
-  border-radius: 6px;
+  padding: clamp(8px, 2vw, 10px) clamp(12px, 3vw, 14px);
+  border-radius: clamp(6px, 1.5vw, 8px);
   border: none;
   background: var(--action-color);
   color: #fff;
@@ -301,7 +301,7 @@ body { overflow: hidden; }
   font-weight: 500;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: clamp(6px, 1.5vw, 8px);
   height: clamp(32px, 4vh, 36px);
   text-decoration: none;
 }
@@ -312,9 +312,9 @@ body { overflow: hidden; }
   background: #111827;
   color: #e5ecff;
   border: 1px solid #24324a;
-  height: 36px;
+  height: clamp(32px, 4vh, 36px);
   width: clamp(32px, 4vh, 36px);
-  border-radius: 8px;
+  border-radius: clamp(6px, 1.5vw, 8px);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -345,9 +345,9 @@ body { overflow: hidden; }
   display: flex;
   align-items: center;
   background-color: var(--app-content-secondary-color);
-  border-radius: 6px;
+  border-radius: clamp(6px, 1.5vw, 8px);
   margin-bottom: clamp(8px, 1vw, 10px);
-  padding: 12px 16px;
+  padding: clamp(10px, 2vw, 12px) clamp(12px, 2.5vw, 16px);
 }
 
 .tableView .products-header {
@@ -361,10 +361,10 @@ body { overflow: hidden; }
 
 .tableView .product-cell {
   flex: 1;
-  padding: 8px;
-  font-size: 14px;
+  padding: clamp(8px, 2vw, 10px);
+  font-size: clamp(13px, 3.5vw, 14px);
   color: var(--app-content-main-color);
-  min-width: 120px; /* helps horizontal scroll on small screens */
+  min-width: clamp(100px, 15vw, 120px); /* helps horizontal scroll on small screens */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -380,23 +380,23 @@ body { overflow: hidden; }
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 360px;
+  max-width: clamp(200px, 45vw, 360px);
 }
 
 .products-empty {
-  padding: 24px;
+  padding: clamp(20px, 5vw, 24px);
   text-align: center;
   color: var(--muted);
-  font-size: 0.95rem;
+  font-size: clamp(14px, 3.5vw, 15px);
   background: rgba(255, 255, 255, 0.03);
-  border-radius: 6px;
+  border-radius: clamp(6px, 1.5vw, 8px);
   border: 1px dashed #2a3347;
 }
 
 /* Status badges */
 .status {
-  padding: 4px 8px;
-  font-size: 12px;
+  padding: clamp(4px, 1vw, 6px) clamp(8px, 2vw, 10px);
+  font-size: clamp(11px, 3vw, 12px);
   border-radius: 999px;
   display: inline-block;
   text-transform: capitalize;
@@ -514,7 +514,7 @@ body { overflow: hidden; }
 .products-header .product-cell {
   font-weight: 600;
   color: var(--text-primary);
-  padding: 12px;
+  padding: clamp(10px, 2vw, 12px);
   white-space: nowrap;
   user-select: none;
   cursor: pointer;
@@ -522,7 +522,7 @@ body { overflow: hidden; }
 }
 
 .products-row .product-cell {
-  padding: 12px;
+  padding: clamp(10px, 2vw, 12px);
   color: var(--text-secondary);
   min-width: 0;
   border-bottom: 1px solid var(--border);
@@ -542,9 +542,9 @@ body { overflow: hidden; }
 }
 
 .status-badge {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 0.8rem;
+  padding: clamp(4px, 1vw, 6px) clamp(8px, 2vw, 10px);
+  border-radius: clamp(10px, 3vw, 12px);
+  font-size: clamp(12px, 3vw, 14px);
   font-weight: 600;
   text-transform: uppercase;
   display: inline-block;
