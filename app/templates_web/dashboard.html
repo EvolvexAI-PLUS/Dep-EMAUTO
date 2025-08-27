@@ -65,10 +65,33 @@
       transition: all 0.3s ease;
     }
 
-    #appShell.collapsed .sidebar {
-      flex: 0 0 clamp(60px, 8vw, 80px);
-      min-width: clamp(60px, 8vw, 80px);
-      max-width: clamp(60px, 8vw, 80px);
+    /* Desktop collapsed state - only for larger screens */
+    @media (min-width: 769px) {
+      #appShell.collapsed .sidebar {
+        flex: 0 0 clamp(3vw, 60px, 8vw);
+        min-width: clamp(3vw, 60px, 8vw);
+        max-width: clamp(3vw, 60px, 8vw);
+      }
+
+      #appShell.collapsed .sidebar-list-item a .label {
+        display: none;
+      }
+
+      #appShell.collapsed .sidebar-list-item a {
+        justify-content: center;
+        padding: var(--space-md) var(--space-sm);
+      }
+
+      #appShell.collapsed .user-block {
+        font-size: clamp(10px, 2vw, 11px);
+        padding: var(--space-sm);
+        min-height: clamp(2.5vh, 50px, 6vh);
+      }
+
+      #appShell.collapsed .sb-top {
+        min-height: clamp(2.5vh, 50px, 6vh);
+        padding: var(--space-sm);
+      }
     }
 
     .app-content {
@@ -365,6 +388,199 @@
       justify-content: flex-end;
     }
 
+    /* Custom Scrollbar Styling for Enhanced UX */
+    ::-webkit-scrollbar {
+      width: clamp(0.5vw, 8px, 1vw);
+      height: clamp(0.5vw, 8px, 1vw);
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--surface-hover);
+      border-radius: clamp(0.25vw, 4px, 0.5vw);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, var(--border-hover), var(--primary));
+      border-radius: clamp(0.25vw, 4px, 0.5vw);
+      transition: all 0.2s ease;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      box-shadow: 0 clamp(0.1vw, 2px, 0.3vw) clamp(0.25vw, 4px, 0.5vw) rgba(99, 102, 241, 0.3);
+    }
+
+    ::-webkit-scrollbar-corner {
+      background: var(--surface-hover);
+    }
+
+    /* Firefox scrollbar */
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: var(--primary) var(--surface-hover);
+    }
+
+    /* Enhanced Sidebar Aesthetics */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      max-height: 100vh;
+      overflow: hidden; /* Prevent sidebar from expanding */
+    }
+
+    .sb-top {
+      flex-shrink: 0;
+      padding: var(--space-md);
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, var(--surface-hover), var(--surface-active));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: clamp(3vh, 60px, 8vh);
+    }
+
+    .user-block {
+      flex-shrink: 0;
+      padding: var(--space-lg) var(--space-md);
+      background: linear-gradient(135deg, var(--surface-active), var(--surface-hover));
+      border-bottom: 1px solid var(--border);
+      font-weight: 600;
+      font-size: clamp(14px, 3vw, 16px);
+      color: var(--text-primary);
+      text-align: center;
+      word-break: break-word;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      min-height: clamp(4vh, 70px, 10vh);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+
+    .user-block::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: clamp(0.1vh, 2px, 0.3vh);
+      background: linear-gradient(90deg, var(--primary), var(--secondary), var(--success));
+      opacity: 0.7;
+    }
+
+    .sidebar-list {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: var(--space-sm) 0;
+      scrollbar-gutter: stable;
+    }
+
+    .sidebar-list-item {
+      margin: var(--space-xs) var(--space-sm);
+      border-radius: var(--radius);
+      transition: all 0.2s ease;
+    }
+
+    .sidebar-list-item:hover {
+      background: rgba(99, 102, 241, 0.1);
+      transform: translateX(clamp(0.2vw, 4px, 0.5vw));
+    }
+
+    .sidebar-list-item a {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      padding: var(--space-md);
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-radius: var(--radius);
+      transition: all 0.2s ease;
+      min-height: clamp(2.5vh, 48px, 6vh);
+      position: relative;
+    }
+
+    .sidebar-list-item a:hover {
+      background: rgba(99, 102, 241, 0.15);
+      color: var(--text-primary);
+      box-shadow: 0 clamp(0.1vw, 2px, 0.3vw) clamp(0.4vw, 8px, 1vw) rgba(99, 102, 241, 0.2);
+    }
+
+    .sidebar-list-item.active a {
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: white;
+      box-shadow: 0 clamp(0.2vw, 4px, 0.6vw) clamp(0.6vw, 12px, 1.5vw) rgba(99, 102, 241, 0.4);
+    }
+
+    .sidebar-list-item a .icon {
+      flex-shrink: 0;
+      width: clamp(1vw, 20px, 2.5vw);
+      height: clamp(1vw, 20px, 2.5vw);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .sidebar-list-item a .label {
+      flex: 1;
+      font-weight: 500;
+      font-size: clamp(14px, 3vw, 15px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Enhanced Collapse Button */
+    .icon-btn {
+      background: linear-gradient(135deg, var(--surface-active), var(--surface-hover));
+      color: var(--text-primary);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: clamp(2vw, 36px, 4vw);
+      height: clamp(2vw, 36px, 4vw);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: clamp(1vw, 16px, 2vw);
+      font-weight: 600;
+      box-shadow: 0 clamp(0.1vw, 2px, 0.3vw) clamp(0.25vw, 4px, 0.5vw) rgba(0, 0, 0, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .icon-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(6, 182, 212, 0.1));
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .icon-btn:hover {
+      background: linear-gradient(135deg, var(--surface-hover), var(--surface-active));
+      border-color: var(--border-hover);
+      transform: scale(1.05) translateY(clamp(-0.05vh, -1px, -0.1vh));
+      box-shadow: 0 clamp(0.2vw, 4px, 0.6vw) clamp(0.4vw, 8px, 1vw) rgba(0, 0, 0, 0.15);
+      color: var(--primary);
+    }
+
+    .icon-btn:hover::before {
+      opacity: 1;
+    }
+
+    .icon-btn:active {
+      transform: scale(0.95);
+      box-shadow: 0 clamp(0.1vw, 2px, 0.3vw) clamp(0.25vw, 4px, 0.5vw) rgba(0, 0, 0, 0.1);
+    }
+
     /* Enhanced mobile sidebar handling */
     @media (max-width: 768px) {
       .sidebar {
@@ -378,6 +594,25 @@
         transform: translateY(-100%);
         transition: transform 0.3s ease;
         overflow-y: auto; /* Allow scrolling within sidebar */
+        scrollbar-gutter: stable; /* Prevent layout shift when scrollbar appears */
+        /* Override desktop flexbox for mobile overlay */
+        display: block !important;
+      }
+
+      .sidebar .sb-top,
+      .sidebar .user-block,
+      .sidebar .sidebar-list {
+        /* Reset flexbox for mobile overlay */
+        flex: none !important;
+        flex-shrink: 0 !important;
+        min-height: auto !important;
+      }
+
+      .sidebar .sidebar-list {
+        /* Allow scrolling in mobile overlay */
+        max-height: calc(60vh - clamp(6vh, 120px, 15vh)); /* Account for header and user block */
+        overflow-y: auto;
+        overflow-x: hidden;
       }
 
       .sidebar.open {
@@ -412,9 +647,9 @@
 
       /* Better button spacing on mobile */
       .icon-btn {
-        padding: clamp(6px, 1.5vw, 8px);
-        min-width: clamp(36px, 10vw, 44px);
-        min-height: clamp(36px, 10vw, 44px);
+        padding: clamp(0.3vw, 6px, 0.8vw);
+        min-width: clamp(2vw, 36px, 4vw);
+        min-height: clamp(2vw, 36px, 4vw);
       }
     }
 
@@ -480,13 +715,13 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 4px;
-        padding: 8px;
+        gap: clamp(0.2vh, 4px, 0.5vh);
+        padding: clamp(0.4vw, 8px, 1vw);
         color: var(--text-secondary);
         text-decoration: none;
-        font-size: 12px;
-        min-width: 60px;
-        border-radius: 8px;
+        font-size: clamp(0.6vw, 12px, 1.5vw);
+        min-width: clamp(3vw, 60px, 7vw);
+        border-radius: clamp(0.4vw, 8px, 1vw);
         transition: all 0.2s ease;
       }
 
