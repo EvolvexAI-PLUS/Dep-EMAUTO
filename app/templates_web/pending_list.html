@@ -590,15 +590,38 @@
 
   <script src="{{ url_for('static', filename='ui-utils.js') }}"></script>
   <script>
-    // Initialize skeleton loading
+    // Initialize skeleton loading properly
     document.addEventListener('DOMContentLoaded', () => {
-      // Simulate loading delay for demonstration
-      setTimeout(() => {
-        // Hide all skeletons and show real content
-        document.querySelectorAll('[data-loading]').forEach(element => {
-          element.removeAttribute('data-loading');
-        });
-      }, 1000);
+      // Use the SkeletonManager from ui-utils.js if available
+      if (window.skeletonManager) {
+        // The skeleton manager will handle data-loading attributes automatically
+        console.log('SkeletonManager initialized');
+      } else {
+        // Fallback: Handle skeleton loading manually
+        const tableWithSkeleton = document.querySelector('[data-loading="skeleton"]');
+        if (tableWithSkeleton) {
+          // Store the original content
+          const originalContent = tableWithSkeleton.innerHTML;
+
+          // Replace with skeleton loading
+          tableWithSkeleton.innerHTML = `
+            <div class="skeleton-loading-overlay">
+              <div class="skeleton-loading-spinner"></div>
+            </div>
+          `;
+
+          // Simulate loading delay (remove this in production)
+          setTimeout(() => {
+            // Restore original content and remove loading attribute
+            tableWithSkeleton.innerHTML = originalContent;
+            tableWithSkeleton.removeAttribute('data-loading');
+
+            // Trigger any post-loading functions
+            if (window.applyFilter) window.applyFilter();
+            if (window.refreshFixedHeader) window.refreshFixedHeader();
+          }, 1000);
+        }
+      }
     });
 
     (function() {
