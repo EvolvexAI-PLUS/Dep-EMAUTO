@@ -59,6 +59,100 @@ class SkeletonManager {
     return new Promise(resolve => setTimeout(() => resolve('<div>Content loaded</div>'), 1000));
   }
 
+  // Override for dashboard components
+  getDashboardMetricsPromise() {
+    return fetch('/api/dashboard-stats')
+      .then(response => {
+        if (!response.ok) throw new Error('Failed to load dashboard stats');
+        return response.json();
+      })
+      .then(data => {
+        // Return HTML with real data
+        return `
+          <div class="metric-card">
+            <div class="metric-value">${data.total_emails || 0}</div>
+            <div class="metric-label">Total Emails Processed</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">${data.ai_accuracy || 0}%</div>
+            <div class="metric-label">AI Response Accuracy</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">${data.pending_reviews || 0}</div>
+            <div class="metric-label">Pending Reviews</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value">${data.response_time || '2.3m'}</div>
+            <div class="metric-label">Avg Response Time</div>
+          </div>
+        `;
+      });
+  }
+
+  // Override for pending emails table
+  getPendingEmailsPromise() {
+    return fetch('/api/pending-emails')
+      .then(response => {
+        if (!response.ok) throw new Error('Failed to load pending emails');
+        return response.json();
+      })
+      .then(data => {
+        if (!data.items || data.items.length === 0) {
+          return '<div class="products-empty">No pending emails found. They will appear here when available.</div>';
+        }
+
+        let html = '';
+        data.items.forEach(item => {
+          const statusClass = `status-${item.status.toLowerCase()}`;
+          const recipients = item.recipients.join(', ');
+          const preview = this.generateEmailPreview(item.original_email);
+
+          html += `
+            <div class="products-row" role="row" data-id="${item.id}" data-status="${item.status}" data-sensitivity="${item.sensitivity}">
+              <div class="product-cell col-select"><input type="checkbox" class="rowCheck" aria-label="Select row" /></div>
+              <div class="product-cell col-created nowrap" title="${item.created_at}">${item.created_at}</div>
+              <div class="product-cell col-recipients" title="${recipients}">${recipients}</div>
+              <div class="product-cell col-subject" title="${item.subject}">${item.subject}</div>
+              <div class="product-cell col-preview">${preview}</div>
+              <div class="product-cell col-sensitivity"><span class="chip">${item.sensitivity}</span></div>
+              <div class="product-cell col-attachments nowrap">${item.attachments.length}</div>
+              <div class="product-cell col-actions actions">
+                <a class="btn primary" href="/pending/${item.id}">Review</a>
+                <form method="POST" action="/pending/${item.id}/cancel" style="display:inline;">
+                  <button class="btn" type="submit">Cancel</button>
+                </form>
+              </div>
+            </div>
+          `;
+        });
+
+        return html;
+      });
+  }
+
+  generateEmailPreview(originalEmail) {
+    if (!originalEmail) {
+      return '<em style="color: #64748b; font-size: 0.85rem;">Preview not available</em>';
+    }
+
+    let preview = '<div class="email-preview">';
+
+    if (originalEmail.sender) {
+      const senderAddress = originalEmail.sender.emailAddress?.address || originalEmail.sender;
+      preview += `<div class="email-sender">📧 ${senderAddress}</div>`;
+    }
+
+    if (originalEmail.snippet) {
+      const snippet = originalEmail.snippet.length > 120
+        ? originalEmail.snippet.substring(0, 120) + '...'
+        : originalEmail.snippet;
+      preview += `<div class="email-snippet">${snippet}</div>`;
+    }
+
+    preview += '</div>';
+    return preview;
+  }
+
   getSkeletonHTML(type) {
     const templates = {
       emailList: this.getEmailListSkeleton(),

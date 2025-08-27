@@ -598,31 +598,149 @@
         console.log('SkeletonManager initialized');
       } else {
         // Fallback: Handle skeleton loading manually
-        const tableWithSkeleton = document.querySelector('[data-loading="skeleton"]');
-        if (tableWithSkeleton) {
-          // Store the original content
-          const originalContent = tableWithSkeleton.innerHTML;
-
-          // Replace with skeleton loading
-          tableWithSkeleton.innerHTML = `
-            <div class="skeleton-loading-overlay">
-              <div class="skeleton-loading-spinner"></div>
-            </div>
-          `;
-
-          // Simulate loading delay (remove this in production)
-          setTimeout(() => {
-            // Restore original content and remove loading attribute
-            tableWithSkeleton.innerHTML = originalContent;
-            tableWithSkeleton.removeAttribute('data-loading');
-
-            // Trigger any post-loading functions
-            if (window.applyFilter) window.applyFilter();
-            if (window.refreshFixedHeader) window.refreshFixedHeader();
-          }, 1000);
-        }
+        loadPendingEmailsData();
       }
     });
+
+    async function loadPendingEmailsData() {
+      const tableWithSkeleton = document.querySelector('[data-loading="skeleton"]');
+      if (!tableWithSkeleton) return;
+
+      // Store the original content structure
+      const originalContent = tableWithSkeleton.innerHTML;
+
+      // Replace with skeleton loading
+      tableWithSkeleton.innerHTML = `
+        <div class="skeleton-loading-overlay">
+          <div class="skeleton-loading-spinner"></div>
+        </div>
+      `;
+
+      try {
+        // Use SkeletonManager if available
+        if (window.skeletonManager) {
+          const pendingHTML = await window.skeletonManager.getPendingEmailsPromise();
+          const headerHTML = tableWithSkeleton.querySelector('.products-header')?.outerHTML || '';
+
+          tableWithSkeleton.innerHTML = headerHTML + '<tbody>' + pendingHTML + '</tbody>';
+
+          // Update header counts
+          const response = await fetch('/api/pending-emails');
+          if (response.ok) {
+            const data = await response.json();
+            updateHeaderCounts(data.total_count);
+          }
+        } else {
+          // Fallback to direct API calls
+          const response = await fetch('/api/pending-emails');
+          if (!response.ok) throw new Error('Failed to load pending emails');
+
+          const data = await response.json();
+          updatePendingEmailsTable(data.items);
+          updateHeaderCounts(data.total_count);
+        }
+
+        // Remove loading state
+        tableWithSkeleton.removeAttribute('data-loading');
+
+        // Trigger post-loading functions
+        if (window.applyFilter) window.applyFilter();
+        if (window.refreshFixedHeader) window.refreshFixedHeader();
+
+      } catch (error) {
+        console.error('Failed to load pending emails:', error);
+        // Fallback to original content
+        tableWithSkeleton.innerHTML = originalContent;
+        tableWithSkeleton.removeAttribute('data-loading');
+
+        // Trigger post-loading functions
+        if (window.applyFilter) window.applyFilter();
+        if (window.refreshFixedHeader) window.refreshFixedHeader();
+      }
+    }
+
+    function updatePendingEmailsTable(items) {
+      const tbody = document.getElementById('pendingBody');
+      const emptyState = document.getElementById('emptyState');
+
+      if (!tbody || !items) return;
+
+      // Clear existing content
+      tbody.innerHTML = '';
+
+      if (items.length === 0) {
+        if (emptyState) emptyState.style.display = '';
+        return;
+      }
+
+      // Hide empty state
+      if (emptyState) emptyState.style.display = 'none';
+
+      // Add new items
+      items.forEach(item => {
+        const row = createPendingEmailRow(item);
+        tbody.appendChild(row);
+      });
+    }
+
+    function createPendingEmailRow(item) {
+      const row = document.createElement('tr');
+      row.setAttribute('data-id', item.id);
+      row.setAttribute('data-status', item.status);
+      row.setAttribute('data-sensitivity', item.sensitivity);
+
+      row.innerHTML = `
+        <td class="col-select"><input type="checkbox" class="rowCheck" aria-label="Select row" /></td>
+        <td class="col-created nowrap" title="${item.created_at}">${item.created_at}</td>
+        <td class="col-recipients" title="${item.recipients.join(', ')}">${item.recipients.join(', ')}</td>
+        <td class="col-subject" title="${item.subject}">${item.subject}</td>
+        <td class="col-preview">
+          ${item.original_email ? createEmailPreview(item.original_email) : '<em style="color: #64748b; font-size: 0.85rem;">Preview not available</em>'}
+        </td>
+        <td class="col-sensitivity"><span class="chip">${item.sensitivity}</span></td>
+        <td class="col-attachments nowrap">${item.attachments.length}</td>
+        <td class="col-actions actions">
+          <a class="btn primary" href="/pending/${item.id}">Review</a>
+          <form method="POST" action="/pending/${item.id}/cancel" style="display:inline;">
+            <button class="btn" type="submit">Cancel</button>
+          </form>
+        </td>
+      `;
+
+      return row;
+    }
+
+    function createEmailPreview(originalEmail) {
+      let preview = '<em style="color: #64748b; font-size: 0.85rem;">Preview not available</em>';
+
+      if (originalEmail) {
+        preview = '<div class="email-preview">';
+
+        if (originalEmail.sender) {
+          const senderAddress = originalEmail.sender.emailAddress?.address || originalEmail.sender;
+          preview += `<div class="email-sender">📧 ${senderAddress}</div>`;
+        }
+
+        if (originalEmail.snippet) {
+          const snippet = originalEmail.snippet.length > 120
+            ? originalEmail.snippet.substring(0, 120) + '...'
+            : originalEmail.snippet;
+          preview += `<div class="email-snippet">${snippet}</div>`;
+        }
+
+        preview += '</div>';
+      }
+
+      return preview;
+    }
+
+    function updateHeaderCounts(count) {
+      const headerCount = document.getElementById('headerCount');
+      const rowCount = document.getElementById('rowCount');
+
+      if (headerCount) headerCount.textContent = `${count} pending`;
+      if (rowCount) rowCount.textContent = count;
+    }
 
     (function() {
       // Inline filters (wide screens)

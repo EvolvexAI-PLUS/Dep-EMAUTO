@@ -634,6 +634,35 @@ def dashboard_stats():
         "sent_replies": sent_replies
     }
 
+@routes.route("/api/pending-emails")
+@require_jwt
+def pending_emails_api():
+    """Get pending emails data for the current user"""
+    user_email = request.user["email"]
+    items = list_pending_emails(user_email)
+
+    # Filter and format pending items
+    pending_items = []
+    for item in items:
+        status = item.get("status", "PENDING")
+        if status in ["PENDING", "DRAFT"]:
+            formatted_item = {
+                "id": item.get("id", ""),
+                "created_at": item.get("created_at", ""),
+                "recipients": item.get("recipients", []),
+                "subject": item.get("subject", "-"),
+                "status": status,
+                "sensitivity": item.get("sensitivity", "normal"),
+                "attachments": item.get("attachments", []),
+                "original_email": item.get("original_email")
+            }
+            pending_items.append(formatted_item)
+
+    return {
+        "items": pending_items,
+        "total_count": len(pending_items)
+    }
+
 @routes.route("/prefs/auto_send", methods=["POST"])
 @require_jwt
 def toggle_auto_send():
