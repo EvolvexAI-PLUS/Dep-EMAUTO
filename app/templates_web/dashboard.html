@@ -144,7 +144,7 @@
 
     .metric-card {
       background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-      padding: var(--space-lg);
+      padding: clamp(12px, 3vw, 16px);
       border-radius: var(--radius-lg);
       border: 1px solid var(--border);
       text-align: center;
@@ -171,7 +171,7 @@
     }
 
     .metric-value {
-      font-size: clamp(2rem, 4vw, 2.5rem);
+      font-size: clamp(1.5rem, 3.5vw, 2.2rem);
       font-weight: 700;
       color: var(--text-primary);
       margin-bottom: var(--space-xs);
@@ -184,7 +184,7 @@
 
     .metric-label {
       color: var(--text-muted);
-      font-size: 0.95rem;
+      font-size: clamp(0.8rem, 2vw, 0.95rem);
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -365,7 +365,7 @@
       justify-content: flex-end;
     }
 
-    /* Better mobile sidebar handling */
+    /* Enhanced mobile sidebar handling */
     @media (max-width: 768px) {
       .sidebar {
         position: fixed;
@@ -373,9 +373,11 @@
         left: 0;
         width: 100%;
         height: auto;
+        max-height: 60vh; /* Limit height on portrait screens */
         z-index: 1000;
         transform: translateY(-100%);
         transition: transform 0.3s ease;
+        overflow-y: auto; /* Allow scrolling within sidebar */
       }
 
       .sidebar.open {
@@ -410,9 +412,126 @@
 
       /* Better button spacing on mobile */
       .icon-btn {
-        padding: var(--space-sm);
-        min-width: clamp(44px, 12vw, 48px);
-        min-height: clamp(44px, 12vw, 48px);
+        padding: clamp(6px, 1.5vw, 8px);
+        min-width: clamp(36px, 10vw, 44px);
+        min-height: clamp(36px, 10vw, 44px);
+      }
+    }
+
+    /* Portrait mode optimizations (very narrow screens) */
+    @media (max-width: 480px) and (orientation: portrait) {
+      .sidebar {
+        max-height: 50vh; /* Even more restrictive for portrait */
+      }
+
+      /* Compact sidebar items for portrait */
+      .sidebar-list-item a {
+        padding: clamp(8px, 2vw, 10px) clamp(10px, 2.5vw, 12px);
+        font-size: clamp(14px, 3.5vw, 16px);
+      }
+
+      .user-block {
+        padding: clamp(6px, 1.5vw, 8px);
+        font-size: clamp(12px, 3vw, 13px);
+      }
+
+      /* Stack header actions vertically */
+      .header-actions {
+        flex-direction: column;
+        gap: clamp(6px, 1.5vw, 8px);
+        align-items: stretch;
+      }
+
+      /* Make buttons full width on very narrow screens */
+      .action-button {
+        width: 100%;
+        justify-content: center;
+      }
+
+      /* Optimize metric cards for portrait */
+      .metric-cards {
+        gap: clamp(6px, 1.5vw, 8px);
+        padding: clamp(6px, 1.5vw, 8px);
+      }
+
+      /* Compact table for portrait */
+      .products-area-wrapper {
+        max-height: calc(100vh - 300px);
+      }
+
+      /* Add bottom navigation for portrait mode */
+      .bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+        padding: clamp(8px, 2vw, 12px);
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        z-index: 1000;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+
+      .bottom-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 8px;
+        color: var(--text-secondary);
+        text-decoration: none;
+        font-size: 12px;
+        min-width: 60px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+      }
+
+      .bottom-nav-item:hover {
+        background: var(--surface-hover);
+        color: var(--text-primary);
+      }
+
+      .bottom-nav-item.active {
+        color: var(--primary);
+        background: rgba(59, 130, 246, 0.1);
+      }
+
+      .bottom-nav-item .icon {
+        font-size: 18px;
+      }
+
+      /* Adjust content to account for bottom nav */
+      .app-content {
+        padding-bottom: 80px;
+      }
+
+      /* Hide regular sidebar navigation in portrait mode */
+      .sidebar .sidebar-list {
+        display: none;
+      }
+
+      /* Show bottom nav only in portrait mode */
+      .bottom-nav {
+        display: flex;
+      }
+    }
+
+    /* Hide bottom nav in landscape */
+    @media (max-width: 480px) and (orientation: landscape) {
+      .bottom-nav {
+        display: none;
+      }
+
+      .app-content {
+        padding-bottom: var(--space-md);
+      }
+
+      .sidebar .sidebar-list {
+        display: block;
       }
     }
 
@@ -449,13 +568,14 @@
 
       .app-content-header {
         flex-direction: column;
-        gap: var(--space-md);
+        gap: clamp(8px, 2vw, 12px);
         align-items: stretch;
       }
 
       .app-content-headerText {
         text-align: center;
         justify-content: center;
+        font-size: clamp(1.25rem, 3vw, 1.5rem);
       }
     }
 
@@ -487,31 +607,31 @@
 
       /* Improve touch targets */
       .action-button, .search-input, .status-badge {
-        min-height: clamp(44px, 11vw, 48px);
-        font-size: clamp(16px, 4vw, 18px); /* Prevent zoom on iOS with responsive sizing */
+        min-height: clamp(36px, 9vw, 44px);
+        font-size: clamp(14px, 3.5vw, 16px); /* Smaller on mobile, prevents zoom on iOS */
       }
 
       /* Better table layout for mobile */
       .products-header .product-cell {
-        padding: var(--space-xs) var(--space-sm);
-        font-size: clamp(11px, 3vw, 12px);
-        min-width: clamp(70px, 18vw, 80px);
+        padding: clamp(4px, 1vw, 6px) clamp(6px, 1.5vw, 8px);
+        font-size: clamp(10px, 2.5vw, 11px);
+        min-width: clamp(60px, 15vw, 70px);
       }
 
       .product-cell {
-        padding: var(--space-xs) var(--space-sm);
-        font-size: clamp(13px, 3.5vw, 14px);
+        padding: clamp(6px, 1.5vw, 8px) clamp(6px, 1.5vw, 8px);
+        font-size: clamp(12px, 3vw, 13px);
         word-wrap: break-word;
       }
 
       /* Make sidebar more compact on very small screens */
       .sidebar {
-        padding: var(--space-sm);
+        padding: clamp(8px, 2vw, 12px);
       }
 
       .user-block {
-        font-size: clamp(13px, 3.5vw, 14px);
-        padding: var(--space-sm);
+        font-size: clamp(12px, 3vw, 13px);
+        padding: clamp(8px, 2vw, 12px);
       }
     }
 
@@ -712,6 +832,34 @@
       </section>
     </main>
   </div>
+
+  <!-- Bottom Navigation for Portrait Mode -->
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <a href="#" class="bottom-nav-item active" data-label="My Replies">
+      <span class="icon">
+        <img src="{{ url_for('static', filename='logos/mail_send.svg') }}" alt="Replies" style="width: clamp(18px, 4vw, 20px); height: clamp(18px, 4vw, 20px);">
+      </span>
+      <span class="label">Replies</span>
+    </a>
+    <a href="/pending" class="bottom-nav-item" data-label="Pending">
+      <span class="icon">
+        <img src="{{ url_for('static', filename='logos/pending_mails.svg') }}" alt="Pending" style="width: clamp(18px, 4vw, 20px); height: clamp(18px, 4vw, 20px);">
+      </span>
+      <span class="label">Pending</span>
+    </a>
+    <a href="/profile" class="bottom-nav-item" data-label="Profile">
+      <span class="icon">
+        <img src="{{ url_for('static', filename='logos/user.svg') }}" alt="Profile" style="width: clamp(18px, 4vw, 20px); height: clamp(18px, 4vw, 20px);">
+      </span>
+      <span class="label">Profile</span>
+    </a>
+    <a href="/logout" class="bottom-nav-item" data-label="Logout">
+      <span class="icon">
+        <img src="{{ url_for('static', filename='logos/logout-rounded.gif') }}" alt="Logout" style="width: clamp(18px, 4vw, 20px); height: clamp(18px, 4vw, 20px);">
+      </span>
+      <span class="label">Logout</span>
+    </a>
+  </nav>
 
   <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
   <script>

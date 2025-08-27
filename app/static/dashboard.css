@@ -96,7 +96,7 @@ html, body {
   width: 100%;
   font-family: 'Poppins', sans-serif;
   background-color: var(--app-bg);
-  color: var(--app-content-main-color);
+  color: var(--text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -104,119 +104,9 @@ html, body {
 /* Allow page content to scroll, not lock it */
 body { overflow: hidden; }
 
-/* App container as grid (supports collapsible sidebar) */
-.app-container {
-  display: grid;
-  grid-template-columns: var(--sidebar-w) 1fr;
-  gap: clamp(12px, 2vw, 16px);
-  width: 100%;
-  height: 100vh;
-  max-width: min(2000px, 95vw);
-  margin: 0 auto;
-  padding: clamp(12px, 2vw, 16px);
-  transition: grid-template-columns .18s ease;
-}
-.app-container.collapsed {
-  grid-template-columns: var(--sidebar-w-collapsed) 1fr;
-}
+/* App container styles removed - handled by inline CSS in template */
 
-/* Sidebar - Enhanced Contrast */
-.sidebar {
-  background-color: var(--surface);
-  display: flex;
-  flex-direction: column;
-  padding: clamp(12px, 2vw, 16px);
-  border-radius: var(--border-radius);
-  overflow: hidden;
-  transition: width .18s ease;
-  width: 100%;
-  border: 1px solid var(--border);
-  position: relative;
-}
-
-.sb-top {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  margin-bottom: clamp(12px, 2vw, 16px);
-  width: 100%;
-}
-
-.sidebar .user-block {
-  padding: clamp(8px, 1.5vw, 12px) clamp(10px, 2vw, 14px);
-  border-radius: var(--radius-md);
-  background: var(--surface-hover);
-  color: var(--text-primary);
-  font-size: 0.9rem;
-  font-weight: 500;
-  word-break: break-word;
-  margin-bottom: 10px;
-  border: 1px solid var(--border);
-}
-.app-container.collapsed .sidebar .user-block { display: none; }
-
-.sidebar-list {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-}
-
-.sidebar-list-item { margin-bottom: 4px; }
-
-.sidebar-list-item a {
-  display: flex;
-  align-items: center;
-  gap: clamp(8px, 1.5vw, 10px);
-  padding: clamp(10px, 2vw, 12px) clamp(12px, 2.5vw, 16px);
-  color: var(--text-secondary);
-  text-decoration: none;
-  border-radius: var(--radius-md);
-  border: 1px solid transparent;
-  transition: all 0.2s ease;
-  font-weight: 500;
-}
-
-.sidebar-list-item a:hover {
-  background-color: var(--surface-hover);
-  color: var(--text-primary);
-  border-color: var(--border-hover);
-}
-
-.sidebar-list-item.active a {
-  background-color: var(--primary);
-  color: white;
-  border-color: var(--primary);
-}
-
-.sidebar-list-item a .icon {
-  width: clamp(18px, 2vw, 20px); height: clamp(18px, 2vw, 20px);
-  display: inline-flex; align-items: center; justify-content: center;
-}
-
-.sidebar-list-item a .label {
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-
-/* Hide labels when collapsed */
-.app-container.collapsed .sidebar-list-item a .label { display: none; }
-
-/* Tooltip-like labels on hover when collapsed */
-.app-container.collapsed .sidebar-list-item a { position: relative; }
-.app-container.collapsed .sidebar-list-item a:hover::after {
-  content: attr(data-label);
-  position: absolute;
-  left: calc(100% + 8px);
-  top: 50%;
-  transform: translateY(-50%);
-  background: #0f172a;
-  color: #e5ecff;
-  border: 1px solid #2a3347;
-  border-radius: 8px;
-  padding: 6px 8px;
-  white-space: nowrap;
-  z-index: 30;
-  box-shadow: var(--filter-shadow);
-}
+/* Sidebar styles removed - handled by inline CSS in template */
 
 /* Content */
 .app-content {
@@ -245,12 +135,12 @@ body { overflow: hidden; }
 }
 
 .app-content-headerText {
-  font-size: 24px;
+  font-size: clamp(18px, 3.5vw, 24px);
   font-weight: 600;
   margin: 0;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: clamp(6px, 1.5vw, 8px);
   color: var(--text-primary);
 }
 
@@ -262,59 +152,36 @@ body { overflow: hidden; }
   flex-wrap: wrap;
 }
 
-.search-input {
-  padding: clamp(8px, 2vw, 10px) clamp(10px, 2.5vw, 12px);
-  border: 1px solid #2a3347;
-  background: #0f172a;
-  color: var(--app-content-main-color);
-  border-radius: clamp(6px, 1.5vw, 8px);
-  min-width: clamp(200px, 25vw, 220px);
-  outline: none;
-}
-.search-input::placeholder { color: var(--muted); }
+/* Search input styles removed - handled by inline CSS in template */
 
-/* Status filter select styled like search input */
-#statusFilter.search-input {
-  min-width: 180px;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-image:
-    linear-gradient(45deg, transparent 50%, #8a93a6 50%),
-    linear-gradient(135deg, #8a93a6 50%, transparent 50%);
-  background-position:
-    calc(100% - 16px) calc(50% - 3px),
-    calc(100% - 11px) calc(50% - 3px);
-  background-size: 5px 5px, 5px 5px;
-  background-repeat: no-repeat;
-  padding-right: clamp(24px, 3vw, 28px);
-}
+/* Status filter styles removed - handled by inline CSS in template */
 
 /* Buttons and links */
 .action-button, button.action-button {
-  padding: clamp(8px, 2vw, 10px) clamp(12px, 3vw, 14px);
-  border-radius: clamp(6px, 1.5vw, 8px);
+  padding: clamp(6px, 1.5vw, 8px) clamp(10px, 2.5vw, 12px);
+  border-radius: clamp(5px, 1.25vw, 6px);
   border: none;
-  background: var(--action-color);
+  background: var(--primary);
   color: #fff;
   cursor: pointer;
   font-weight: 500;
   display: inline-flex;
   align-items: center;
-  gap: clamp(6px, 1.5vw, 8px);
-  height: clamp(32px, 4vh, 36px);
+  gap: clamp(4px, 1vw, 6px);
+  height: clamp(28px, 3.5vh, 32px);
   text-decoration: none;
+  font-size: clamp(13px, 3.25vw, 14px);
 }
-.action-button:hover { background: var(--action-color-hover); }
+.action-button:hover { background: var(--primary-hover); }
 
 /* Ghost button style (for collapse toggle, refresh, etc.) */
 .icon-btn {
   background: #111827;
   color: #e5ecff;
   border: 1px solid #24324a;
-  height: clamp(32px, 4vh, 36px);
-  width: clamp(32px, 4vh, 36px);
-  border-radius: clamp(6px, 1.5vw, 8px);
+  height: clamp(28px, 3.5vh, 32px);
+  width: clamp(28px, 3.5vh, 32px);
+  border-radius: clamp(5px, 1.25vw, 6px);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -344,7 +211,7 @@ body { overflow: hidden; }
 .tableView .products-row {
   display: flex;
   align-items: center;
-  background-color: var(--app-content-secondary-color);
+  background-color: var(--surface);
   border-radius: clamp(6px, 1.5vw, 8px);
   margin-bottom: clamp(8px, 1vw, 10px);
   padding: clamp(10px, 2vw, 12px) clamp(12px, 2.5vw, 16px);
@@ -361,10 +228,10 @@ body { overflow: hidden; }
 
 .tableView .product-cell {
   flex: 1;
-  padding: clamp(8px, 2vw, 10px);
-  font-size: clamp(13px, 3.5vw, 14px);
+  padding: clamp(6px, 1.5vw, 8px);
+  font-size: clamp(12px, 3vw, 13px);
   color: var(--app-content-main-color);
-  min-width: clamp(100px, 15vw, 120px); /* helps horizontal scroll on small screens */
+  min-width: clamp(80px, 12vw, 100px); /* helps horizontal scroll on small screens */
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -395,8 +262,8 @@ body { overflow: hidden; }
 
 /* Status badges */
 .status {
-  padding: clamp(4px, 1vw, 6px) clamp(8px, 2vw, 10px);
-  font-size: clamp(11px, 3vw, 12px);
+  padding: clamp(3px, 0.75vw, 4px) clamp(6px, 1.5vw, 8px);
+  font-size: clamp(10px, 2.5vw, 11px);
   border-radius: 999px;
   display: inline-block;
   text-transform: capitalize;
@@ -419,31 +286,7 @@ body { overflow: hidden; }
   color: var(--error-fg);
 }
 
-/* Responsive tweaks */
-/* Default to collapsed on <= 960px (grid column shrinks) */
-@media (max-width: 960px) {
-  .app-container { grid-template-columns: var(--sidebar-w-collapsed) 1fr; }
-  .app-content-headerText { font-size: 20px; }
-}
-
-/* Your existing <=720px mode (sidebar becomes top bar). Keep as-is. */
-@media (max-width: 720px) {
-  .app-container {
-    display: flex;            /* revert grid to your original stacked layout */
-    flex-direction: column;
-    height: 100vh;
-    padding: clamp(12px, 2vw, 16px);
-  }
-  .sidebar {
-    width: 100%;
-    flex-direction: row;
-    align-items: center;
-    gap: 10px;
-  }
-  .sidebar .user-block { margin: 0; flex: 1; }
-  .app-content { height: calc(100vh - 80px); }
-  .tableView .product-cell { min-width: 180px; }
-}
+/* Mobile responsive behavior removed - handled by inline CSS in template */
 
 /* Auto-send status styles */
 .auto-send-status {
@@ -458,117 +301,13 @@ body { overflow: hidden; }
   color: var(--warning);
 }
 
-/* Enhanced status badges */
-.status-badge {
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: var(--space-xs) var(--space-sm);
-  border-radius: var(--radius-sm);
-  display: inline-block;
-}
+/* Status badge styles removed - handled by inline CSS in template */
 
-.status-badge[data-status="sent"] {
-  background: var(--success-bg);
-  color: var(--success-fg);
-}
+/* Search input styles removed - handled by inline CSS in template */
 
-.status-badge[data-status="failed"] {
-  background: var(--error-bg);
-  color: var(--error-fg);
-}
+/* Table styles removed - handled by inline CSS in template */
 
-.status-badge[data-status="pending"] {
-  background: var(--warning-bg);
-  color: var(--warning-fg);
-}
-
-.status-badge[data-status="ready_to_send"] {
-  background: var(--info-bg);
-  color: var(--info-fg);
-}
-
-/* Enhanced search input */
-.search-input {
-  padding: var(--space-sm) var(--space-md);
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text-primary);
-  border-radius: var(--radius-lg);
-  font-size: var(--font-size-sm);
-  transition: all 0.2s ease;
-}
-
-.search-input:focus {
-  outline: none;
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-}
-
-.search-input::placeholder {
-  color: var(--text-muted);
-}
-
-/* Enhanced Table Styles for Better Text Visibility */
-.products-header .product-cell {
-  font-weight: 600;
-  color: var(--text-primary);
-  padding: clamp(10px, 2vw, 12px);
-  white-space: nowrap;
-  user-select: none;
-  cursor: pointer;
-  background: var(--surface-hover);
-}
-
-.products-row .product-cell {
-  padding: clamp(10px, 2vw, 12px);
-  color: var(--text-secondary);
-  min-width: 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.product-cell[data-field="subject"] {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  color: var(--text-primary);
-  font-weight: 500;
-}
-
-.product-cell[data-field="recipient"] {
-  color: var(--text-primary);
-  font-weight: 500;
-}
-
-.status-badge {
-  padding: clamp(4px, 1vw, 6px) clamp(8px, 2vw, 10px);
-  border-radius: clamp(10px, 3vw, 12px);
-  font-size: clamp(12px, 3vw, 14px);
-  font-weight: 600;
-  text-transform: uppercase;
-  display: inline-block;
-}
-
-.status-badge[data-status="sent"] {
-  background: var(--success-bg);
-  color: var(--success-fg);
-}
-
-.status-badge[data-status="failed"] {
-  background: var(--error-bg);
-  color: var(--error-fg);
-}
-
-.status-badge[data-status="pending"] {
-  background: var(--warning-bg);
-  color: var(--warning-fg);
-}
-
-.status-badge[data-status="ready_to_send"] {
-  background: var(--info-bg);
-  color: var(--info-fg);
-}
+/* Status badge styles removed - handled by inline CSS in template */
 
 /* Optional: keyboard focus */
 a:focus,
