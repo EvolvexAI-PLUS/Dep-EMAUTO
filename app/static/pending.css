@@ -28,8 +28,8 @@
   --space-lg: 1.5rem;
   --space-xl: 2rem;
 
-  /* Page-specific variables from inline CSS */
-  --gap: 12px;
+  /* Page-specific variables from inline CSS - responsive */
+  --gap: clamp(8px, 1vw, 12px);
   --muted: #8892a6;
   --glass-bg: rgba(255, 255, 255, 0);
   --glass-border: 1px solid rgba(255, 255, 255, 0.06);
@@ -37,8 +37,8 @@
   --th-bg: rgba(15, 20, 32, 0.96);
   --th-fg: #c9d4ff;
   --td-fg: #e5ecff;
-  --maxw: 1600px;
-  --space-xs: 8px;
+  --maxw: min(1600px, 95vw);
+  --space-xs: clamp(6px, 1vw, 8px);
 }
 
 /* Base Layout */
@@ -293,15 +293,15 @@ body {
   background: var(--surface-hover);
 }
 
-/* Column Widths */
-.pending-col-select { width: 60px; text-align: center; }
-.pending-col-created { width: 180px; }
-.pending-col-recipients { min-width: 250px; }
-.pending-col-subject { min-width: 300px; }
-.pending-col-preview { min-width: 350px; }
-.pending-col-sensitivity { width: 120px; }
-.pending-col-attachments { width: 110px; text-align: center; }
-.pending-col-actions { width: 220px; }
+/* Column Widths - responsive */
+.pending-col-select { width: clamp(50px, 8vw, 60px); text-align: center; }
+.pending-col-created { width: clamp(140px, 18vw, 180px); }
+.pending-col-recipients { min-width: clamp(200px, 25vw, 250px); }
+.pending-col-subject { min-width: clamp(250px, 35vw, 300px); }
+.pending-col-preview { min-width: clamp(280px, 40vw, 350px); }
+.pending-col-sensitivity { width: clamp(100px, 15vw, 120px); }
+.pending-col-attachments { width: clamp(90px, 12vw, 110px); text-align: center; }
+.pending-col-actions { width: clamp(180px, 25vw, 220px); }
 
 /* Status Badges */
 .pending-status-badge {
@@ -455,7 +455,7 @@ html, body {
   grid-template-rows: auto auto 1fr;
   grid-template-columns: 1fr;
   gap: var(--gap);
-  padding: 12px;
+  padding: clamp(8px, 2vw, 12px);
   background: radial-gradient(1200px 600px at 30% -10%, rgba(59,130,246,0.15), transparent 60%),
                radial-gradient(1000px 500px at 100% 0%, rgba(99,102,241,0.12), transparent 60%),
                #0b101a;
@@ -481,10 +481,10 @@ html, body {
   position: sticky;
   top: 0;
   z-index: 100;
-  padding: 12px 14px;
+  padding: clamp(8px, 2vw, 12px) clamp(10px, 2.5vw, 14px);
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: clamp(8px, 1.5vw, 12px);
 }
 
 .header-left {
@@ -626,9 +626,9 @@ html, body {
   position: sticky;
   top: 0;
   z-index: 95;
-  padding: 10px 14px;
+  padding: clamp(8px, 1.5vw, 10px) clamp(10px, 2.5vw, 14px);
   display: flex;
-  gap: 10px;
+  gap: clamp(8px, 1.5vw, 10px);
   align-items: center;
   flex-wrap: wrap;
 }
@@ -945,19 +945,19 @@ td > * {
   }
 
   th.col-recipients {
-    width: 200px;
+    width: clamp(150px, 25vw, 200px);
   }
 
   th.col-subject {
-    width: 250px;
+    width: clamp(180px, 30vw, 250px);
   }
 
   th.col-preview {
-    width: 300px;
+    width: clamp(200px, 35vw, 300px);
   }
 
   th.col-actions, td.col-actions {
-    width: 170px;
+    width: clamp(140px, 20vw, 170px);
   }
 }
 
@@ -975,13 +975,13 @@ td > * {
   }
 
   th.col-sensitivity {
-    width: 100px;
+    width: clamp(80px, 15vw, 100px);
   }
 
   .actions {
     flex-direction: column;
     align-items: stretch;
-    gap: 6px;
+    gap: clamp(4px, 1vw, 6px);
   }
 
   .actions .btn {
@@ -989,10 +989,10 @@ td > * {
   }
 
   .btn {
-    height: 40px;
+    height: clamp(36px, 8vh, 40px);
   }
 
   .header-panel {
-    padding: 12px;
+    padding: clamp(8px, 2vw, 12px);
   }
 }

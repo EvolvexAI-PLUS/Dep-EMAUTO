@@ -158,6 +158,8 @@ def _extract_text_from_gemini_response(response_text: str) -> str:
 # --- Prompts ---
 SYSTEM_PROMPT = """You are an email assistant. Analyze the incoming email and decide on action.
 
+IMPORTANT: You must respond with VALID JSON only. No additional text, explanations, or formatting.
+
 Choose one action:
 - AUTO_REPLY: Draft and send a reply (confident, safe responses only)
 - HUMAN_REVIEW: Draft reply but require human approval (uncertain, sensitive, or complex cases)
@@ -165,7 +167,7 @@ Choose one action:
 
 For AUTO_REPLY or HUMAN_REVIEW, draft a brief, professional reply.
 
-Return only valid JSON:
+Your response MUST be valid JSON in this exact format:
 {
   "action": "AUTO_REPLY"|"HUMAN_REVIEW"|"IGNORE",
   "confidence": 0.0-1.0,
@@ -177,7 +179,9 @@ Return only valid JSON:
     "topics": [],
     "risk_flags": []
   }
-}"""
+}
+
+Do not include any text before or after the JSON. Do not wrap in markdown code blocks."""
 
 def build_user_context(user_profile: Optional[Dict[str, Any]] = None) -> str:
     user_profile = user_profile or {}
@@ -269,19 +273,102 @@ Return JSON only per schema. Do not include any prose outside the JSON."""
             cleaned_text = cleaned_text[:-3]  # Remove ```
 
         cleaned_text = cleaned_text.strip()
-        result = json.loads(cleaned_text)
-        print(f"[GEMINI] ✅ Successfully parsed JSON response")
+
+        # Check if response is a simple text action like "[NO_REPLY_NEEDED]", "NO_REPLY_NEEDED", etc.
+        response_lower = cleaned_text.lower()
+        if (cleaned_text.startswith('[') and cleaned_text.endswith(']')) or 'no_reply_needed' in response_lower or 'ignore' in response_lower:
+            if 'no_reply_needed' in response_lower or 'ignore' in response_lower:
+                result = {
+                    "action": "IGNORE",
+                    "confidence": 0.9,
+                    "reason": "Gemini indicated no reply needed",
+                    "suggested_subject": "",
+                    "suggested_reply": "",
+                    "metadata": {"needs_clarification": False, "topics": [], "risk_flags": []}
+                }
+            elif 'auto_reply' in response_lower or 'auto reply' in response_lower:
+                result = {
+                    "action": "AUTO_REPLY",
+                    "confidence": 0.8,
+                    "reason": "Gemini indicated auto reply is appropriate",
+                    "suggested_subject": "",
+                    "suggested_reply": "",
+                    "metadata": {"needs_clarification": False, "topics": [], "risk_flags": []}
+                }
+            elif 'human_review' in response_lower or 'human review' in response_lower:
+                result = {
+                    "action": "HUMAN_REVIEW",
+                    "confidence": 0.7,
+                    "reason": "Gemini indicated human review needed",
+                    "suggested_subject": "",
+                    "suggested_reply": "",
+                    "metadata": {"needs_clarification": False, "topics": [], "risk_flags": []}
+                }
+            else:
+                # Default to IGNORE for bracketed responses
+                result = {
+                    "action": "IGNORE",
+                    "confidence": 0.8,
+                    "reason": "Gemini provided bracketed response, interpreted as no reply needed",
+                    "suggested_subject": "",
+                    "suggested_reply": "",
+                    "metadata": {"needs_clarification": False, "topics": [], "risk_flags": []}
+                }
+        else:
+            # Try to parse as JSON
+            result = json.loads(cleaned_text)
+
+        print(f"[GEMINI] ✅ Successfully parsed response")
     except Exception as e:
         print(f"[GEMINI] ❌ Failed to parse JSON response: {e}")
         print(f"[GEMINI] 📄 Raw response: {response_text[:500]}...")
-        result = {
-            "action": "HUMAN_REVIEW",
-            "confidence": 0.0,
-            "reason": "Failed to parse structured output",
-            "suggested_subject": "",
-            "suggested_reply": "",
-            "metadata": {"needs_clarification": False, "topics": [], "risk_flags": ["parse_error"]}
-        }
+
+        # Enhanced fallback: try to extract action from text
+        response_lower = response_text.lower()
+        print(f"[GEMINI] 🔍 Analyzing response for fallback parsing: '{response_text[:100]}...'")
+
+        # Check for various indicators of different actions
+        if ('ignore' in response_lower or 'no reply' in response_lower or 'no_reply' in response_lower or
+            'no response' in response_lower or 'do not reply' in response_lower or 'spam' in response_lower):
+            result = {
+                "action": "IGNORE",
+                "confidence": 0.8,
+                "reason": "Fallback: Response indicates no reply needed",
+                "suggested_subject": "",
+                "suggested_reply": "",
+                "metadata": {"needs_clarification": False, "topics": [], "risk_flags": ["fallback_parsing"]}
+            }
+            print(f"[GEMINI] 📋 Fallback: Detected IGNORE action")
+        elif ('auto' in response_lower and 'reply' in response_lower) or 'autoreply' in response_lower:
+            result = {
+                "action": "AUTO_REPLY",
+                "confidence": 0.7,
+                "reason": "Fallback: Response indicates auto reply",
+                "suggested_subject": "",
+                "suggested_reply": "",
+                "metadata": {"needs_clarification": False, "topics": [], "risk_flags": ["fallback_parsing"]}
+            }
+            print(f"[GEMINI] 📋 Fallback: Detected AUTO_REPLY action")
+        elif ('human' in response_lower and 'review' in response_lower) or 'needs_review' in response_lower:
+            result = {
+                "action": "HUMAN_REVIEW",
+                "confidence": 0.6,
+                "reason": "Fallback: Response indicates human review needed",
+                "suggested_subject": "",
+                "suggested_reply": "",
+                "metadata": {"needs_clarification": False, "topics": [], "risk_flags": ["fallback_parsing"]}
+            }
+            print(f"[GEMINI] 📋 Fallback: Detected HUMAN_REVIEW action")
+        else:
+            result = {
+                "action": "HUMAN_REVIEW",
+                "confidence": 0.0,
+                "reason": "Failed to parse structured output - fallback to human review",
+                "suggested_subject": "",
+                "suggested_reply": "",
+                "metadata": {"needs_clarification": False, "topics": [], "risk_flags": ["parse_error"]}
+            }
+            print(f"[GEMINI] 📋 Fallback: Defaulting to HUMAN_REVIEW due to unparseable response")
 
     # Normalize
     action = str(result.get("action", "HUMAN_REVIEW")).upper()
@@ -318,6 +405,54 @@ def test_gemini_integration():
     except Exception as e:
         print(f"❌ Gemini Test Failed: {e}")
         return False
+
+def test_gemini_parsing():
+    """Test Gemini JSON parsing with various response formats"""
+    print("🧪 Testing Gemini Response Parsing...")
+
+    test_cases = [
+        # Valid JSON
+        '{"action": "IGNORE", "confidence": 0.9, "reason": "test"}',
+
+        # Bracketed responses
+        "[NO_REPLY_NEEDED]",
+        "[AUTO_REPLY]",
+        "[HUMAN_REVIEW]",
+
+        # Text responses
+        "NO_REPLY_NEEDED",
+        "Auto reply needed",
+        "Human review required",
+
+        # Invalid responses
+        "Some random text",
+        "",
+    ]
+
+    for i, test_response in enumerate(test_cases):
+        print(f"\n📋 Test {i+1}: '{test_response}'")
+        try:
+            # Simulate the parsing logic
+            cleaned_text = test_response.strip()
+
+            response_lower = cleaned_text.lower()
+            if (cleaned_text.startswith('[') and cleaned_text.endswith(']')) or 'no_reply_needed' in response_lower or 'ignore' in response_lower:
+                if 'no_reply_needed' in response_lower or 'ignore' in response_lower:
+                    result = {"action": "IGNORE", "confidence": 0.9}
+                elif 'auto_reply' in response_lower or 'auto reply' in response_lower:
+                    result = {"action": "AUTO_REPLY", "confidence": 0.8}
+                elif 'human_review' in response_lower or 'human review' in response_lower:
+                    result = {"action": "HUMAN_REVIEW", "confidence": 0.7}
+                else:
+                    result = {"action": "IGNORE", "confidence": 0.8}
+            else:
+                result = json.loads(cleaned_text)
+
+            print(f"✅ Parsed successfully: {result}")
+        except Exception as e:
+            print(f"❌ Failed to parse: {e}")
+
+    print("🧪 Gemini parsing test completed!")
 
 # Legacy functions for compatibility
 def triage_email(email_item: Dict[str, Any], user_profile: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:

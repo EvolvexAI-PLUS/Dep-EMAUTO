@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='pending.css') }}">
   <style>
     :root {
-      --gap: 12px;
+      --gap: clamp(8px, 1vw, 12px);
       --muted: #8892a6;
       --glass-bg: rgba(255, 255, 255, 0);
       --glass-border: 1px solid rgba(255, 255, 255, 0.06);
@@ -17,18 +17,18 @@
       --th-bg: rgba(15, 20, 32, 0.96);
       --th-fg: #c9d4ff;
       --td-fg: #e5ecff;
-      --maxw: 1600px;
+      --maxw: min(1600px, 95vw);
       --text-primary: #e5ecff;
       --text-secondary: #cbd5e1;
       --text-muted: #8892a6;
       --border: rgba(255, 255, 255, 0.08);
-      --radius: 12px;
-      --radius-md: 8px;
-      --radius-lg: 16px;
-      --space-sm: 8px;
-      --space-md: 12px;
-      --space-lg: 16px;
-      --space-xl: 24px;
+      --radius: clamp(8px, 2vw, 12px);
+      --radius-md: clamp(6px, 1.5vw, 8px);
+      --radius-lg: clamp(12px, 3vw, 16px);
+      --space-sm: clamp(6px, 1vw, 8px);
+      --space-md: clamp(8px, 1.5vw, 12px);
+      --space-lg: clamp(12px, 2vw, 16px);
+      --space-xl: clamp(16px, 3vw, 24px);
     }
 
     html, body { height: 100%; margin: 0; }
@@ -317,15 +317,15 @@
     }
     td > * { margin: 0; } /* prevent inner margins from shifting rows */
 
-    /* Column widths */
-    th.col-select, td.col-select { width: 52px; text-align: center; }
-    th.col-actions, td.col-actions { width: 220px; }
-    th.col-created { width: 180px; }
-    th.col-attachments { width: 110px; text-align: center; }
-    th.col-sensitivity { width: 120px; }
-    th.col-recipients { width: 300px; }
-    th.col-subject { width: 350px; }
-    th.col-preview { width: 400px; }
+    /* Column widths - responsive */
+    th.col-select, td.col-select { width: clamp(40px, 8vw, 52px); text-align: center; }
+    th.col-actions, td.col-actions { width: clamp(160px, 25vw, 220px); }
+    th.col-created { width: clamp(140px, 18vw, 180px); }
+    th.col-attachments { width: clamp(80px, 12vw, 110px); text-align: center; }
+    th.col-sensitivity { width: clamp(100px, 15vw, 120px); }
+    th.col-recipients { width: clamp(200px, 30vw, 300px); }
+    th.col-subject { width: clamp(250px, 35vw, 350px); }
+    th.col-preview { width: clamp(250px, 40vw, 400px); }
 
     .chip {
       display: inline-block;
@@ -381,23 +381,23 @@
 
     /* Narrow tweaks */
     @media (max-width: 720px) {
-       .header-panel { flex-wrap: wrap; }
-       td.col-recipients, td.col-subject, td.col-preview { white-space: normal; }
-       th.col-recipients { width: 200px; }
-       th.col-subject { width: 250px; }
-       th.col-preview { width: 300px; }
-       th.col-actions, td.col-actions { width: 170px; }
-     }
+        .header-panel { flex-wrap: wrap; }
+        td.col-recipients, td.col-subject, td.col-preview { white-space: normal; }
+        th.col-recipients { width: clamp(150px, 25vw, 200px); }
+        th.col-subject { width: clamp(180px, 30vw, 250px); }
+        th.col-preview { width: clamp(200px, 35vw, 300px); }
+        th.col-actions, td.col-actions { width: clamp(140px, 20vw, 170px); }
+      }
     @media (max-width: 520px) {
-       th.col-created, td.col-created { display: none; }
-       th.col-attachments, td.col-attachments { display: none; }
-       th.col-preview, td.col-preview { display: none; }
-       th.col-sensitivity { width: 100px; }
-       .actions { flex-direction: column; align-items: stretch; gap: 6px; }
-       .actions .btn { width: 100%; }
-       .btn { height: 40px; }
-       .header-panel { padding: 12px; }
-     }
+        th.col-created, td.col-created { display: none; }
+        th.col-attachments, td.col-attachments { display: none; }
+        th.col-preview, td.col-preview { display: none; }
+        th.col-sensitivity { width: clamp(80px, 15vw, 100px); }
+        .actions { flex-direction: column; align-items: stretch; gap: clamp(4px, 1vw, 6px); }
+        .actions .btn { width: 100%; }
+        .btn { height: clamp(36px, 8vh, 40px); }
+        .header-panel { padding: clamp(8px, 2vw, 12px); }
+      }
 
     /* Fixed (cloned) header host bar */
     .table-header-fixed {

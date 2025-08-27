@@ -16,7 +16,7 @@ if os.path.exists('secret.env'):
                 key, value = line.strip().split('=', 1)
                 os.environ[key] = value
 
-from automation.llm.gemini_interface import test_gemini_integration, classify_and_draft
+from automation.llm.gemini_interface import test_gemini_integration, test_gemini_parsing, classify_and_draft
 
 def test_gemini():
     print("🚀 Starting Gemini Integration Test...")
@@ -34,6 +34,10 @@ def test_gemini():
         return False
 
     print("\n✅ Gemini basic integration working!")
+
+    # Test response parsing robustness
+    print("\n🧪 Testing response parsing robustness...")
+    test_gemini_parsing()
 
     # Test email classification
     print("\n📧 Testing email classification...")
