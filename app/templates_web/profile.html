@@ -51,18 +51,18 @@
     }
 
     .profile-avatar {
-      width: 140px;
-      height: 140px;
+      width: clamp(100px, 15vw, 140px);
+      height: clamp(100px, 15vw, 140px);
       border-radius: 50%;
       background: var(--profile-gradient);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 4rem;
+      font-size: clamp(3rem, 8vw, 4rem);
       font-weight: 800;
       color: white;
       margin: 0 auto 2rem;
-      border: 6px solid rgba(255, 255, 255, 0.2);
+      border: clamp(3px, 1vw, 6px) solid rgba(255, 255, 255, 0.2);
       box-shadow: var(--profile-shadow);
       position: relative;
       overflow: hidden;
@@ -159,15 +159,15 @@
     }
 
     .profile-card-icon {
-      width: 64px;
-      height: 64px;
+      width: clamp(48px, 8vw, 64px);
+      height: clamp(48px, 8vw, 64px);
       display: flex;
       align-items: center;
       justify-content: center;
       background: var(--profile-gradient);
-      border-radius: 16px;
+      border-radius: clamp(12px, 2vw, 16px);
       color: white;
-      font-size: 2rem;
+      font-size: clamp(1.5rem, 4vw, 2rem);
       box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
       position: relative;
     }
@@ -176,7 +176,7 @@
       content: '';
       position: absolute;
       inset: -2px;
-      border-radius: 18px;
+      border-radius: clamp(14px, 2.2vw, 18px);
       background: var(--profile-gradient);
       z-index: -1;
       opacity: 0.3;
@@ -237,9 +237,9 @@
       padding: 1.25rem 1.5rem;
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid var(--profile-border);
-      border-radius: 16px;
+      border-radius: clamp(12px, 2vw, 16px);
       font-size: 1.1rem;
-      min-height: 60px;
+      min-height: clamp(50px, 8vh, 60px);
       display: flex;
       align-items: center;
       font-weight: 500;
@@ -268,10 +268,10 @@
       padding: 1.25rem 1.5rem;
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid var(--profile-border);
-      border-radius: 16px;
+      border-radius: clamp(12px, 2vw, 16px);
       color: var(--text-primary);
       font-size: 1.1rem;
-      min-height: 60px;
+      min-height: clamp(50px, 8vh, 60px);
       transition: all 0.3s ease;
       font-family: inherit;
       backdrop-filter: blur(15px);
@@ -426,10 +426,10 @@
 
     .profile-toggle-switch {
       position: relative;
-      width: 64px;
-      height: 32px;
+      width: clamp(56px, 10vw, 64px);
+      height: clamp(28px, 5vw, 32px);
       background: rgba(255, 255, 255, 0.1);
-      border-radius: 16px;
+      border-radius: clamp(14px, 2.5vw, 16px);
       transition: all 0.4s ease;
       border: 2px solid var(--profile-border);
       position: relative;
@@ -455,10 +455,10 @@
     .profile-toggle-switch::after {
       content: '';
       position: absolute;
-      top: 3px;
-      left: 3px;
-      width: 26px;
-      height: 26px;
+      top: clamp(2px, 0.5vw, 3px);
+      left: clamp(2px, 0.5vw, 3px);
+      width: clamp(22px, 4vw, 26px);
+      height: clamp(22px, 4vw, 26px);
       background: white;
       border-radius: 50%;
       transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -587,22 +587,22 @@
       }
 
       .profile-card {
-        padding: 2rem;
-        border-radius: 20px;
+        padding: clamp(1.5rem, 5vw, 2rem);
+        border-radius: clamp(16px, 4vw, 20px);
       }
 
       .profile-title {
-        font-size: 2.5rem;
+        font-size: clamp(2rem, 6vw, 2.5rem);
       }
 
       .profile-subtitle {
-        font-size: 1.1rem;
+        font-size: clamp(1rem, 3vw, 1.1rem);
       }
 
       .profile-avatar {
-        width: 120px;
-        height: 120px;
-        font-size: 3.5rem;
+        width: clamp(100px, 20vw, 120px);
+        height: clamp(100px, 20vw, 120px);
+        font-size: clamp(2.5rem, 7vw, 3.5rem);
       }
 
       .profile-actions {
@@ -624,13 +624,13 @@
       }
 
       .profile-card-icon {
-        width: 48px;
-        height: 48px;
-        font-size: 1.5rem;
+        width: clamp(40px, 8vw, 48px);
+        height: clamp(40px, 8vw, 48px);
+        font-size: clamp(1.2rem, 3vw, 1.5rem);
       }
 
       .profile-card-title {
-        font-size: 1.5rem;
+        font-size: clamp(1.2rem, 4vw, 1.5rem);
       }
     }
 
@@ -640,17 +640,17 @@
       }
 
       .profile-card {
-        padding: 1.5rem;
+        padding: clamp(1rem, 4vw, 1.5rem);
       }
 
       .profile-title {
-        font-size: 2rem;
+        font-size: clamp(1.5rem, 6vw, 2rem);
       }
 
       .profile-avatar {
-        width: 100px;
-        height: 100px;
-        font-size: 3rem;
+        width: clamp(80px, 20vw, 100px);
+        height: clamp(80px, 20vw, 100px);
+        font-size: clamp(2rem, 7vw, 3rem);
       }
     }
 
@@ -686,9 +686,9 @@
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 32px;
-      height: 32px;
-      margin: -16px 0 0 -16px;
+      width: clamp(24px, 6vw, 32px);
+      height: clamp(24px, 6vw, 32px);
+      margin: calc(clamp(24px, 6vw, 32px) / -2) 0 0 calc(clamp(24px, 6vw, 32px) / -2);
       border: 3px solid var(--profile-border);
       border-top-color: var(--primary);
       border-radius: 50%;
@@ -728,15 +728,15 @@
       position: fixed;
       bottom: 2rem;
       right: 2rem;
-      width: 50px;
-      height: 50px;
+      width: clamp(40px, 8vw, 50px);
+      height: clamp(40px, 8vw, 50px);
       background: var(--profile-gradient);
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       color: white;
-      font-size: 1.2rem;
+      font-size: clamp(1rem, 3vw, 1.2rem);
       cursor: pointer;
       opacity: 0;
       transition: all 0.3s ease;
