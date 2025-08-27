@@ -995,4 +995,53 @@ td > * {
   .header-panel {
     padding: clamp(8px, 2vw, 12px);
   }
+
+  /* Enhanced Review button for narrow mobile screens */
+  .actions .btn.primary {
+    min-height: 48px;
+    padding: clamp(12px, 3vw, 16px) clamp(16px, 4vw, 20px);
+    font-size: clamp(0.9rem, 3vw, 1rem);
+    font-weight: 600;
+    border-radius: clamp(12px, 3vw, 16px);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    white-space: nowrap;
+    width: 100%;
+    margin-bottom: clamp(6px, 1.5vw, 8px);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%);
+    border: 2px solid var(--primary);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .actions .btn.primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s;
+  }
+
+  .actions .btn.primary:hover::before {
+    left: 100%;
+  }
+
+  .actions .btn.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+    background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary) 100%);
+    border-color: var(--primary-hover);
+  }
+
+  .actions .btn.primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  }
 }

@@ -38,8 +38,8 @@
       display: grid;
       grid-template-rows: auto auto 1fr;
       grid-template-columns: 1fr;
-      gap: var(--gap);
-      padding: 12px;
+      gap: clamp(0.5vw, 12px, 1vw);
+      padding: clamp(0.5vw, 12px, 1vw);
       background: radial-gradient(1200px 600px at 30% -10%, rgba(59,130,246,0.15), transparent 60%),
                   radial-gradient(1000px 500px at 100% 0%, rgba(99,102,241,0.12), transparent 60%),
                   #0b101a;
@@ -500,7 +500,7 @@
         <div class="dropdown-wrap">
           <button id="filtersBtn_hdr" class="btn" aria-haspopup="true" aria-expanded="false">Filters ▾</button>
           <div id="filtersMenu_hdr" class="dropdown" role="menu" aria-label="Filters">
-            <div style="display:grid; gap:8px; width:min(320px, 92vw);">
+            <div style="display:grid; gap:clamp(6px, 2vw, 12px); width:min(320px, 92vw);">
               <label for="search_hdr" style="font-size:0.85rem; color:var(--muted);">Search</label>
               <input id="search_hdr" class="input" type="search" placeholder="Search subject or recipient…">
 
@@ -519,7 +519,7 @@
                 <option value="high">High</option>
               </select>
 
-              <div style="display:flex; gap:8px; margin-top:6px;">
+              <div style="display:flex; gap:clamp(6px, 2vw, 12px); margin-top:clamp(4px, 1vh, 8px);">
                 <button id="applyFilters_hdr" class="btn primary" type="button">Apply</button>
                 <button id="resetFilters_hdr" class="btn" type="button">Reset</button>
               </div>
@@ -692,7 +692,7 @@
         if (!filtersVisible && filtersMenuHdr && filtersMenuHdr.classList.contains('open')) {
           hdrDropH = Math.ceil(filtersMenuHdr.getBoundingClientRect().height);
         }
-        const gap = 12;
+        const gap = Math.max(8, Math.min(16, window.innerWidth * 0.02)); // Responsive gap between 8-16px
         return hH + (fH ? gap + fH : 0) + (hdrDropH ? gap + hdrDropH : 0) + gap;
       }
 
