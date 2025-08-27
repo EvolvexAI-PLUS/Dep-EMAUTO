@@ -1,54 +1,61 @@
 /* Pending Emails Page - Comprehensive & Railway-Friendly */
 
 :root {
-  /* Core Colors */
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --error: #ef4444;
-  --info: #06b6d4;
+  /* Override conflicting variables from other CSS files */
+  --primary: #6366f1 !important;
+  --primary-hover: #4f46e5 !important;
+  --success: #10b981 !important;
+  --warning: #f59e0b !important;
+  --error: #ef4444 !important;
+  --info: #06b6d4 !important;
 
   /* Background & Surface */
-  --app-bg: #0b101a;
-  --surface: #1e293b;
-  --surface-hover: #334155;
+  --app-bg: #0b101a !important;
+  --surface: #1e293b !important;
+  --surface-hover: #334155 !important;
 
   /* Text */
-  --text-primary: #f8fafc;
-  --text-secondary: #e2e8f0;
-  --text-muted: #94a3b8;
+  --text-primary: #f8fafc !important;
+  --text-secondary: #e2e8f0 !important;
+  --text-muted: #94a3b8 !important;
 
   /* Borders & Spacing */
-  --border: #334155;
-  --border-hover: #475569;
-  --radius: 0.5rem;
-  --space-sm: 0.5rem;
-  --space-md: 1rem;
-  --space-lg: 1.5rem;
-  --space-xl: 2rem;
+  --border: #334155 !important;
+  --border-hover: #475569 !important;
+  --radius: 0.5rem !important;
+  --space-sm: 0.5rem !important;
+  --space-md: 1rem !important;
+  --space-lg: 1.5rem !important;
+  --space-xl: 2rem !important;
 
   /* Page-specific variables from inline CSS - responsive */
-  --gap: clamp(8px, 1vw, 12px);
-  --muted: #8892a6;
-  --glass-bg: rgba(255, 255, 255, 0);
-  --glass-border: 1px solid rgba(255, 255, 255, 0.06);
-  --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-  --th-bg: rgba(15, 20, 32, 0.96);
-  --th-fg: #c9d4ff;
-  --td-fg: #e5ecff;
-  --maxw: min(1600px, 95vw);
-  --space-xs: clamp(6px, 1vw, 8px);
+  --gap: clamp(8px, 1vw, 12px) !important;
+  --muted: #8892a6 !important;
+  --glass-bg: rgba(255, 255, 255, 0) !important;
+  --glass-border: 1px solid rgba(255, 255, 255, 0.06) !important;
+  --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.1) !important;
+  --th-bg: rgba(15, 20, 32, 0.96) !important;
+  --th-fg: #c9d4ff !important;
+  --td-fg: #e5ecff !important;
+  --maxw: min(1600px, 95vw) !important;
+  --space-xs: clamp(6px, 1vw, 8px) !important;
 }
 
-/* Base Layout */
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: linear-gradient(135deg, #0b101a 0%, #1a1f2e 25%, #0b101a 100%);
-  color: var(--text-primary);
-  margin: 0;
-  padding: 0;
-  min-height: 100vh;
+/* Base Layout - Override all conflicting body styles */
+body.pending-list,
+.pending-container body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  background: linear-gradient(135deg, #0b101a 0%, #1a1f2e 25%, #0b101a 100%) !important;
+  color: var(--text-primary) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  min-height: 100vh !important;
+}
+
+/* Ensure all body styles are overridden */
+html body {
+  background: linear-gradient(135deg, #0b101a 0%, #1a1f2e 25%, #0b101a 100%) !important;
+  color: var(--text-primary) !important;
 }
 
 .pending-container {
@@ -178,24 +185,85 @@ body {
   color: var(--text-muted);
 }
 
-/* Buttons */
-.pending-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-sm);
-  padding: var(--space-sm) var(--space-lg);
-  border-radius: var(--radius);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(17, 24, 39, 0.6);
-  color: var(--text-secondary);
-  text-decoration: none;
-  font-size: 0.9rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-  min-height: 44px;
+/* Buttons - Override all conflicting button styles with higher specificity */
+.pending-list .btn,
+.pending-container .btn,
+.content-panel .btn,
+.pending-list .pending-btn,
+.pending-container .pending-btn,
+.content-panel .pending-btn,
+.pending-list button,
+.pending-container button,
+.content-panel button,
+.pending-list a.btn,
+.pending-container a.btn,
+.content-panel a.btn {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: clamp(0.3vw, 6px, 0.7vw) !important;
+  height: clamp(2vh, 38px, 4vh) !important;
+  padding: 0 clamp(0.6vw, 12px, 1.4vw) !important;
+  border-radius: clamp(0.5vw, 10px, 1.2vw) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  background: rgba(17, 24, 39, 0.6) !important;
+  color: #e5ecff !important;
+  cursor: pointer !important;
+  font-size: clamp(0.85rem, 2vw, 0.94rem) !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+  white-space: nowrap !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+/* Override button hover states */
+.pending-list .btn:hover,
+.pending-container .btn:hover,
+.content-panel .btn:hover,
+.pending-list .pending-btn:hover,
+.pending-container .pending-btn:hover,
+.content-panel .pending-btn:hover {
+  background: rgba(61, 87, 122, 0.7) !important;
+  border-color: rgba(255,255,255,0.15) !important;
+}
+
+/* Override button active states */
+.pending-list .btn:active,
+.pending-container .btn:active,
+.content-panel .btn:active,
+.pending-list .pending-btn:active,
+.pending-container .pending-btn:active,
+.content-panel .pending-btn:active {
+  transform: translateY(1px) !important;
+}
+
+/* Override primary button styles */
+.pending-list .btn.primary,
+.pending-container .btn.primary,
+.content-panel .btn.primary,
+.pending-list .pending-btn.primary,
+.pending-container .pending-btn.primary,
+.content-panel .pending-btn.primary {
+  background: #2563eb !important;
+  border-color: #1d4ed8 !important;
+  color: #fff !important;
+}
+
+/* Override primary button hover */
+.pending-list .btn.primary:hover,
+.pending-container .btn.primary:hover,
+.content-panel .btn.primary:hover {
+  background: #1f53c7 !important;
+}
+
+/* Override danger button styles */
+.pending-list .btn.danger,
+.pending-container .btn.danger,
+.content-panel .btn.danger {
+  background: #3b1a1a !important;
+  color: #fecaca !important;
+  border-color: #7f1d1d !important;
 }
 
 .pending-btn:hover {
@@ -1373,44 +1441,46 @@ td > * {
 
 /* Enhanced mobile interactions and accessibility */
 @media (max-width: 768px) {
-  /* Better touch targets */
-  .btn, .action-button {
-    -webkit-tap-highlight-color: rgba(59, 130, 246, 0.2);
-    touch-action: manipulation;
+  /* Override conflicting button styles from other CSS files */
+  .pending-list .btn, .pending-container .btn, .content-panel .btn,
+  .pending-list .action-button, .pending-container .action-button, .content-panel .action-button {
+    -webkit-tap-highlight-color: rgba(59, 130, 246, 0.2) !important;
+    touch-action: manipulation !important;
   }
 
   /* Smooth scrolling */
-  .table-wrap {
-    -webkit-overflow-scrolling: touch;
-    scroll-behavior: smooth;
+  .pending-list .table-wrap, .pending-container .table-wrap, .content-panel .table-wrap {
+    -webkit-overflow-scrolling: touch !important;
+    scroll-behavior: smooth !important;
   }
 
   /* Enhanced focus states for keyboard navigation */
-  .btn:focus, .action-button:focus {
-    outline: 2px solid rgba(59, 130, 246, 0.8);
-    outline-offset: 2px;
-    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2);
+  .pending-list .btn:focus, .pending-container .btn:focus, .content-panel .btn:focus,
+  .pending-list .action-button:focus, .pending-container .action-button:focus, .content-panel .action-button:focus {
+    outline: 2px solid rgba(59, 130, 246, 0.8) !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.2) !important;
   }
 
   /* Loading states */
-  .loading {
-    position: relative;
-    pointer-events: none;
-    opacity: 0.7;
+  .pending-list .loading, .pending-container .loading, .content-panel .loading {
+    position: relative !important;
+    pointer-events: none !important;
+    opacity: 0.7 !important;
   }
 
-  .loading::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 20px;
-    height: 20px;
-    margin: -10px 0 0 -10px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    border-top: 2px solid #3b82f6;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+  .pending-list .loading::after, .pending-container .loading::after, .content-panel .loading::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    width: 20px !important;
+    height: 20px !important;
+    margin: -10px 0 0 -10px !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    border-top: 2px solid #3b82f6 !important;
+    border-radius: 50% !important;
+    animation: spin 1s linear infinite !important;
   }
 
   @keyframes spin {
@@ -1419,42 +1489,42 @@ td > * {
   }
 
   /* Enhanced visual feedback */
-  .rowCheck:focus {
-    outline: 2px solid rgba(59, 130, 246, 0.8);
-    outline-offset: 2px;
+  .pending-list .rowCheck:focus, .pending-container .rowCheck:focus, .content-panel .rowCheck:focus {
+    outline: 2px solid rgba(59, 130, 246, 0.8) !important;
+    outline-offset: 2px !important;
   }
 
   /* Better form interactions */
-  .form-input:focus {
-    transform: scale(1.02);
-    transition: transform 0.2s ease;
+  .pending-list .form-input:focus, .pending-container .form-input:focus, .content-panel .form-input:focus {
+    transform: scale(1.02) !important;
+    transition: transform 0.2s ease !important;
   }
 
   /* Swipe hints for mobile */
-  .table-wrap {
-    position: relative;
+  .pending-list .table-wrap, .pending-container .table-wrap, .content-panel .table-wrap {
+    position: relative !important;
   }
 
-  .table-wrap::before {
-    content: '👆 Swipe to scroll horizontally';
-    position: absolute;
-    top: -30px;
-    right: 10px;
-    background: rgba(59, 130, 246, 0.9);
-    color: white;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.3s ease;
-    pointer-events: none;
-    z-index: 100;
+  .pending-list .table-wrap::before, .pending-container .table-wrap::before, .content-panel .table-wrap::before {
+    content: '👆 Swipe to scroll horizontally' !important;
+    position: absolute !important;
+    top: -30px !important;
+    right: 10px !important;
+    background: rgba(59, 130, 246, 0.9) !important;
+    color: white !important;
+    padding: 6px 12px !important;
+    border-radius: 8px !important;
+    font-size: 0.8rem !important;
+    opacity: 0 !important;
+    transform: translateY(10px) !important;
+    transition: all 0.3s ease !important;
+    pointer-events: none !important;
+    z-index: 100 !important;
   }
 
-  .table-wrap:hover::before {
-    opacity: 1;
-    transform: translateY(0);
+  .pending-list .table-wrap:hover::before, .pending-container .table-wrap:hover::before, .content-panel .table-wrap:hover::before {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
   }
 }
 
