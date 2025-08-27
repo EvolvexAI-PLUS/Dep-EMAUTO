@@ -670,7 +670,7 @@
   <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
   <script src="{{ url_for('static', filename='ui-utils.js') }}"></script>
   <script>
-    // Mobile offcanvas functionality and skeleton loading
+    // Mobile offcanvas functionality
     document.addEventListener('DOMContentLoaded', () => {
       // Initialize offcanvas for mobile
       if (window.offcanvasManager) {
@@ -684,162 +684,18 @@
         });
       }
 
-      // Handle skeleton loading for dashboard components
-      loadDashboardComponents();
+      // Load dashboard data with skeletons
+      loadDashboardData();
     });
 
-    async function loadDashboardComponents() {
-      // Use SkeletonManager if available
-      if (window.skeletonManager) {
-        // Handle metrics cards skeleton
-        const metricsContainer = document.querySelector('.metric-cards[data-loading="skeleton"]');
-        if (metricsContainer) {
-          try {
-            const metricsHTML = await window.skeletonManager.getDashboardMetricsPromise();
-            metricsContainer.innerHTML = metricsHTML;
-            metricsContainer.removeAttribute('data-loading');
+    async function loadDashboardData() {
+      // Simulate loading delay for demonstration
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-            // Update auto-send status
-            await updateAutoSendStatus();
-          } catch (error) {
-            console.error('Failed to load dashboard metrics:', error);
-            // Fallback to original content
-            metricsContainer.removeAttribute('data-loading');
-          }
-        }
-
-        // Handle table skeleton
-        const tableContainer = document.querySelector('.products-area-wrapper[data-loading="skeleton"]');
-        if (tableContainer) {
-          try {
-            // Load real data by refreshing the page content
-            const response = await fetch('/api/dashboard-stats');
-            if (!response.ok) throw new Error('Failed to refresh dashboard');
-
-            // Restore original content and remove loading state
-            const originalContent = tableContainer.querySelector('.products-header')?.outerHTML || '';
-            const tbodyContent = await getRepliesTableContent();
-
-            tableContainer.innerHTML = originalContent + tbodyContent;
-            tableContainer.removeAttribute('data-loading');
-
-            // Trigger dashboard initialization after loading
-            if (window.applyFilter) window.applyFilter();
-          } catch (error) {
-            console.error('Failed to load dashboard table:', error);
-            // Fallback to original content
-            tableContainer.removeAttribute('data-loading');
-
-            // Trigger dashboard initialization after loading
-            if (window.applyFilter) window.applyFilter();
-          }
-        }
-      } else {
-        // Fallback to direct API calls
-        await loadDashboardComponentsFallback();
-      }
-    }
-
-    async function loadDashboardComponentsFallback() {
-      // Handle metrics cards skeleton
-      const metricsContainer = document.querySelector('.metric-cards[data-loading="skeleton"]');
-      if (metricsContainer) {
-        const originalContent = metricsContainer.innerHTML;
-
-        // Replace with loading state
-        metricsContainer.innerHTML = `
-          <div class="skeleton-loading-overlay">
-            <div class="skeleton-loading-spinner"></div>
-          </div>
-        `;
-
-        try {
-          // Load real dashboard stats from API
-          const response = await fetch('/api/dashboard-stats');
-          if (!response.ok) throw new Error('Failed to load dashboard stats');
-
-          const data = await response.json();
-          updateDashboardMetrics(data);
-          metricsContainer.removeAttribute('data-loading');
-        } catch (error) {
-          console.error('Failed to load dashboard stats:', error);
-          // Fallback to original content
-          metricsContainer.innerHTML = originalContent;
-          metricsContainer.removeAttribute('data-loading');
-        }
-      }
-
-      // Handle table skeleton
-      const tableContainer = document.querySelector('.products-area-wrapper[data-loading="skeleton"]');
-      if (tableContainer) {
-        const originalContent = tableContainer.innerHTML;
-
-        // Replace with loading state
-        tableContainer.innerHTML = `
-          <div class="skeleton-loading-overlay">
-            <div class="skeleton-loading-spinner"></div>
-          </div>
-        `;
-
-        try {
-          // Load real data by refreshing the page content
-          const response = await fetch('/api/dashboard-stats');
-          if (!response.ok) throw new Error('Failed to refresh dashboard');
-
-          // Restore original content and remove loading state
-          tableContainer.innerHTML = originalContent;
-          tableContainer.removeAttribute('data-loading');
-
-          // Trigger dashboard initialization after loading
-          if (window.applyFilter) window.applyFilter();
-        } catch (error) {
-          console.error('Failed to load dashboard data:', error);
-          // Fallback to original content
-          tableContainer.innerHTML = originalContent;
-          tableContainer.removeAttribute('data-loading');
-
-          // Trigger dashboard initialization after loading
-          if (window.applyFilter) window.applyFilter();
-        }
-      }
-    }
-
-    async function getRepliesTableContent() {
-      // This would need to be implemented to get the actual replies table content
-      // For now, return empty tbody
-      return '<tbody id="repliesBody"><!-- Replies will be loaded here --></tbody>';
-    }
-
-    async function updateAutoSendStatus() {
-      try {
-        const response = await fetch('/api/dashboard-stats');
-        if (!response.ok) return;
-
-        const data = await response.json();
-        const autoSendPill = document.querySelector('.pill strong');
-        if (autoSendPill && data.auto_send_enabled !== undefined) {
-          autoSendPill.textContent = data.auto_send_enabled ? 'On' : 'Off';
-        }
-      } catch (error) {
-        console.error('Failed to update auto-send status:', error);
-      }
-    }
-
-    function updateDashboardMetrics(data) {
-      // Update metric values with real data
-      const metrics = document.querySelectorAll('.metric-card');
-      if (metrics.length >= 4) {
-        metrics[0].querySelector('.metric-value').textContent = data.total_emails || 0;
-        metrics[1].querySelector('.metric-value').textContent = `${data.ai_accuracy || 0}%`;
-        metrics[2].querySelector('.metric-value').textContent = data.pending_reviews || 0;
-        metrics[3].querySelector('.metric-value').textContent = data.response_time || '2.3m';
-      }
-
-      // Update auto-send status
-      const autoSendPill = document.querySelector('.pill strong');
-      if (autoSendPill && data.auto_send_enabled !== undefined) {
-        autoSendPill.textContent = data.auto_send_enabled ? 'On' : 'Off';
-      }
+      // Hide skeletons and show real content
+      document.querySelectorAll('[data-loading]').forEach(element => {
+        element.removeAttribute('data-loading');
+      });
     }
 
     // Collapsible sidebar functionality
