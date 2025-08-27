@@ -61,15 +61,15 @@
       position: sticky;
       top: 0;
       z-index: 100;
-      padding: 12px 14px;
+      padding: clamp(0.6vh, 12px, 1.4vh) clamp(0.7vw, 14px, 1.7vw);
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: clamp(0.6vw, 12px, 1.4vw);
     }
     .header-left {
       display: flex;
       align-items: baseline;
-      gap: 10px;
+      gap: clamp(0.5vw, 10px, 1.2vw);
       min-width: 0;
       flex: 1 1 auto;
     }
@@ -109,7 +109,7 @@
     .header-right {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: clamp(0.4vw, 8px, 1vw);
       flex-wrap: nowrap;
       flex: 0 0 auto;
     }
@@ -118,15 +118,15 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 6px;
-      height: 38px;
-      padding: 0 12px;
-      border-radius: 10px;
+      gap: clamp(0.3vw, 6px, 0.7vw);
+      height: clamp(2vh, 38px, 4vh);
+      padding: 0 clamp(0.6vw, 12px, 1.4vw);
+      border-radius: clamp(0.5vw, 10px, 1.2vw);
       border: 1px solid rgba(255,255,255,0.08);
       background: rgba(17, 24, 39, 0.6);
       color: #e5ecff;
       cursor: pointer;
-      font-size: 0.94rem;
+      font-size: clamp(0.85rem, 2vw, 0.94rem);
       text-decoration: none;
       transition: all 0.2s ease;
       white-space: nowrap;
@@ -158,15 +158,15 @@
     .dropdown-wrap { position: relative; }
     .dropdown {
       position: absolute;
-      right: 0; top: calc(100% + 8px);
+      right: 0; top: calc(100% + clamp(0.4vw, 8px, 1vw));
       background: rgba(17, 24, 39, 0.98);
       border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 12px;
-      box-shadow: 0 10px 24px rgba(0,0,0,0.3);
+      border-radius: clamp(0.6vw, 12px, 1.4vw);
+      box-shadow: 0 clamp(0.5vw, 10px, 1.2vw) clamp(1.2vw, 24px, 2.4vw) rgba(0,0,0,0.3);
       display: none;
-      min-width: 220px;
+      min-width: clamp(11vw, 220px, 20vw);
       z-index: 200;
-      padding: 8px;
+      padding: clamp(0.4vw, 8px, 1vw);
     }
     .dropdown.open { display: block; }
 
@@ -175,25 +175,25 @@
       position: sticky;
       top: 0;
       z-index: 95;
-      padding: 10px 14px;
+      padding: clamp(0.5vh, 10px, 1.2vh) clamp(0.7vw, 14px, 1.7vw);
       display: flex;
-      gap: 10px;
+      gap: clamp(0.5vw, 10px, 1.2vw);
       align-items: center;
       flex-wrap: wrap;
     }
     .filters-panel .input, .filters-panel .select {
-      padding: 10px 12px;
+      padding: clamp(0.5vh, 10px, 1.2vh) clamp(0.6vw, 12px, 1.4vw);
       border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 10px;
-      min-width: min(260px, 48vw);
+      border-radius: clamp(0.5vw, 10px, 1.2vw);
+      min-width: min(clamp(13vw, 260px, 25vw), 48vw);
       background: rgba(10, 14, 22, 0.6);
       color: #e5ecff;
-      height: 40px;
-      flex: 1 1 240px;
+      height: clamp(2vh, 40px, 4vh);
+      flex: 1 1 clamp(12vw, 240px, 20vw);
     }
     .badge {
-      font-size: 0.9rem;
-      padding: 6px 12px;
+      font-size: clamp(0.8rem, 2vw, 0.9rem);
+      padding: clamp(0.3vh, 6px, 0.7vh) clamp(0.6vw, 12px, 1.4vw);
       border-radius: 999px;
       background: rgba(30, 41, 59, 0.65);
       color: #e5ecff;
@@ -207,7 +207,7 @@
       flex-direction: column;
       min-height: 0;
       overflow: hidden;
-      padding: 8px;
+      padding: clamp(0.4vw, 8px, 1vw);
     }
     .table-shell { display: flex; flex-direction: column; min-height: 0; overflow: hidden; }
     .table-wrap {
@@ -217,6 +217,36 @@
       flex: 1 1 auto;
       background: rgba(9,12,20,0.35);
       position: relative; /* stable stacking for inner elements */
+      /* Enhanced vertical scrolling for compact display */
+      max-height: clamp(60vh, 70vh, 80vh);
+      scrollbar-gutter: stable;
+    }
+
+    /* Custom scrollbar styling for vertical scrolling */
+    .table-wrap::-webkit-scrollbar {
+      width: clamp(0.5vw, 8px, 1vw);
+      height: clamp(0.5vw, 8px, 1vw);
+    }
+
+    .table-wrap::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: clamp(0.25vw, 4px, 0.5vw);
+    }
+
+    .table-wrap::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, var(--muted), var(--text-secondary));
+      border-radius: clamp(0.25vw, 4px, 0.5vw);
+      transition: all 0.2s ease;
+    }
+
+    .table-wrap::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, var(--text-secondary), var(--text-primary));
+    }
+
+    /* Firefox scrollbar */
+    .table-wrap {
+      scrollbar-width: thin;
+      scrollbar-color: var(--text-secondary) rgba(255, 255, 255, 0.05);
     }
 
     /* Table + base cells */
@@ -230,25 +260,30 @@
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       border-bottom: 1px solid rgba(255,255,255,0.14);
-      padding: 12px 10px;
-      height: 46px;
+      padding: clamp(0.6vh, 10px, 1.2vh) clamp(0.5vw, 10px, 1vw);
+      height: clamp(3vh, 40px, 5vh);
       text-align: left;
       font-weight: 600;
-      font-size: 0.95rem;
+      font-size: clamp(0.85rem, 2vw, 0.95rem);
       white-space: nowrap;
       color: var(--th-fg);
       background-clip: padding-box;
+      /* More compact header for better space utilization */
+      line-height: 1.2;
     }
     tbody td {
       border-bottom: 1px solid rgba(255,255,255,0.08);
-      padding: 12px 10px;
+      padding: clamp(0.6vh, 10px, 1.2vh) clamp(0.5vw, 10px, 1vw);
       vertical-align: middle;
-      font-size: 0.95rem;
+      font-size: clamp(0.85rem, 2vw, 0.95rem);
       color: var(--td-fg);
       overflow: hidden;
       text-overflow: ellipsis;
       background: transparent;
       transition: all 0.2s ease;
+      /* Make rows more compact for better space utilization */
+      line-height: 1.3;
+      min-height: clamp(3vh, 40px, 5vh);
     }
 
     tbody tr {
@@ -267,9 +302,9 @@
     .status-badge {
       display: inline-flex;
       align-items: center;
-      padding: 4px 8px;
-      border-radius: 12px;
-      font-size: 0.75rem;
+      padding: clamp(0.2vh, 4px, 0.4vh) clamp(0.4vw, 8px, 1vw);
+      border-radius: clamp(0.6vw, 12px, 1.4vw);
+      font-size: clamp(0.65rem, 1.5vw, 0.75rem);
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.05em;
@@ -300,7 +335,7 @@
     }
 
     .email-preview {
-      font-size: 0.85rem;
+      font-size: clamp(0.75rem, 2vw, 0.85rem);
       color: #94a3b8;
       line-height: 1.4;
     }
@@ -313,7 +348,7 @@
     .email-snippet {
       font-style: italic;
       color: #cbd5e1;
-      margin-top: 2px;
+      margin-top: clamp(0.1vh, 2px, 0.3vh);
     }
     td > * { margin: 0; } /* prevent inner margins from shifting rows */
 
@@ -329,16 +364,16 @@
 
     .chip {
       display: inline-block;
-      padding: 3px 8px;
+      padding: clamp(0.15vh, 3px, 0.2vh) clamp(0.4vw, 8px, 1vw);
       border-radius: 999px;
       background: rgba(255, 193, 7, 0.15);
       color: #ffd166;
-      font-size: 0.78rem;
+      font-size: clamp(0.7rem, 1.8vw, 0.78rem);
       border: 1px solid rgba(255, 193, 7, 0.35);
     }
-    .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .actions { display: flex; gap: clamp(0.4vw, 8px, 1vw); align-items: center; flex-wrap: wrap; }
     .empty {
-      padding: 48px 24px;
+      padding: clamp(2.4vh, 48px, 6vh) clamp(1.2vw, 24px, 3vw);
       text-align: center;
       color: var(--muted);
       background: rgba(255, 255, 255, 0.02);
@@ -347,23 +382,23 @@
     }
 
     .empty-icon {
-      font-size: 3rem;
-      margin-bottom: 1rem;
+      font-size: clamp(1.5rem, 6vw, 3rem);
+      margin-bottom: clamp(0.5vh, 1rem, 1.2vh);
       opacity: 0.5;
     }
 
     .empty-title {
-      font-size: 1.2rem;
+      font-size: clamp(1rem, 3vw, 1.2rem);
       font-weight: 600;
       color: var(--text-primary);
-      margin-bottom: 0.5rem;
+      margin-bottom: clamp(0.25vh, 0.5rem, 0.6vh);
     }
 
     .empty-description {
-      font-size: 0.9rem;
+      font-size: clamp(0.8rem, 2vw, 0.9rem);
       color: var(--text-muted);
-      margin-bottom: 1.5rem;
-      max-width: 400px;
+      margin-bottom: clamp(0.75vh, 1.5rem, 1.8vh);
+      max-width: clamp(20vw, 400px, 30vw);
       margin-left: auto;
       margin-right: auto;
     }
@@ -383,20 +418,20 @@
     @media (max-width: 720px) {
         .header-panel { flex-wrap: wrap; }
         td.col-recipients, td.col-subject, td.col-preview { white-space: normal; }
-        th.col-recipients { width: clamp(150px, 25vw, 200px); }
-        th.col-subject { width: clamp(180px, 30vw, 250px); }
-        th.col-preview { width: clamp(200px, 35vw, 300px); }
-        th.col-actions, td.col-actions { width: clamp(140px, 20vw, 170px); }
+        th.col-recipients { width: clamp(7.5vw, 150px, 12.5vw); }
+        th.col-subject { width: clamp(9vw, 180px, 15.6vw); }
+        th.col-preview { width: clamp(10vw, 200px, 18.8vw); }
+        th.col-actions, td.col-actions { width: clamp(7vw, 140px, 10.6vw); }
       }
     @media (max-width: 520px) {
         th.col-created, td.col-created { display: none; }
         th.col-attachments, td.col-attachments { display: none; }
         th.col-preview, td.col-preview { display: none; }
-        th.col-sensitivity { width: clamp(80px, 15vw, 100px); }
-        .actions { flex-direction: column; align-items: stretch; gap: clamp(4px, 1vw, 6px); }
+        th.col-sensitivity { width: clamp(4vw, 80px, 6.3vw); }
+        .actions { flex-direction: column; align-items: stretch; gap: clamp(0.2vw, 4px, 0.4vw); }
         .actions .btn { width: 100%; }
-        .btn { height: clamp(36px, 8vh, 40px); }
-        .header-panel { padding: clamp(8px, 2vw, 12px); }
+        .btn { height: clamp(2vh, 36px, 4vh); }
+        .header-panel { padding: clamp(0.4vw, 8px, 1vw); }
       }
 
     /* Fixed (cloned) header host bar */
@@ -423,10 +458,13 @@
       font-weight: 600;
       color: var(--th-fg);
       border-bottom: 1px solid rgba(255,255,255,0.14);
-      padding: 12px 10px;
-      height: 46px;
+      padding: clamp(0.6vh, 10px, 1.2vh) clamp(0.5vw, 10px, 1vw);
+      height: clamp(3vh, 40px, 5vh);
       white-space: nowrap;
       background-clip: padding-box;
+      /* Match compact design */
+      line-height: 1.2;
+      font-size: clamp(0.85rem, 2vw, 0.95rem);
     }
   </style>
 </head>

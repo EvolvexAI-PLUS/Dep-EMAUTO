@@ -751,6 +751,100 @@
       transform: scale(1.1);
       box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
     }
+
+    /* Bottom Navigation for Mobile */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: clamp(0.4vw, 8px, 1vw);
+      display: none;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .bottom-nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: clamp(0.2vh, 4px, 0.5vh);
+      padding: clamp(0.4vw, 8px, 1vw);
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: clamp(0.6vw, 12px, 1.5vw);
+      min-width: clamp(3vw, 60px, 7vw);
+      border-radius: clamp(0.4vw, 8px, 1vw);
+      transition: all 0.2s ease;
+    }
+
+    .bottom-nav-item:hover {
+      background: var(--surface-hover);
+      color: var(--text-primary);
+    }
+
+    .bottom-nav-item.active {
+      color: var(--primary);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .bottom-nav-item .icon {
+      font-size: clamp(1.2vw, 18px, 2vw);
+    }
+
+    /* Adjust content to account for bottom nav */
+    .app-content {
+      padding-bottom: clamp(5vh, 80px, 12vh);
+    }
+
+    /* Mobile bottom navigation visibility control */
+    @media (max-width: 480px) and (orientation: portrait) {
+      /* Show bottom nav only in portrait mode on narrow screens */
+      .bottom-nav {
+        display: flex;
+      }
+
+      /* Hide regular sidebar navigation in portrait mode */
+      .sidebar .sidebar-list {
+        display: none;
+      }
+    }
+
+    /* Hide bottom nav in landscape and larger screens */
+    @media (min-width: 481px) {
+      .bottom-nav {
+        display: none !important;
+      }
+
+      .app-content {
+        padding-bottom: var(--space-md);
+      }
+
+      /* Ensure regular sidebar navigation is visible on larger screens */
+      .sidebar .sidebar-list {
+        display: block;
+      }
+    }
+
+    /* Also hide on landscape orientation of narrow screens */
+    @media (max-width: 480px) and (orientation: landscape) {
+      .bottom-nav {
+        display: none;
+      }
+
+      .app-content {
+        padding-bottom: var(--space-md);
+      }
+
+      .sidebar .sidebar-list {
+        display: block;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1067,6 +1161,34 @@
       </div>
     </main>
   </div>
+
+  <!-- Bottom Navigation for Portrait Mode -->
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <a href="/dashboard" class="bottom-nav-item" data-label="Dashboard">
+      <span class="icon">
+        <img src="{{ url_for('static', filename='logos/mail_send.svg') }}" alt="Dashboard" style="width: clamp(18px, 4vw, 20px); height: clamp(18px, 4vw, 20px);">
+      </span>
+      <span class="label">Dashboard</span>
+    </a>
+    <a href="/pending" class="bottom-nav-item" data-label="Pending">
+      <span class="icon">
+        <img src="{{ url_for('static', filename='logos/pending_mails.svg') }}" alt="Pending" style="width: clamp(18px, 4vw, 20px); height: clamp(18px, 4vw, 20px);">
+      </span>
+      <span class="label">Pending</span>
+    </a>
+    <a href="/profile" class="bottom-nav-item active" data-label="Profile">
+      <span class="icon">
+        <img src="{{ url_for('static', filename='logos/user.svg') }}" alt="Profile" style="width: clamp(18px, 4vw, 20px); height: clamp(18px, 4vw, 20px);">
+      </span>
+      <span class="label">Profile</span>
+    </a>
+    <a href="/logout" class="bottom-nav-item" data-label="Logout">
+      <span class="icon">
+        <img src="{{ url_for('static', filename='logos/logout-rounded.gif') }}" alt="Logout" style="width: clamp(18px, 4vw, 20px); height: clamp(18px, 4vw, 20px);">
+      </span>
+      <span class="label">Logout</span>
+    </a>
+  </nav>
 
   <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
   <script>
