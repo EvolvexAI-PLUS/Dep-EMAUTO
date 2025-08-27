@@ -3,16 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <title>Pending Emails</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-  <meta name="theme-color" content="#0b101a">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Pending Emails">
-  <meta name="description" content="Review and manage your pending AI-generated email responses">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='admin_dashboard.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='pending.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='responsive.css') }}">
   <style>
     :root {
       --gap: clamp(8px, 1vw, 12px);
@@ -506,7 +500,7 @@
         <div class="dropdown-wrap">
           <button id="filtersBtn_hdr" class="btn" aria-haspopup="true" aria-expanded="false">Filters ▾</button>
           <div id="filtersMenu_hdr" class="dropdown" role="menu" aria-label="Filters">
-            <div style="display:grid; gap:clamp(6px, 2vw, 12px); width:min(320px, 92vw);">
+            <div style="display:grid; gap:8px; width:min(320px, 92vw);">
               <label for="search_hdr" style="font-size:0.85rem; color:var(--muted);">Search</label>
               <input id="search_hdr" class="input" type="search" placeholder="Search subject or recipient…">
 
@@ -525,7 +519,7 @@
                 <option value="high">High</option>
               </select>
 
-              <div style="display:flex; gap:clamp(6px, 2vw, 12px); margin-top:clamp(4px, 1vh, 8px);">
+              <div style="display:flex; gap:8px; margin-top:6px;">
                 <button id="applyFilters_hdr" class="btn primary" type="button">Apply</button>
                 <button id="resetFilters_hdr" class="btn" type="button">Reset</button>
               </div>
@@ -560,17 +554,17 @@
         <div class="table-header-fixed glass container-width" id="tableHeaderFixed" aria-hidden="true"></div>
 
         <div class="table-wrap" id="tableWrap">
-          <table id="pendingTable" class="pending-table" aria-describedby="tableHelp">
+          <table id="pendingTable" aria-describedby="tableHelp">
             <thead>
               <tr>
-                <th class="col-select pending-col-select" scope="col"><input type="checkbox" id="selectAll" aria-label="Select all" /></th>
-                <th class="col-created nowrap pending-col-created" scope="col">Created</th>
-                <th class="col-recipients pending-col-recipients" scope="col">Recipients</th>
-                <th class="col-subject pending-col-subject" scope="col">Subject</th>
-                <th class="col-preview pending-col-preview" scope="col">Email Preview</th>
-                <th class="col-sensitivity pending-col-sensitivity" scope="col">Sensitivity</th>
-                <th class="col-attachments nowrap pending-col-attachments" scope="col">Attachments</th>
-                <th class="col-actions pending-col-actions" scope="col">Actions</th>
+                <th class="col-select" scope="col"><input type="checkbox" id="selectAll" aria-label="Select all" /></th>
+                <th class="col-created nowrap" scope="col">Created</th>
+                <th class="col-recipients" scope="col">Recipients</th>
+                <th class="col-subject" scope="col">Subject</th>
+                <th class="col-preview" scope="col">Email Preview</th>
+                <th class="col-sensitivity" scope="col">Sensitivity</th>
+                <th class="col-attachments nowrap" scope="col">Attachments</th>
+                <th class="col-actions" scope="col">Actions</th>
               </tr>
             </thead>
             <tbody id="pendingBody">
@@ -580,16 +574,16 @@
                 {% if st in ['PENDING', 'DRAFT'] %}
                   {% set _ = (visible_count.__add__(1)) %}
                   <tr data-id="{{ it.get('id', '') }}" data-status="{{ st }}" data-sensitivity="{{ it.get('sensitivity', 'normal') }}">
-                    <td class="col-select pending-col-select"><input type="checkbox" class="rowCheck" aria-label="Select row" /></td>
-                    <td class="col-created nowrap pending-col-created" title="{{ it.get('created_at', '') }}">{{ it.get('created_at', '') }}</td>
-                    <td class="col-recipients pending-col-recipients" title="{{ (it.get('recipients', []) or []) | join(', ') }}">{{ (it.get('recipients', []) or []) | join(", ") }}</td>
-                    <td class="col-subject pending-col-subject" title="{{ it.get('subject', '-') }}">{{ it.get('subject', "-") }}</td>
-                    <td class="col-preview pending-col-preview">
+                    <td class="col-select"><input type="checkbox" class="rowCheck" aria-label="Select row" /></td>
+                    <td class="col-created nowrap" title="{{ it.get('created_at', '') }}">{{ it.get('created_at', '') }}</td>
+                    <td class="col-recipients" title="{{ (it.get('recipients', []) or []) | join(', ') }}">{{ (it.get('recipients', []) or []) | join(", ") }}</td>
+                    <td class="col-subject" title="{{ it.get('subject', '-') }}">{{ it.get('subject', "-") }}</td>
+                    <td class="col-preview">
                       {% if it.original_email %}
                         {% set orig = it.original_email %}
-                        <div class="pending-email-preview">
+                        <div class="email-preview">
                           {% if orig.sender %}
-                            <div class="pending-email-sender">
+                            <div class="email-sender">
                               {% if orig.sender.emailAddress %}
                                 📧 {{ orig.sender.emailAddress.address }}
                               {% else %}
@@ -598,20 +592,16 @@
                             </div>
                           {% endif %}
                           {% if orig.snippet %}
-                            <div class="pending-email-snippet">{{ orig.snippet[:120] }}{% if orig.snippet|length > 120 %}...{% endif %}</div>
+                            <div class="email-snippet">{{ orig.snippet[:120] }}{% if orig.snippet|length > 120 %}...{% endif %}</div>
                           {% endif %}
                         </div>
                       {% else %}
                         <em style="color: #64748b; font-size: 0.85rem;">Preview not available</em>
                       {% endif %}
                     </td>
-                    <td class="col-sensitivity pending-col-sensitivity">
-                      <span class="pending-chip {{ 'pending-status-' + (it.status or 'pending').lower() }}">
-                        {{ it.sensitivity or "normal" }}
-                      </span>
-                    </td>
-                    <td class="col-attachments nowrap pending-col-attachments">{{ (it.attachments or []) | length }}</td>
-                    <td class="col-actions actions pending-col-actions">
+                    <td class="col-sensitivity"><span class="chip">{{ it.sensitivity or "normal" }}</span></td>
+                    <td class="col-attachments nowrap">{{ (it.attachments or []) | length }}</td>
+                    <td class="col-actions actions">
                       <a class="btn primary" href="{{ url_for('routes.pending_edit', pid=it.id) }}">Review</a>
                       <form method="POST" action="{{ url_for('routes.pending_cancel', pid=it.id) }}" style="display:inline;">
                         <button class="btn" type="submit">Cancel</button>
@@ -702,7 +692,7 @@
         if (!filtersVisible && filtersMenuHdr && filtersMenuHdr.classList.contains('open')) {
           hdrDropH = Math.ceil(filtersMenuHdr.getBoundingClientRect().height);
         }
-        const gap = Math.max(8, Math.min(16, window.innerWidth * 0.02)); // Responsive gap between 8-16px
+        const gap = 12;
         return hH + (fH ? gap + fH : 0) + (hdrDropH ? gap + hdrDropH : 0) + gap;
       }
 
