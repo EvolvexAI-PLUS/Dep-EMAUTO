@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='admin_dashboard.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='pending.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='skeleton.css') }}">
   <style>
     :root {
       --gap: 12px;
@@ -516,7 +517,7 @@
         <div class="table-header-fixed glass container-width" id="tableHeaderFixed" aria-hidden="true"></div>
 
         <div class="table-wrap" id="tableWrap">
-          <table id="pendingTable" aria-describedby="tableHelp">
+          <table id="pendingTable" aria-describedby="tableHelp" data-loading="skeleton">
             <thead>
               <tr>
                 <th class="col-select" scope="col"><input type="checkbox" id="selectAll" aria-label="Select all" /></th>
@@ -587,7 +588,19 @@
     </div>
   </div>
 
+  <script src="{{ url_for('static', filename='ui-utils.js') }}"></script>
   <script>
+    // Initialize skeleton loading
+    document.addEventListener('DOMContentLoaded', () => {
+      // Simulate loading delay for demonstration
+      setTimeout(() => {
+        // Hide all skeletons and show real content
+        document.querySelectorAll('[data-loading]').forEach(element => {
+          element.removeAttribute('data-loading');
+        });
+      }, 1000);
+    });
+
     (function() {
       // Inline filters (wide screens)
       const searchInput = document.getElementById('search');

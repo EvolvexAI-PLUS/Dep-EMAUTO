@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="stylesheet" href="{{ url_for('static', filename='dashboard.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='responsive.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='offcanvas.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='skeleton.css') }}">
   <style>
     /* Modern Dashboard Enhancement */
     :root {
@@ -450,6 +452,89 @@
   </style>
 </head>
 <body>
+  <!-- Mobile Header -->
+  <header class="mobile-header">
+    <div class="mobile-header-content">
+      <button class="hamburger-btn" aria-label="Open menu">
+        <span class="hamburger-icon"></span>
+      </button>
+      <h1 class="mobile-page-title">Email AI Dashboard</h1>
+      <div class="mobile-header-actions">
+        <a class="action-button" href="/pending" title="Pending reviews">Review</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Offcanvas Overlay -->
+  <div class="offcanvas-overlay"></div>
+
+  <!-- Offcanvas Sidebar -->
+  <aside class="offcanvas">
+    <div class="offcanvas-content">
+      <div class="offcanvas-header">
+        <h2 class="offcanvas-title">Menu</h2>
+        <button class="offcanvas-close" aria-label="Close menu">×</button>
+      </div>
+
+      <!-- User Block -->
+      <div class="offcanvas-user-block">
+        <div class="offcanvas-user-avatar">{{ user_email[0].upper() if user_email else 'U' }}</div>
+        <div class="offcanvas-user-info">
+          <div class="offcanvas-user-name">{{ user_email or 'User' }}</div>
+          <div class="offcanvas-user-email">{{ user_email or 'user@example.com' }}</div>
+        </div>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="offcanvas-section">
+        <div class="offcanvas-section-title">Navigation</div>
+        <ul class="offcanvas-menu">
+          <li class="offcanvas-menu-item">
+            <a href="#" class="offcanvas-menu-link active" aria-current="page">
+              <span class="offcanvas-menu-icon">📧</span>
+              <span class="offcanvas-menu-label">My Replies</span>
+            </a>
+          </li>
+          <li class="offcanvas-menu-item">
+            <a href="/pending" class="offcanvas-menu-link">
+              <span class="offcanvas-menu-icon">⏳</span>
+              <span class="offcanvas-menu-label">Pending</span>
+            </a>
+          </li>
+          <li class="offcanvas-menu-item">
+            <a href="/profile" class="offcanvas-menu-link">
+              <span class="offcanvas-menu-icon">👤</span>
+              <span class="offcanvas-menu-label">Profile</span>
+            </a>
+          </li>
+          {% if role in ('admin', 'superuser') %}
+          <li class="offcanvas-menu-item">
+            <a href="/admin" class="offcanvas-menu-link">
+              <span class="offcanvas-menu-icon">⚙️</span>
+              <span class="offcanvas-menu-label">Admin</span>
+            </a>
+          </li>
+          {% endif %}
+          <li class="offcanvas-menu-item">
+            <a href="/logout" class="offcanvas-menu-link">
+              <span class="offcanvas-menu-icon">🚪</span>
+              <span class="offcanvas-menu-label">Logout</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <!-- Quick Actions -->
+      <div class="offcanvas-section">
+        <div class="offcanvas-section-title">Quick Actions</div>
+        <div class="offcanvas-actions">
+          <a href="/pending" class="offcanvas-action-btn primary">Review Pending</a>
+          <button class="offcanvas-action-btn" onclick="refreshDashboard()">Refresh</button>
+        </div>
+      </div>
+    </div>
+  </aside>
+
   <div id="appShell" class="app-container">
     <!-- Sidebar -->
     <aside class="sidebar" aria-label="Sidebar">
@@ -529,7 +614,7 @@
       </div>
 
       <!-- Metrics Overview -->
-      <div class="metric-cards">
+      <div class="metric-cards" data-loading="skeleton">
         <div class="metric-card">
           <div class="metric-value">{{ total_emails if total_emails is defined else 0 }}</div>
           <div class="metric-label">Total Emails Processed</div>
@@ -549,7 +634,7 @@
       </div>
 
       <!-- Enhanced Email List -->
-      <section class="products-area-wrapper tableView" aria-live="polite">
+      <section class="products-area-wrapper tableView" aria-live="polite" data-loading="skeleton">
         <div class="products-header" role="row">
           <div class="product-cell sortable" tabindex="0" data-sort="recipient" role="columnheader" aria-sort="none">Recipient</div>
           <div class="product-cell sortable" tabindex="0" data-sort="subject" role="columnheader" aria-sort="none">Subject</div>
@@ -583,7 +668,36 @@
   </div>
 
   <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
+  <script src="{{ url_for('static', filename='ui-utils.js') }}"></script>
   <script>
+    // Mobile offcanvas functionality
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize offcanvas for mobile
+      if (window.offcanvasManager) {
+        // Custom offcanvas behavior for dashboard
+        document.addEventListener('offcanvas:open', () => {
+          console.log('Dashboard offcanvas opened');
+        });
+
+        document.addEventListener('offcanvas:close', () => {
+          console.log('Dashboard offcanvas closed');
+        });
+      }
+
+      // Load dashboard data with skeletons
+      loadDashboardData();
+    });
+
+    async function loadDashboardData() {
+      // Simulate loading delay for demonstration
+      await new Promise(resolve => setTimeout(resolve, 1000));
+
+      // Hide skeletons and show real content
+      document.querySelectorAll('[data-loading]').forEach(element => {
+        element.removeAttribute('data-loading');
+      });
+    }
+
     // Collapsible sidebar functionality
     const shell = document.getElementById('appShell');
     const collapseBtn = document.getElementById('collapseBtn');

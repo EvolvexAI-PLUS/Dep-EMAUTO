@@ -1,0 +1,535 @@
+/* ========================================
+   Offcanvas Sidebar System
+   ======================================== */
+
+/* Offcanvas Base Styles */
+.offcanvas {
+  position: fixed;
+  top: 0;
+  left: -320px; /* Hidden by default */
+  width: 300px;
+  height: 100vh;
+  background: var(--surface, #ffffff);
+  border-right: 1px solid var(--border, #e2e8f0);
+  z-index: 1000;
+  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 2px 0 20px rgba(0, 0, 0, 0.15);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.offcanvas.open {
+  left: 0;
+}
+
+.offcanvas.closing {
+  transition: left 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Overlay for mobile */
+.offcanvas-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  z-index: 999;
+  backdrop-filter: blur(1px);
+}
+
+.offcanvas-overlay.open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.offcanvas-overlay.closing {
+  transition: all 0.2s ease;
+}
+
+/* Offcanvas Content */
+.offcanvas-content {
+  padding: 1.5rem;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.offcanvas-header {
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border, #e2e8f0);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.offcanvas-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+  margin: 0;
+}
+
+.offcanvas-close {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  color: var(--text-muted, #6b7280);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+}
+
+.offcanvas-close:hover {
+  background: var(--surface-hover, #f3f4f6);
+  color: var(--text-primary, #1f2937);
+}
+
+/* Navigation Sections */
+.offcanvas-section {
+  margin-bottom: 1.5rem;
+}
+
+.offcanvas-section:last-child {
+  margin-bottom: auto;
+}
+
+.offcanvas-section-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-muted, #6b7280);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+  padding: 0.25rem 0;
+}
+
+/* Navigation Menu */
+.offcanvas-menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.offcanvas-menu-item {
+  margin-bottom: 0.25rem;
+}
+
+.offcanvas-menu-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  color: var(--text-secondary, #374151);
+  text-decoration: none;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
+  position: relative;
+}
+
+.offcanvas-menu-link:hover {
+  background: var(--surface-hover, #f3f4f6);
+  color: var(--text-primary, #1f2937);
+  border-color: var(--border-hover, #d1d5db);
+}
+
+.offcanvas-menu-link.active {
+  background: var(--primary, #6366f1);
+  color: white;
+  border-color: var(--primary, #6366f1);
+}
+
+.offcanvas-menu-link.active:hover {
+  background: var(--primary-hover, #4f46e5);
+  border-color: var(--primary-hover, #4f46e5);
+}
+
+.offcanvas-menu-icon {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1.25rem;
+}
+
+.offcanvas-menu-label {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* User Block */
+.offcanvas-user-block {
+  background: var(--surface-hover, #f8fafc);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.offcanvas-user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary, #6366f1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.offcanvas-user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.offcanvas-user-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.offcanvas-user-email {
+  font-size: 0.8rem;
+  color: var(--text-muted, #6b7280);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Filters Section */
+.offcanvas-filters {
+  background: var(--surface-hover, #f8fafc);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 0.75rem;
+  padding: 1rem;
+}
+
+.offcanvas-filters-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+  margin: 0 0 0.75rem 0;
+}
+
+.offcanvas-filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.offcanvas-filter-label {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: var(--text-secondary, #374151);
+  margin: 0;
+}
+
+.offcanvas-filter-input,
+.offcanvas-filter-select {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border, #d1d5db);
+  border-radius: 0.5rem;
+  background: var(--surface, #ffffff);
+  color: var(--text-primary, #1f2937);
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.offcanvas-filter-input:focus,
+.offcanvas-filter-select:focus {
+  outline: none;
+  border-color: var(--primary, #6366f1);
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Action Buttons */
+.offcanvas-actions {
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border, #e2e8f0);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.offcanvas-action-btn {
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border, #d1d5db);
+  background: var(--surface, #ffffff);
+  color: var(--text-primary, #1f2937);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.offcanvas-action-btn:hover {
+  background: var(--surface-hover, #f3f4f6);
+  border-color: var(--border-hover, #9ca3af);
+}
+
+.offcanvas-action-btn.primary {
+  background: var(--primary, #6366f1);
+  border-color: var(--primary, #6366f1);
+  color: white;
+}
+
+.offcanvas-action-btn.primary:hover {
+  background: var(--primary-hover, #4f46e5);
+  border-color: var(--primary-hover, #4f46e5);
+}
+
+/* Mobile Header Integration */
+.mobile-header {
+  display: none;
+  background: var(--surface, #ffffff);
+  border-bottom: 1px solid var(--border, #e2e8f0);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding: 0.75rem 1rem;
+}
+
+.mobile-header-content {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.hamburger-btn {
+  background: none;
+  border: none;
+  padding: 0.5rem;
+  cursor: pointer;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+}
+
+.hamburger-btn:hover {
+  background: var(--surface-hover, #f3f4f6);
+}
+
+.hamburger-icon {
+  width: 20px;
+  height: 20px;
+  position: relative;
+}
+
+.hamburger-icon::before,
+.hamburger-icon::after,
+.hamburger-icon {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 2px;
+  background: var(--text-primary, #1f2937);
+  transition: all 0.3s ease;
+  border-radius: 1px;
+}
+
+.hamburger-icon::before {
+  top: -6px;
+}
+
+.hamburger-icon::after {
+  top: 6px;
+}
+
+.hamburger-btn.open .hamburger-icon {
+  background: transparent;
+}
+
+.hamburger-btn.open .hamburger-icon::before {
+  transform: rotate(45deg) translate(6px, 6px);
+}
+
+.hamburger-btn.open .hamburger-icon::after {
+  transform: rotate(-45deg) translate(6px, -6px);
+}
+
+.mobile-page-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary, #1f2937);
+  margin: 0;
+  flex: 1;
+}
+
+.mobile-header-actions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* Responsive Behavior */
+@media (max-width: 768px) {
+  .mobile-header {
+    display: block;
+  }
+
+  .desktop-sidebar {
+    display: none;
+  }
+
+  .main-content {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .offcanvas {
+    width: 280px;
+    left: -280px;
+  }
+
+  .offcanvas.open {
+    left: 0;
+  }
+}
+
+@media (min-width: 769px) {
+  .mobile-header {
+    display: none;
+  }
+
+  .desktop-sidebar {
+    display: block;
+  }
+
+  .main-content {
+    margin-left: var(--sidebar-width, 220px);
+  }
+}
+
+/* Animation Enhancements */
+.offcanvas-enter {
+  transform: translateX(-100%);
+}
+
+.offcanvas-enter-active {
+  transform: translateX(0);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.offcanvas-exit {
+  transform: translateX(0);
+}
+
+.offcanvas-exit-active {
+  transform: translateX(-100%);
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Touch Gestures */
+.offcanvas-swipe-area {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 100vh;
+  z-index: 1001;
+}
+
+@media (max-width: 768px) {
+  .offcanvas-swipe-area {
+    display: block;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .offcanvas {
+    background: var(--surface, #1e293b);
+    border-right-color: var(--border, #475569);
+  }
+
+  .offcanvas-user-block {
+    background: var(--surface-hover, #334155);
+    border-color: var(--border, #475569);
+  }
+
+  .offcanvas-filters {
+    background: var(--surface-hover, #334155);
+    border-color: var(--border, #475569);
+  }
+
+  .offcanvas-menu-link {
+    color: var(--text-secondary, #e2e8f0);
+  }
+
+  .offcanvas-menu-link:hover {
+    background: var(--surface-hover, #334155);
+    color: var(--text-primary, #f8fafc);
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .offcanvas,
+  .offcanvas-overlay {
+    transition: none;
+  }
+
+  .hamburger-icon::before,
+  .hamburger-icon::after,
+  .hamburger-icon {
+    transition: none;
+  }
+}
+
+/* High Contrast Mode */
+@media (prefers-contrast: high) {
+  .offcanvas {
+    border-right: 2px solid var(--border, #000);
+  }
+
+  .offcanvas-menu-link.active {
+    border: 2px solid var(--primary, #6366f1);
+  }
+}
+
+/* Print Styles */
+@media print {
+  .offcanvas,
+  .offcanvas-overlay,
+  .mobile-header {
+    display: none !important;
+  }
+}
