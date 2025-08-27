@@ -29,11 +29,11 @@ html, body {
 }
 
 body {
-  margin: 0;
-  padding: 32px 16px;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: radial-gradient(800px 400px at 10% 0%, #0c1220 0%, #0b1221 40%, var(--app-bg) 100%);
-  color: var(--text-color);
+   margin: 0;
+   padding: clamp(24px, 6vw, 32px) clamp(12px, 3vw, 16px);
+   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+   background: radial-gradient(800px 400px at 10% 0%, #0c1220 0%, #0b1221 40%, var(--app-bg) 100%);
+   color: var(--text-color);
 }
 
 .container, .dashboard-container {
@@ -42,7 +42,7 @@ body {
 }
 
 h1, h2, h3 {
-  margin: 0 0 12px;
+  margin: 0 0 clamp(8px, 2vw, 12px);
   line-height: 1.25;
 }
 
@@ -61,7 +61,7 @@ h2 {
   background: var(--panel-bg);
   border: 1px solid var(--table-border);
   border-radius: 10px;
-  padding: 16px;
+  padding: clamp(12px, 3vw, 16px);
   box-shadow: var(--shadow);
 }
 
@@ -71,12 +71,12 @@ h2 {
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: clamp(12px, 3vw, 16px);
 }
 .topbar-left {
   display: flex;
   align-items: baseline;
-  gap: 12px;
+  gap: clamp(8px, 2vw, 12px);
 }
 .topbar .muted {
   color: var(--muted);
@@ -91,8 +91,8 @@ h2 {
 .btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
+  gap: clamp(6px, 1.5vw, 8px);
+  padding: clamp(6px, 1.5vw, 8px) clamp(10px, 2.5vw, 12px);
   font-size: 14px;
   line-height: 1;
   border: 1px solid var(--btn-border);
@@ -131,7 +131,7 @@ select, .select, input[type="text"], input[type="email"] {
   color: var(--text-color);
   border: 1px solid var(--input-border);
   border-radius: 8px;
-  padding: 8px 10px;
+  padding: clamp(6px, 1.5vw, 8px) clamp(8px, 2vw, 10px);
   font-size: 14px;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -152,7 +152,7 @@ select:focus, .select:focus, input[type="text"]:focus, input[type="email"]:focus
 table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 760px;
+  min-width: clamp(600px, 75vw, 760px);
   background: var(--table-bg);
 }
 thead th {
@@ -164,7 +164,7 @@ thead th {
   text-align: left;
   font-weight: 500;
   font-size: 13px;
-  padding: 12px 14px;
+  padding: clamp(10px, 2.5vw, 12px) clamp(12px, 3vw, 14px);
   border-bottom: 1px solid var(--table-border);
   letter-spacing: 0.3px;
 }
@@ -185,13 +185,13 @@ tbody tr:hover {
 
 /* Role badges */
 .role-badge {
-  padding: 4px 10px;
+  padding: clamp(3px, 1vw, 4px) clamp(8px, 2vw, 10px);
   border-radius: 999px;
   font-size: 0.82rem;
   font-weight: 500;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: clamp(4px, 1.5vw, 6px);
   letter-spacing: 0.2px;
   border: 1px solid transparent;
 }
@@ -235,14 +235,14 @@ tbody tr:hover {
 
 /* Footer/logout */
 .logout-link {
-  margin-top: 20px;
+  margin-top: clamp(16px, 4vw, 20px);
   text-align: center;
 }
 .logout-link a {
   color: var(--logout-color);
   text-decoration: none;
   font-weight: 500;
-  padding: 10px 20px;
+  padding: clamp(8px, 2vw, 10px) clamp(16px, 4vw, 20px);
   background-color: rgba(98, 145, 253, 0.1);
   border: 1px solid rgba(98, 145, 253, 0.25);
   border-radius: 8px;
@@ -266,7 +266,7 @@ tbody tr:hover {
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: clamp(8px, 2vw, 10px);
 }
 .header-row .left {
   display: flex;
