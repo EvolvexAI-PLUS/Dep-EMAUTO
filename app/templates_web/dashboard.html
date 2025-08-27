@@ -694,7 +694,7 @@
         max-height: calc(100vh - 300px);
       }
 
-      /* Add bottom navigation for portrait mode - hidden by default */
+      /* Bottom Navigation for Mobile - Hidden by default */
       .bottom-nav {
         position: fixed;
         bottom: 0;
@@ -702,8 +702,8 @@
         right: 0;
         background: var(--surface);
         border-top: 1px solid var(--border);
-        padding: clamp(8px, 2vw, 12px);
-        display: none; /* Hidden by default */
+        padding: clamp(0.4vw, 8px, 1vw);
+        display: none !important; /* Always hidden by default */
         justify-content: space-around;
         align-items: center;
         z-index: 1000;
@@ -736,12 +736,12 @@
       }
 
       .bottom-nav-item .icon {
-        font-size: 18px;
+        font-size: clamp(1.2vw, 18px, 2vw);
       }
 
       /* Adjust content to account for bottom nav */
       .app-content {
-        padding-bottom: 80px;
+        padding-bottom: clamp(5vh, 80px, 12vh);
       }
 
       /* Hide regular sidebar navigation in portrait mode */
@@ -751,43 +751,53 @@
 
       /* Show bottom nav only in portrait mode */
       .bottom-nav {
-        display: flex;
-      }
-
-      /* Hide regular sidebar navigation in portrait mode */
-      .sidebar .sidebar-list {
-        display: none;
+        display: flex !important;
       }
     }
 
-    /* Hide bottom nav in landscape and larger screens */
-    @media (min-width: 481px) {
+    /* Hide bottom nav on tablets in portrait mode (keep sidebar) */
+    @media (min-width: 481px) and (max-width: 768px) and (orientation: portrait) {
       .bottom-nav {
         display: none !important;
       }
 
-      .app-content {
-        padding-bottom: var(--space-md);
-      }
-
-      /* Ensure regular sidebar navigation is visible on larger screens */
       .sidebar .sidebar-list {
         display: block;
       }
     }
 
-    /* Also hide on landscape orientation of narrow screens */
-    @media (max-width: 480px) and (orientation: landscape) {
+    /* Hide bottom nav on all landscape orientations */
+    @media (orientation: landscape) {
       .bottom-nav {
-        display: none;
-      }
-
-      .app-content {
-        padding-bottom: var(--space-md);
+        display: none !important;
       }
 
       .sidebar .sidebar-list {
         display: block;
+      }
+    }
+
+    /* Hide bottom nav on laptops and larger screens */
+    @media (min-width: 769px) {
+      .bottom-nav {
+        display: none !important;
+      }
+
+      .sidebar .sidebar-list {
+        display: block;
+      }
+    }
+
+    /* Ensure proper content padding based on navigation state */
+    @media (max-width: 480px) and (orientation: portrait) {
+      .app-content {
+        padding-bottom: clamp(5vh, 80px, 12vh);
+      }
+    }
+
+    @media (min-width: 481px) or (orientation: landscape) {
+      .app-content {
+        padding-bottom: var(--space-md);
       }
     }
 
