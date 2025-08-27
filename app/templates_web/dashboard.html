@@ -459,7 +459,7 @@
         max-height: calc(100vh - 300px);
       }
 
-      /* Add bottom navigation for portrait mode */
+      /* Add bottom navigation for portrait mode - hidden by default */
       .bottom-nav {
         position: fixed;
         bottom: 0;
@@ -468,7 +468,7 @@
         background: var(--surface);
         border-top: 1px solid var(--border);
         padding: clamp(8px, 2vw, 12px);
-        display: flex;
+        display: none; /* Hidden by default */
         justify-content: space-around;
         align-items: center;
         z-index: 1000;
@@ -518,9 +518,30 @@
       .bottom-nav {
         display: flex;
       }
+
+      /* Hide regular sidebar navigation in portrait mode */
+      .sidebar .sidebar-list {
+        display: none;
+      }
     }
 
-    /* Hide bottom nav in landscape */
+    /* Hide bottom nav in landscape and larger screens */
+    @media (min-width: 481px) {
+      .bottom-nav {
+        display: none !important;
+      }
+
+      .app-content {
+        padding-bottom: var(--space-md);
+      }
+
+      /* Ensure regular sidebar navigation is visible on larger screens */
+      .sidebar .sidebar-list {
+        display: block;
+      }
+    }
+
+    /* Also hide on landscape orientation of narrow screens */
     @media (max-width: 480px) and (orientation: landscape) {
       .bottom-nav {
         display: none;
