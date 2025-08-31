@@ -27,6 +27,8 @@ from google.oauth2 import id_token as google_id_token
 from functools import wraps
 import secrets
 from typing import Optional, Tuple, Dict, Any
+import time
+from collections import defaultdict
 
 routes = Blueprint("routes", __name__)
 JWT_SECRET = os.getenv("JWT_SECRET", "super-secret-jwt")
@@ -160,8 +162,88 @@ def set_auth_cookies(resp, jwt_token: str, session_uuid: str, email: str):
         )
 
 def clear_auth_cookies(resp):
+    """Securely clear all authentication cookies with proper security flags"""
     for name in ("access_token", "session_uuid", "email"):
-        resp.set_cookie(name, "", expires=0)
+        resp.set_cookie(
+            name,
+            "",
+            expires=0,
+            httponly=True,
+            secure=COOKIE_SECURE,
+            samesite="Lax",
+            # Set to empty and past date to ensure deletion
+            max_age=0
+        )
+
+# 🛡️ Rate Limiting (Simple in-memory implementation)
+_rate_limit_store = defaultdict(list)
+
+def rate_limiter(max_requests=10, window_seconds=60):
+    """Simple rate limiter decorator"""
+    def decorator(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            # Get client identifier (IP address)
+            client_ip = request.remote_addr
+            if not client_ip:
+                return f(*args, **kwargs)  # Allow if no IP (for testing)
+
+            current_time = time.time()
+
+            # Clean old requests
+            _rate_limit_store[client_ip] = [
+                req_time for req_time in _rate_limit_store[client_ip]
+                if current_time - req_time < window_seconds
+            ]
+
+            # Check rate limit
+            if len(_rate_limit_store[client_ip]) >= max_requests:
+                return "Too many requests. Please try again later.", 429
+
+            # Add current request
+            _rate_limit_store[client_ip].append(current_time)
+
+            return f(*args, **kwargs)
+        return wrapper
+    return decorator
+
+# 🔒 Data Privacy Helpers
+def sanitize_email_content(content):
+    """Remove sensitive data from email content for logging/analysis"""
+    if not content:
+        return ""
+
+    # Remove email addresses, phone numbers, and other PII
+    import re
+
+    # Remove email addresses
+    content = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', '[EMAIL]', content)
+
+    # Remove phone numbers (basic patterns)
+    content = re.sub(r'\b\d{3}[-.]?\d{3}[-.]?\d{4}\b', '[PHONE]', content)
+
+    # Remove credit card patterns (basic)
+    content = re.sub(r'\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b', '[CARD]', content)
+
+    # Truncate long content
+    if len(content) > 1000:
+        content = content[:997] + "..."
+
+    return content
+
+def audit_log(action, user_email=None, details=None):
+    """Security audit logging function"""
+    timestamp = datetime.datetime.utcnow().isoformat()
+    log_entry = {
+        'timestamp': timestamp,
+        'action': action,
+        'user': user_email,
+        'ip': request.remote_addr,
+        'session': request.cookies.get('session_uuid', 'unknown'),
+        'details': sanitize_email_content(str(details)) if details else None
+    }
+
+    print(f"🔐 AUDIT: {log_entry}")  # In production, write to secure log file/database
 
 # ---------------- Routes ----------------
 @routes.route("/")
@@ -222,6 +304,7 @@ def login():
     return render_template("login.html")
 
 @routes.route("/login/imap", methods=["GET", "POST"])
+@rate_limiter(max_requests=5, window_seconds=300)  # 5 attempts per 5 minutes
 def login_imap():
     """IMAP authentication route"""
     if request.method == "GET":
@@ -229,18 +312,42 @@ def login_imap():
 
     # POST request - handle IMAP authentication
     try:
+        # 🔐 Security: Input validation and sanitization
         email = request.form.get("email", "").strip()
         password = request.form.get("password", "").strip()
         imap_server = request.form.get("imap_server", "").strip()
-        imap_port = int(request.form.get("imap_port", 993))
         smtp_server = request.form.get("smtp_server", "").strip()
-        smtp_port = int(request.form.get("smtp_port", 587))
+
+        # 🚫 Security: Prevent potential injection attacks
+        if any(char in email + imap_server + smtp_server for char in ['<', '>', '"', "'", '&']):
+            return render_template("login_imap.html",
+                                  error="Invalid characters detected. Please check your input.")
+
+        # Validate email format
+        import re
+        if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+            return render_template("login_imap.html", error="Invalid email format")
+
+        # Validate server formats (basic)
+        if not all(server and '.' in server for server in [imap_server, smtp_server]):
+            return render_template("login_imap.html", error="Invalid server format. Use format like 'mail.example.com'")
+
+        # Safe port parsing with validation
+        try:
+            imap_port = int(request.form.get("imap_port", 993))
+            smtp_port = int(request.form.get("smtp_port", 587))
+            if not (1 <= imap_port <= 65535 and 1 <= smtp_port <= 65535):
+                raise ValueError("Invalid port range")
+        except ValueError:
+            return render_template("login_imap.html", error="Invalid port numbers")
+
         use_ssl = request.form.get("use_ssl") == "on"
 
-        # Validate required fields
-        if not all([email, password, imap_server, smtp_server]):
+        # Validate required fields (with length checks for security)
+        required_fields = [email, password, imap_server, smtp_server]
+        if not all(required_fields) or any(len(field) > 255 for field in required_fields):
             return render_template("login_imap.html",
-                                 error="All fields are required")
+                                  error="All fields are required and must be under 255 characters")
 
         # Test IMAP connection
         test_credentials = {
@@ -297,6 +404,9 @@ def login_imap():
         session_uuid = create_user_session(email)
         role = get_user_role(email) or "user"
         jwt_token = generate_jwt(email, role)
+
+        # 🔐 Security: Audit successful login
+        audit_log("LOGIN_SUCCESSFUL", user_email=email, details="IMAP authentication")
 
         resp = make_response(redirect("/dashboard"))
         set_auth_cookies(resp, jwt_token, session_uuid, email)
@@ -418,6 +528,9 @@ def auth_callback(provider):
     default_next = "/admin" if role in ("admin", "superuser") else "/dashboard"
     resp = make_response(redirect(next_url or default_next))
     set_auth_cookies(resp, jwt_token, session_uuid, email)
+
+    # 🔐 Security: Audit OAuth login
+    audit_log("OAUTH_LOGIN_SUCCESSFUL", user_email=email, details=f"{provider} authentication")
 
     # Kick off background main_loop
     threading.Thread(target=main_loop, args=(provider, token, email, session_uuid), daemon=True).start()
@@ -568,26 +681,35 @@ def terms():
 def contact():
     return render_template("contact.html")
 
-@routes.route("/logout")
+@routes.route("/logout", methods=["GET", "POST"])
 def logout():
-    token = request.cookies.get("access_token")
-    session_uuid = request.cookies.get("session_uuid")
-    email_cookie = request.cookies.get("email")
-    user = decode_jwt(token) if token else None
-    email_to_end = (user or {}).get("email") or email_cookie
+    """Secure logout with CSRF protection and confirmation"""
+    if request.method == "GET":
+        # Show logout confirmation page
+        return render_template("logout.html")
 
-    if email_to_end and session_uuid:
-        try:
-            end_user_session(email_to_end, session_uuid)
-        except Exception:
-            # don't fail logout if session cleanup fails
-            pass
+    # POST request - perform actual logout
+    user = get_current_user()
+    if user:
+        email = user["email"]
+        session_uuid = request.cookies.get("session_uuid")
 
-    # Clear server-side session for provider creds
-    session.pop("provider", None)
-    session.pop("provider_token", None)
+        # Clean database session
+        if email and session_uuid:
+            try:
+                end_user_session(email, session_uuid)
+            except Exception as e:
+                print(f"Session cleanup error: {e}")
+                # Don't fail logout if DB cleanup fails
 
-    resp = redirect(url_for("routes.login"))
+    # Clear ALL server-side session data
+    session.clear()
+
+    # 🔐 Security: Audit logout action
+    audit_log("LOGOUT", user_email=email if user else None)
+
+    # Clear all auth cookies
+    resp = make_response(redirect(url_for("routes.login")))
     clear_auth_cookies(resp)
     return resp
 

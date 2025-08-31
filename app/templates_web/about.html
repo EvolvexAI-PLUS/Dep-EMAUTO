@@ -22,9 +22,9 @@
     }
 
     .container {
-      max-width: 800px;
+      max-width: min(95vw, 800px);
       margin: 0 auto;
-      padding: 0 20px;
+      padding: 0 clamp(1rem, 2.5vw, 1.25rem);
     }
 
     .nav {
@@ -63,7 +63,7 @@
     }
 
     .hero {
-      padding: 4rem 0 2rem;
+      padding: clamp(3rem, 12vh, 4rem) 0 clamp(1.5rem, 8vh, 2rem);
       text-align: center;
     }
 
@@ -76,15 +76,15 @@
     }
 
     .hero-subtitle {
-      font-size: 1.2rem;
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
       color: #6b7280;
-      max-width: 600px;
+      max-width: min(90%, 600px);
       margin: 0 auto;
       line-height: 1.7;
     }
 
     .content {
-      padding: 2rem 0 4rem;
+      padding: clamp(1.5rem, 8vh, 2rem) 0 clamp(3rem, 15vh, 4rem);
     }
 
     .section {
