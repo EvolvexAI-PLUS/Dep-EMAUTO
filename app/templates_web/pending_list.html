@@ -132,6 +132,7 @@
       white-space: nowrap;
       position: relative;
       overflow: hidden;
+      min-width: clamp(8vw, 90px, 15vw); /* Prevent button text wrapping */
     }
 
     .btn::before {
@@ -148,11 +149,66 @@
     .btn:hover::before {
       left: 100%;
     }
-    .btn:hover { background: rgba(61, 87, 122, 0.7); border-color: rgba(255,255,255,0.15); }
-    .btn:active { transform: translateY(1px); }
-    .btn.primary { background: #2563eb; border-color: #1d4ed8; color: #fff; }
-    .btn.primary:hover { background: #1f53c7; }
-    .btn.danger { background: #3b1a1a; color: #fecaca; border-color: #7f1d1d; }
+
+    .btn:hover {
+      background: rgba(61, 87, 122, 0.7);
+      border-color: rgba(255,255,255,0.15);
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn.loading {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+
+    .btn.loading::after {
+      content: '';
+      position: absolute;
+      width: clamp(1rem, 2.5vw, 1.5rem);
+      height: clamp(1rem, 2.5vw, 1.5rem);
+      margin: auto;
+      border: 2px solid transparent;
+      border-top: 2px solid currentColor;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .btn.primary {
+      background: #2563eb;
+      border-color: #1d4ed8;
+      color: #fff;
+    }
+
+    .btn.primary:hover {
+      background: #1f53c7;
+    }
+
+    .btn.primary.loading::after {
+      border-top-color: white;
+    }
+
+    .btn.danger {
+      background: #dc2626;
+      color: #fecaca;
+      border-color: #b91c1c;
+    }
+
+    .btn.danger:hover {
+      background: #b91c1c;
+    }
+
+    .btn.danger.loading::after {
+      border-top-color: #fecaca;
+    }
 
     /* Menus */
     .dropdown-wrap { position: relative; }
@@ -249,6 +305,119 @@
       scrollbar-color: var(--text-secondary) rgba(255, 255, 255, 0.05);
     }
 
+    /* Swipe gesture styles for mobile tables */
+    .swipe-indicator {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      display: none;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: clamp(0.5vh, 8px, 1vh) clamp(1vw, 16px, 2vw);
+      border-radius: clamp(0.5vw, 8px, 1vw);
+      font-size: clamp(0.8rem, 2vw, 0.9rem);
+      font-weight: 600;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .swipe-left-indicator {
+      right: clamp(1vw, 15px, 2vw);
+    }
+
+    .swipe-right-indicator {
+      left: clamp(1vw, 15px, 2vw);
+    }
+
+    .swipe-indicator.show {
+      opacity: 1;
+    }
+
+    .swipe-row {
+      position: relative;
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      touch-action: pan-y; /* Only allow vertical scrolling */
+    }
+
+    .swipe-row:touch-action {
+      cursor: grabbing;
+    }
+
+    /* Only apply swipe on mobile */
+    @media (max-width: 768px) and (hover: none) {
+      .swipe-row {
+        cursor: grab !important;
+      }
+
+      .swipe-row:active {
+        cursor: grabbing !important;
+      }
+    }
+
+    /* Touch feedback improvements */
+    @media (max-width: 768px) and (hover: none) {
+      tbody tr:hover {
+        background: none; /* Disable hover on touch devices */
+      }
+
+      tbody tr:active {
+        background: rgba(59, 130, 246, 0.05);
+        transform: scale(0.98);
+      }
+
+      .btn:active {
+        transform: scale(0.95);
+      }
+    }
+
+    /* Enhanced table responsiveness */
+    @media (max-width: 860px) {
+      .filters-panel {
+        display: none; /* Moved to dropdowns */
+      }
+    }
+
+    @media (max-width: 720px) {
+      /* Stack action buttons vertically */
+      td.col-actions .actions {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: clamp(0.2vw, 4px, 0.4vw) !important;
+        align-items: stretch !important;
+      }
+
+      td.col-actions .btn {
+        width: 100% !important;
+        min-width: unset !important;
+      }
+    }
+
+    /* Improved mobile filtering */
+    @media (max-width: 520px) {
+      /* Hide less important columns */
+      th.col-created, td.col-created { display: none; }
+      th.col-attachments, td.col-attachments { display: none; }
+      th.col-preview, td.col-preview { display: none; }
+
+      /* Make remaining columns more spacious */
+      th.col-sensitivity { width: clamp(4vw, 80px, 6.3vw); }
+      th.col-recipients { width: clamp(30vw, 140px, 40vw); }
+      th.col-subject { width: clamp(35vw, 160px, 45vw); }
+    }
+
+    /* Enhanced scroll behavior */
+    .table-wrap {
+      scroll-behavior: smooth;
+    }
+
     /* Table + base cells */
     table { width: 100%; border-collapse: collapse; table-layout: fixed; }
     thead th {
@@ -289,14 +458,40 @@
     tbody tr {
       transition: all 0.2s ease;
       cursor: pointer;
+      transform: translateX(0);
     }
 
     tbody tr:hover {
-      background: rgba(59, 130, 246, 0.05);
+      background: linear-gradient(90deg,
+        rgba(59, 130, 246, 0.05) 0%,
+        rgba(59, 130, 246, 0.03) 100%);
+      transform: translateX(2px);
+      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
     }
 
     tbody tr:hover td {
       color: #ffffff;
+    }
+
+    /* Enhanced mobile hover for touch devices */
+    @media (hover: none) {
+      tbody tr:hover {
+        background: none;
+        transform: none;
+        box-shadow: none;
+      }
+
+      tbody tr:active {
+        background: rgba(59, 130, 246, 0.08);
+        transform: scale(0.98);
+      }
+    }
+
+    /* Keyboard navigation enhancements */
+    tbody tr:focus-within {
+      outline: 2px solid #3b82f6;
+      outline-offset: -2px;
+      background: rgba(59, 130, 246, 0.05);
     }
 
     .status-badge {
@@ -372,36 +567,90 @@
       border: 1px solid rgba(255, 193, 7, 0.35);
     }
     .actions { display: flex; gap: clamp(0.4vw, 8px, 1vw); align-items: center; flex-wrap: wrap; }
-    .empty {
-      padding: clamp(2.4vh, 48px, 6vh) clamp(1.2vw, 24px, 3vw);
+    .empty-state {
+      padding: clamp(4vh, 60px, 8vh) clamp(3vw, 30px, 6vw);
       text-align: center;
       color: var(--muted);
-      background: rgba(255, 255, 255, 0.02);
-      border-radius: var(--radius-md);
-      border: 1px dashed rgba(255, 255, 255, 0.1);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+      border-radius: var(--radius-lg);
+      border: 2px dashed rgba(255, 255, 255, 0.08);
+      position: relative;
+      overflow: hidden;
+      min-height: 50vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
     }
 
-    .empty-icon {
-      font-size: clamp(1.5rem, 6vw, 3rem);
-      margin-bottom: clamp(0.5vh, 1rem, 1.2vh);
-      opacity: 0.5;
+    .empty-illustration {
+      position: relative;
+      width: clamp(15vw, 120px, 20vw);
+      height: clamp(12vh, 90px, 16vh);
+      margin-bottom: clamp(3vh, 40px, 5vh);
+    }
+
+    .floating-envelope {
+      font-size: clamp(4rem, 12vw, 6rem);
+      position: relative;
+      animation: floatEnvelope 3s ease-in-out infinite;
+    }
+
+    .checkmark-animation {
+      position: absolute;
+      top: 10%;
+      right: 15%;
+      font-size: clamp(1.5rem, 4vw, 2.5rem);
+      opacity: 0;
+      animation: showCheckmark 3s ease-in-out infinite;
+      animation-delay: 1.5s;
+    }
+
+    @keyframes floatEnvelope {
+      0%, 100% { transform: translateY(0px) rotate(-2deg); }
+      50% { transform: translateY(-10px) rotate(2deg); }
+    }
+
+    @keyframes showCheckmark {
+      0% { opacity: 0; transform: scale(0.5); }
+      20% { opacity: 1; transform: scale(1.2); }
+      30% { transform: scale(1); }
+      70% { opacity: 1; }
+      100% { opacity: 0; }
     }
 
     .empty-title {
-      font-size: clamp(1rem, 3vw, 1.2rem);
-      font-weight: 600;
+      font-size: clamp(1.8rem, 5vw, 2.5rem);
+      font-weight: 700;
       color: var(--text-primary);
-      margin-bottom: clamp(0.25vh, 0.5rem, 0.6vh);
+      margin-bottom: clamp(1vh, 12px, 2vh);
+      background: linear-gradient(135deg, var(--text-primary) 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    .empty-description {
-      font-size: clamp(0.8rem, 2vw, 0.9rem);
-      color: var(--text-muted);
-      margin-bottom: clamp(0.75vh, 1.5rem, 1.8vh);
-      max-width: clamp(20vw, 400px, 30vw);
-      margin-left: auto;
-      margin-right: auto;
+    .empty-subtitle {
+      font-size: clamp(1rem, 3vw, 1.3rem);
+      color: var(--text-secondary);
+      margin-bottom: clamp(3vh, 30px, 4vh);
+      max-width: min(80%, 500px);
     }
+
+    .empty-actions {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(1vh, 12px, 2vh);
+      align-items: center;
+    }
+
+    .hint {
+      font-size: clamp(0.8rem, 2vw, 0.9rem);
+      color: var(--muted);
+      opacity: 0.7;
+      font-style: italic;
+    }
+
 
     /* Responsive: move Filters into header next to More on narrow screens */
     @media (max-width: 860px) {
@@ -573,7 +822,7 @@
                 {% set st = (it.status or 'PENDING') %}
                 {% if st in ['PENDING', 'DRAFT'] %}
                   {% set _ = (visible_count.__add__(1)) %}
-                  <tr data-id="{{ it.get('id', '') }}" data-status="{{ st }}" data-sensitivity="{{ it.get('sensitivity', 'normal') }}">
+                  <tr class="swipe-row" data-id="{{ it.get('id', '') }}" data-status="{{ st }}" data-sensitivity="{{ it.get('sensitivity', 'normal') }}">
                     <td class="col-select"><input type="checkbox" class="rowCheck" aria-label="Select row" /></td>
                     <td class="col-created nowrap" title="{{ it.get('created_at', '') }}">{{ it.get('created_at', '') }}</td>
                     <td class="col-recipients" title="{{ (it.get('recipients', []) or []) | join(', ') }}">{{ (it.get('recipients', []) or []) | join(", ") }}</td>
@@ -613,10 +862,17 @@
             </tbody>
           </table>
           {% if not items or visible_count == 0 %}
-            <div class="empty" id="emptyState">
-              <div class="empty-icon">📭</div>
-              <div class="empty-title">No Pending Emails</div>
-              <div class="empty-description">All caught up! New emails requiring review will appear here automatically.</div>
+            <div class="empty-state" id="emptyState">
+              <div class="empty-illustration">
+                <div class="floating-envelope">✉️</div>
+                <div class="checkmark-animation">✅</div>
+              </div>
+              <h3 class="empty-title">All Caught Up!</h3>
+              <p class="empty-subtitle">Your inbox is squeaky clean</p>
+              <div class="empty-actions">
+                <a href="/dashboard" class="btn primary">Return to Dashboard</a>
+                <span class="hint">New emails will appear automatically</span>
+              </div>
             </div>
           {% endif %}
         </div>
@@ -626,9 +882,36 @@
   </div>
 
   <script>
-    (function() {
-      // Inline filters (wide screens)
-      const searchInput = document.getElementById('search');
+      // Add swipe indicators to the DOM
+      const leftIndicator = document.createElement('div');
+      leftIndicator.className = 'swipe-indicator swipe-left-indicator';
+      leftIndicator.textContent = 'Send Email 👈';
+      document.body.appendChild(leftIndicator);
+  
+      const rightIndicator = document.createElement('div');
+      rightIndicator.className = 'swipe-indicator swipe-right-indicator';
+      rightIndicator.textContent = 'Cancel Email ❯';
+      document.body.appendChild(rightIndicator);
+  
+      // Swipe gesture handling variables
+      let isSwiping = false;
+      let startX, startY;
+      let currentRow;
+      let swipeThreshold = window.innerWidth > 768 ? 150 : 80; // Different threshold for desktop/mobile
+  
+      // Show/hide swipe indicators
+      function showSwipeIndicator(direction, show = true) {
+        const indicator = direction === 'left' ? leftIndicator : rightIndicator;
+        if (show) {
+          indicator.classList.add('show');
+        } else {
+          indicator.classList.remove('show');
+        }
+      }
+  
+      (function() {
+        // Inline filters (wide screens)
+        const searchInput = document.getElementById('search');
       const statusFilter = document.getElementById('statusFilter');
       const sensitivityFilter = document.getElementById('sensitivityFilter');
 
@@ -850,21 +1133,50 @@
         return res.json().catch(() => ({}));
       }
 
+      // Enhanced batch operation helpers with loading states and toast notifications
       async function batchSend() {
         const ids = getSelectedIds(); if (ids.length === 0) return;
-        [sendSelectedBtn, cancelSelectedBtn, sendSelectedMore, cancelSelectedMore].forEach(b => b && (b.disabled = true));
-        try { await postJSON('/pending/batch/send', { ids }); window.location.reload(); }
-        catch (e) { alert('Failed to send selected: ' + e.message); }
-        finally { [sendSelectedBtn, cancelSelectedBtn, sendSelectedMore, cancelSelectedMore].forEach(b => b && (b.disabled = false)); }
+
+        // Add loading states to buttons
+        const buttons = [sendSelectedBtn, cancelSelectedBtn, sendSelectedMore, cancelSelectedMore];
+        buttons.forEach(b => { if (b) { b.classList.add('loading'); b.disabled = true; } });
+
+        try {
+          const response = await postJSON('/pending/batch/send', { ids });
+          if (response) {
+            showToast(`Successfully sent ${ids.length} email${ids.length > 1 ? 's' : ''}!`, 'success');
+            setTimeout(() => window.location.reload(), 1500);
+          }
+        }
+        catch (e) {
+          showToast('Failed to send selected emails: ' + e.message, 'error');
+        }
+        finally {
+          buttons.forEach(b => { if (b) { b.classList.remove('loading'); b.disabled = false; } });
+        }
       }
 
       async function batchCancel() {
         const ids = getSelectedIds(); if (ids.length === 0) return;
-        if (!confirm('Cancel ' + ids.length + ' pending draft(s)?')) return;
-        [sendSelectedBtn, cancelSelectedBtn, sendSelectedMore, cancelSelectedMore].forEach(b => b && (b.disabled = true));
-        try { await postJSON('/pending/batch/cancel', { ids }); window.location.reload(); }
-        catch (e) { alert('Failed to cancel selected: ' + e.message); }
-        finally { [sendSelectedBtn, cancelSelectedBtn, sendSelectedMore, cancelSelectedMore].forEach(b => b && (b.disabled = false)); }
+        if (!confirm(`Cancel ${ids.length} pending draft${ids.length > 1 ? 's' : ''}?`)) return;
+
+        // Add loading states to buttons
+        const buttons = [sendSelectedBtn, cancelSelectedBtn, sendSelectedMore, cancelSelectedMore];
+        buttons.forEach(b => { if (b) { b.classList.add('loading'); b.disabled = true; } });
+
+        try {
+          const response = await postJSON('/pending/batch/cancel', { ids });
+          if (response) {
+            showToast(`Successfully canceled ${ids.length} email${ids.length > 1 ? 's' : ''}!`, 'success');
+            setTimeout(() => window.location.reload(), 1500);
+          }
+        }
+        catch (e) {
+          showToast('Failed to cancel selected emails: ' + e.message, 'error');
+        }
+        finally {
+          buttons.forEach(b => { if (b) { b.classList.remove('loading'); b.disabled = false; } });
+        }
       }
 
       // Dropdown helpers
@@ -910,6 +1222,187 @@
       cancelSelectedBtn && cancelSelectedBtn.addEventListener('click', batchCancel);
       sendSelectedMore && sendSelectedMore.addEventListener('click', () => { closeMenu(moreMenu, moreBtn); batchSend(); });
       cancelSelectedMore && cancelSelectedMore.addEventListener('click', () => { closeMenu(moreMenu, moreBtn); batchCancel(); });
+
+      // TOUCH GESTURE HANDLING FOR SWIPE
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let isSwiping = false;
+      let currentSwipedRow = null;
+
+      tbody.addEventListener('touchstart', (e) => {
+        if (window.innerWidth > 768) return; // Only enable on mobile
+
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        isSwiping = false;
+
+        const row = e.target.closest('tr');
+        if (row) {
+          currentSwipedRow = row;
+          row.classList.add('swipe-row');
+        }
+      }, { passive: true });
+
+      tbody.addEventListener('touchmove', (e) => {
+        if (!currentSwipedRow || window.innerWidth > 768) return;
+
+        const touchCurrentX = e.touches[0].clientX;
+        const touchCurrentY = e.touches[0].clientY;
+        const diffX = touchCurrentX - touchStartX;
+        const diffY = touchCurrentY - touchStartY;
+
+        // Only trigger if horizontal movement is dominant
+        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 20) {
+          isSwiping = true;
+          e.preventDefault();
+
+          // Apply transform with limits
+          const maxSwipe = window.innerWidth * 0.25; // Max 25% of screen width
+          const translateX = Math.max(-maxSwipe, Math.min(maxSwipe, diffX));
+          currentSwipedRow.style.transform = `translateX(${translateX}px)`;
+
+          // Show indicators based on swipe direction and distance
+          const threshold = window.innerWidth * 0.15; // 15% of screen width
+          if (Math.abs(translateX) > threshold) {
+            if (translateX > 0) {
+              showSwipeIndicator('right', true);
+              showSwipeIndicator('left', false);
+            } else {
+              showSwipeIndicator('left', true);
+              showSwipeIndicator('right', false);
+            }
+          } else {
+            showSwipeIndicator('left', false);
+            showSwipeIndicator('right', false);
+          }
+        }
+      }, { passive: false });
+
+      tbody.addEventListener('touchend', (e) => {
+        if (!currentSwipedRow || !isSwiping || window.innerWidth > 768) {
+          if (currentSwipedRow) {
+            currentSwipedRow.style.transform = '';
+            currentSwipedRow.classList.remove('swipe-row');
+          }
+          showSwipeIndicator('left', false);
+          showSwipeIndicator('right', false);
+          currentSwipedRow = null;
+          return;
+        }
+
+        const touchEndX = e.changedTouches[0].clientX;
+        const diffX = touchEndX - touchStartX;
+        const threshold = window.innerWidth * 0.15;
+
+        // Reset visual indicators
+        showSwipeIndicator('left', false);
+        showSwipeIndicator('right', false);
+
+        if (Math.abs(diffX) > threshold) {
+          const emailId = currentSwipedRow.dataset.id;
+
+          if (diffX > 0) {
+            // Swiped right - Cancel action
+            if (confirm('Cancel this pending email?')) {
+              quickAction('/pending/' + emailId + '/cancel', emailId, 'cancel');
+            }
+          } else {
+            // Swiped left - Send action
+            if (confirm('Send this email now?')) {
+              quickAction('/pending/' + emailId + '/send', emailId, 'send');
+            }
+          }
+        } else {
+          // Reset row position if threshold not met
+          currentSwipedRow.style.transform = '';
+        }
+
+        currentSwipedRow.classList.remove('swipe-row');
+        currentSwipedRow = null;
+        isSwiping = false;
+      });
+
+      // Clear swipe effects when menu/dropdown opens
+      document.addEventListener('click', () => {
+        showSwipeIndicator('left', false);
+        showSwipeIndicator('right', false);
+        if (currentSwipedRow) {
+          currentSwipedRow.style.transform = '';
+          currentSwipedRow.classList.remove('swipe-row');
+          currentSwipedRow = null;
+        }
+      });
+
+      // Quick action helper for swipe gestures
+      function quickAction(url, emailId, action) {
+        showToast(`Processing ${action}...`, 'info');
+
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+        }).then(response => {
+          if (response.ok) {
+            showToast(`${action.toUpperCase()} successful!`, 'success');
+            setTimeout(() => window.location.reload(), 1000);
+          } else {
+            throw new Error(`${action.toUpperCase()} failed`);
+          }
+        }).catch(error => {
+          console.error(`${action} error:`, error);
+          showToast(`${action.toUpperCase()} failed. Please try again.`, 'error');
+        });
+      }
+
+      // Toast notification system
+      function showToast(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `
+          <div style="
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: ${type === 'success' ? 'rgba(16, 185, 129, 0.95)' : type === 'error' ? 'rgba(239, 68, 68, 0.95)' : 'rgba(59, 130, 246, 0.95)'};
+            color: white;
+            padding: clamp(0.75vh, 12px, 1vh) clamp(1vw, 16px, 2vw);
+            border-radius: clamp(0.5vw, 8px, 1vw);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-weight: 500;
+            font-size: clamp(0.9rem, 2vw, 1rem);
+            z-index: 10000;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            max-width: min(80vw, 400px);
+          ">
+            ${message}
+          </div>`;
+
+        document.body.appendChild(toast);
+
+        // Animate in
+        setTimeout(() => {
+          toast.firstElementChild.style.opacity = '1';
+          toast.firstElementChild.style.transform = 'translateY(0)';
+        }, 100);
+
+        // Auto remove
+        setTimeout(() => {
+          const toastElement = toast.firstElementChild;
+          toastElement.style.opacity = '0';
+          toastElement.style.transform = 'translateY(-20px)';
+          setTimeout(() => {
+            if (document.body.contains(toast)) {
+              document.body.removeChild(toast);
+            }
+          }, 300);
+        }, 3000);
+      }
 
       tbody.addEventListener('change', (e) => {
         if (e.target && e.target.classList.contains('rowCheck')) {
