@@ -165,9 +165,16 @@ def clear_auth_cookies(resp):
 
 # ---------------- Routes ----------------
 @routes.route("/")
+def index():
+    """Show landing page for non-authenticated users, dashboard for authenticated users"""
+    user = get_current_user()
+    if user:
+        return redirect(url_for("routes.dashboard"))
+    return render_template("landing.html")
+
 @routes.route("/dashboard")
 @require_jwt
-def index():
+def dashboard():
     user_email = request.user["email"]
     # Normalize role each visit in case legacy users still have old flags
     user_item = get_user(user_email)
