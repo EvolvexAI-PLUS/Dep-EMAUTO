@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About EmailAI - Smart Email Automation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      line-height: 1.6;
+      color: #1f2937;
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .nav {
+      padding: 1.5rem 0;
+      background: white;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .nav-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #667eea;
+      text-decoration: none;
+    }
+
+    .back-link {
+      color: #6b7280;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+    }
+
+    .back-link:hover {
+      color: #1f2937;
+      background: #f8fafc;
+    }
+
+    .hero {
+      padding: 4rem 0 2rem;
+      text-align: center;
+    }
+
+    .hero-title {
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero-subtitle {
+      font-size: 1.2rem;
+      color: #6b7280;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.7;
+    }
+
+    .content {
+      padding: 2rem 0 4rem;
+    }
+
+    .section {
+      margin-bottom: 3rem;
+    }
+
+    .section-title {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 1.5rem;
+      position: relative;
+    }
+
+    .section-title::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 4px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      margin-top: 0.5rem;
+      border-radius: 2px;
+    }
+
+    .text {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #4b5563;
+      margin-bottom: 1.5rem;
+    }
+
+    .highlight-box {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .highlight-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 1rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .stat {
+      text-align: center;
+      padding: 1.5rem;
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #667eea;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      color: #6b7280;
+      font-weight: 500;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .mission {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.05), rgba(118, 75, 162, 0.05));
+      border: 1px solid rgba(102, 126, 234, 0.1);
+      border-radius: 16px;
+      padding: 2.5rem;
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .mission-quote {
+      font-size: 1.3rem;
+      font-style: italic;
+      color: #1f2937;
+      font-weight: 500;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 2rem 0 1rem;
+      }
+
+      .hero-title {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="container nav-content">
+      <a href="/" class="logo">
+        <span style="font-size: 1.8rem;">✨</span>
+        EmailAI
+      </a>
+      <a href="/" class="back-link">← Back to Home</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="container">
+      <h1 class="hero-title">About EmailAI</h1>
+      <p class="hero-subtitle">
+        We're building the future of email productivity with intelligent automation that understands your unique communication style.
+      </p>
+    </div>
+  </section>
+
+  <!-- Content -->
+  <div class="container content">
+
+    <!-- Mission -->
+    <div class="section">
+      <div class="mission">
+        <div class="mission-quote">
+          "Our mission is to transform how professionals manage their email communications through intelligent automation and personalized AI assistance."
+        </div>
+      </div>
+    </div>
+
+    <!-- What We Do -->
+    <div class="section">
+      <h2 class="section-title">What We Do</h2>
+      <div class="text">
+        EmailAI leverages cutting-edge artificial intelligence to revolutionize email management. Our platform learns from your communication patterns, tone, and preferences to generate personalized, professional responses that maintain your unique voice while dramatically improving your productivity.
+      </div>
+
+      <div class="highlight-box">
+        <h3 class="highlight-title">Smart Automation Features</h3>
+        <ul style="color: #4b5563; line-height: 1.8;">
+          <li>• AI-powered reply generation with contextual intelligence</li>
+          <li>• Personalized tone and style matching</li>
+          <li>• Multi-platform email integration (Outlook, Gmail, IMAP)</li>
+          <li>• Advanced filtering and prioritization</li>
+          <li>• Conversation thread awareness and memory</li>
+          <li>• Mobile-responsive dashboard</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Our Impact -->
+    <div class="section">
+      <h2 class="section-title">Our Impact</h2>
+      <div class="text">
+        Since our launch, thousands of professionals across industries have transformed their email workflow. Our users report significant improvements in response times, quality of communication, and overall email management efficiency.
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat">
+          <div class="stat-number">10x</div>
+          <div class="stat-label">Faster Responses</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">98%</div>
+          <div class="stat-label">Accuracy Rate</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">50K+</div>
+          <div class="stat-label">Emails Processed</div>
+        </div>
+        <div class="stat">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Data Privacy</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Technology -->
+    <div class="section">
+      <h2 class="section-title">Powered by Advanced Technology</h2>
+      <div class="text">
+        Our platform combines multiple AI technologies to deliver unmatched email automation:
+      </div>
+
+      <div class="highlight-box">
+        <h3 class="highlight-title">Technology Stack</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+          <div>
+            <strong>Large Language Models</strong><br>
+            <span style="color: #6b7280; font-size: 0.9rem;">For natural language understanding and generation</span>
+          </div>
+          <div>
+            <strong>Natural Language Processing</strong><br>
+            <span style="color: #6b7280; font-size: 0.9rem;">For context analysis and sentiment detection</span>
+          </div>
+          <div>
+            <strong>Machine Learning</strong><br>
+            <span style="color: #6b7280; font-size: 0.9rem;">For personalization and continuous improvement</span>
+          </div>
+          <div>
+            <strong>Cloud Infrastructure</strong><br>
+            <span style="color: #6b7280; font-size: 0.9rem;">For scalable, secure, and reliable processing</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Commitment -->
+    <div class="section">
+      <h2 class="section-title">Our Commitment</h2>
+      <div class="text">
+        We believe that privacy and security are fundamental to email automation. Your emails and data are encrypted, stored securely, and never used for training purposes without explicit consent. We're committed to maintaining the highest standards of data protection and compliance.
+      </div>
+
+      <div class="highlight-box">
+        <h3 class="highlight-title">Privacy & Security</h3>
+        <ul style="color: #4b5563; line-height: 1.8;">
+          <li>• End-to-end encryption for all email data</li>
+          <li>• GDPR compliant data handling</li>
+          <li>• Secure OAuth integration with major email providers</li>
+          <li>• Regular security audits and penetration testing</li>
+          <li>• Transparent data usage and retention policies</li>
+          <li>• SOC 2 Type II certification process underway</li>
+        </ul>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

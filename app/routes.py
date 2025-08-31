@@ -552,6 +552,22 @@ def pending_cancel(pid):
     mark_pending_canceled(user_email, pid)
     return redirect(url_for("routes.pending_list"))
 
+@routes.route("/about")
+def about():
+    return render_template("about.html")
+
+@routes.route("/privacy")
+def privacy():
+    return render_template("privacy.html")
+
+@routes.route("/terms")
+def terms():
+    return render_template("terms.html")
+
+@routes.route("/contact")
+def contact():
+    return render_template("contact.html")
+
 @routes.route("/logout")
 def logout():
     token = request.cookies.get("access_token")
