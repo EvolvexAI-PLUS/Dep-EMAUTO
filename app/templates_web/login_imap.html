@@ -221,18 +221,7 @@
         <form method="POST" action="/login/imap" class="imap-form">
             {% if error %}
             <div class="error-message">
-                ⚠️ <strong>Connection Error:</strong><br>
-                {{ error }}
-                <br><br>
-                <strong>🔧 Troubleshooting Steps:</strong>
-                <ul style="margin: 0.5rem 0 0 1rem; padding-left: 1rem;">
-                    <li>Verify your email address and password</li>
-                    <li>Check IMAP/SMTP server settings</li>
-                    <li>For Gmail: Enable 2FA and use app-specific password</li>
-                    <li>For Outlook: Generate app password in account settings</li>
-                    <li>Try toggling SSL/TLS settings</li>
-                    <li>Check if your email provider allows IMAP access</li>
-                </ul>
+                {{ error | safe }}
             </div>
             {% endif %}
 
@@ -242,27 +231,100 @@
                 🔧 <strong>Need Help?</strong> Use app-specific passwords for Gmail, Outlook app passwords for enhanced security.
             </div>
 
-            <!-- Connection Tips -->
-            <div class="help-section" style="margin-bottom: 1.5rem;">
-                <h4>🔍 Quick Setup Guide</h4>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div>
-                        <h5 style="color: #495057; margin-bottom: 0.5rem;">📧 Gmail Setup</h5>
-                        <ul style="margin: 0; padding-left: 1.2rem;">
-                            <li>Server: imap.gmail.com:993</li>
-                            <li>SMTP: smtp.gmail.com:587</li>
-                            <li>Use app-specific password</li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h5 style="color: #495057; margin-bottom: 0.5rem;">📧 Outlook Setup</h5>
-                        <ul style="margin: 0; padding-left: 1.2rem;">
-                            <li>Server: outlook.office365.com:993</li>
-                            <li>SMTP: smtp-mail.outlook.com:587</li>
-                            <li>Use app password</li>
-                        </ul>
-                    </div>
+            {% if provider_detected %}
+            <div class="info-banner" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-color: #2196f3;">
+                🎯 <strong>{{ provider_detected }} Detected!</strong><br>
+                {% if auth_type == 'oauth2' %}
+                <span style="color: #0d47a1; font-weight: bold;">⚠️ Recommended: Use OAuth2 login instead of IMAP for {{ provider_detected }}</span><br>
+                IMAP authentication with {{ provider_detected }} may not work due to security restrictions.
+                {% elif auth_type == 'app_password' %}
+                <strong>💡 Tip:</strong> {{ provider_detected }} requires an app-specific password. Click help below for setup instructions.
+                {% endif %}
+            </div>
+
+            {% if provider_detected and auth_type == 'oauth2' %}
+            <div class="info-banner" style="background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%); border-color: #ffc107;">
+                🔄 <strong>Easy Alternative:</strong> Use secure OAuth2 authentication instead!
+                <div style="margin-top: 1rem;">
+                    {% if provider_detected == 'Gmail' %}
+                    <a href="/login/google" class="btn" style="background: linear-gradient(135deg, #4285f4 0%, #357ae8 100%); color: white; margin-right: 0.5rem;">
+                        🔐 Sign in with Google
+                    </a>
+                    {% elif provider_detected == 'Outlook' %}
+                    <a href="/login/outlook" class="btn" style="background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%); color: white; margin-right: 0.5rem;">
+                        🔐 Sign in with Microsoft
+                    </a>
+                    {% elif provider_detected == 'Yahoo' %}
+                    <a href="/login/yahoo" class="btn" style="background: linear-gradient(135deg, #5f01d1 0%, #400096 100%); color: white; margin-right: 0.5rem;">
+                        🔐 Sign in with Yahoo
+                    </a>
+                    {% endif %}
+                    <em style="font-size: 0.9rem;">Safer and easier than manual IMAP setup!</em>
                 </div>
+            </div>
+            {% endif %}
+            {% endif %}
+
+            <!-- Connection Tips -->
+            <div class="help-section" style="margin-bottom: 1.5rem;" id="setup-guide">
+                <h4>🔍 Quick Setup Guide</h4>
+                {% if provider_detected and auth_type %}
+                    <div id="provider-specific-guide">
+                        {% if provider_detected == 'Gmail' %}
+                        <h5 style="color: #ea4335;">📧 Gmail IMAP Setup</h5>
+                        <div style="background: #fefefe; padding: 1rem; border-radius: 6px; border: 1px solid #dadce0; margin-bottom: 1rem;">
+                            <strong>🚨 IMPORTANT:</strong> Gmail no longer allows basic IMAP authentication for security reasons.<br>
+                            <strong>Recommended:</strong> Use the <span style="color: #4285f4; font-weight: bold;">Sign in with Google</span> button instead!<br><br>
+                            <strong>Alternative (App Password):</strong><br>
+                            1. Enable 2-Factor Authentication on your Google account<br>
+                            2. Go to <a href="https://myaccount.google.com/apppasswords" target="_blank">Google App Passwords</a><br>
+                            3. Generate password for "Email Automation"<br>
+                            4. Use this 16-character password below<br>
+                        </div>
+                        {% elif provider_detected == 'Outlook' %}
+                        <h5 style="color: #0078d4;">📧 Outlook IMAP Setup</h5>
+                        <div style="background: #fefefe; padding: 1rem; border-radius: 6px; border: 1px solid #dadce0; margin-bottom: 1rem;">
+                            <strong>🚨 IMPORTANT:</strong> Microsoft is phasing out basic IMAP authentication.<br>
+                            <strong>Recommended:</strong> Use the <span style="color: #0078d4; font-weight: bold;">Sign in with Microsoft</span> button instead!<br><br>
+                            <strong>Alternative (App Password):</strong><br>
+                            1. Go to <a href="https://account.microsoft.com/security/app-passwords" target="_blank">Microsoft App Passwords</a><br>
+                            2. Create app password for email automation<br>
+                            3. Use this password instead of your regular password<br>
+                        </div>
+                        {% elif provider_detected == 'Yahoo' %}
+                        <h5 style="color: #5f01d1;">📧 Yahoo IMAP Setup</h5>
+                        <div style="background: #fefefe; padding: 1rem; border-radius: 6px; border: 1px solid #dadce0; margin-bottom: 1rem;">
+                            <strong>App-Specific Password Required:</strong><br>
+                            1. Enable 2-Factor Authentication in Yahoo account<br>
+                            2. Go to Yahoo Account Security > App Passwords<br>
+                            3. Generate password for "Email Automation"<br>
+                            4. Use this password below (not your regular password)<br>
+                        </div>
+                        {% else %}
+                        <h5 style="color: #495057;">📧 {{ provider_detected }} Custom Setup</h5>
+                        <p style="margin: 0;">For custom domains, use your mail server's IMAP/SMTP settings.<br>Typically: <code>mail.yourdomain.com</code> for both servers.</p>
+                        {% endif %}
+                    </div>
+                {% else %}
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div>
+                            <h5 style="color: #495057; margin-bottom: 0.5rem;">📧 Gmail Setup</h5>
+                            <ul style="margin: 0; padding-left: 1.2rem;">
+                                <li>Server: imap.gmail.com:993</li>
+                                <li>SMTP: smtp.gmail.com:587</li>
+                                <li>Use app-specific password</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 style="color: #495057; margin-bottom: 0.5rem;">📧 Outlook Setup</h5>
+                            <ul style="margin: 0; padding-left: 1.2rem;">
+                                <li>Server: outlook.office365.com:993</li>
+                                <li>SMTP: smtp-mail.outlook.com:587</li>
+                                <li>Use app password</li>
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
 
             <!-- Account Credentials -->

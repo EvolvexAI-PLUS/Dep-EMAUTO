@@ -14,6 +14,8 @@ from database.memory_manager_dynamo import (
     set_user_profile,
 )
 from automation.send_reply import main_loop, send_pending_email
+from automation.clients.imap_client import test_imap_connection
+from app.auth_provider_detection import EmailProviderDetection, diagnose_authentication_error
 from boto3.dynamodb.conditions import Key
 import threading
 import jwt
@@ -321,7 +323,7 @@ def login_imap():
         # 🚫 Security: Prevent potential injection attacks
         if any(char in email + imap_server + smtp_server for char in ['<', '>', '"', "'", '&']):
             return render_template("login_imap.html",
-                                  error="Invalid characters detected. Please check your input.")
+                                   error="Invalid characters detected. Please check your input.")
 
         # Validate email format
         import re
@@ -343,29 +345,83 @@ def login_imap():
 
         use_ssl = request.form.get("use_ssl") == "on"
 
+        # 🔍 Enhanced Provider Detection
+        provider, detection_message = EmailProviderDetection.detect_provider(email)
+        if provider:
+            audit_log("IMAP_PROVIDER_DETECTED", user_email=email, details=f"Provider: {provider.name}")
+
+            # Validate server settings against expected provider defaults
+            settings_valid, settings_message = EmailProviderDetection.validate_server_settings(
+                imap_server, smtp_server, email
+            )
+
+            if settings_message and "don't match" in settings_message.lower():
+                audit_log("IMAP_SERVER_MISMATCH", user_email=email, details=settings_message)
+
+            # Get recommended authentication method
+            recommended_auth = EmailProviderDetection.get_recommended_auth_type(provider)
+
+            # Provide guidance for OAuth2 providers that likely won't work with IMAP
+            if recommended_auth == "oauth2" and provider.name in ["Gmail", "Outlook", "Yahoo"]:
+                auth_guide = EmailProviderDetection.get_authentication_guide(provider, recommended_auth)
+                error_msg = (f"⚠️ {provider.name} requires OAuth2 authentication, which is not compatible with basic IMAP login.\n\n"
+                           f"**Recommended:** Use the OAuth2 login button for {provider.name} instead of IMAP configuration.\n\n"
+                           f"Alternative: Follow these steps for app-specific password setup:\n{auth_guide}")
+
+                return render_template("login_imap.html",
+                                     error=error_msg,
+                                     provider_detected=provider.name,
+                                     auth_type=recommended_auth)
+
         # Validate required fields (with length checks for security)
         required_fields = [email, password, imap_server, smtp_server]
         if not all(required_fields) or any(len(field) > 255 for field in required_fields):
             return render_template("login_imap.html",
                                   error="All fields are required and must be under 255 characters")
 
-        # Test IMAP connection
+        # 🔗 Enhanced connection testing with provider-specific enhancement
+        enhanced_credentials = EmailProviderDetection.enhance_credentials_for_provider(
+            email, password, imap_server, smtp_server
+        )
+
         test_credentials = {
             'email': email,
-            'imap_server': imap_server,
-            'imap_port': imap_port,
-            'smtp_server': smtp_server,
-            'smtp_port': smtp_port,
+            'imap_server': enhanced_credentials['imap_server'],
+            'imap_port': enhanced_credentials['imap_port'],
+            'smtp_server': enhanced_credentials['smtp_server'],
+            'smtp_port': enhanced_credentials['smtp_port'],
             'password': password,  # Plaintext for testing
-            'use_ssl': use_ssl
+            'use_ssl': enhanced_credentials['use_ssl']
         }
 
-        from automation.clients.imap_client import test_imap_connection
+        # Test IMAP connection with enhanced error handling
         connection_success = test_imap_connection(test_credentials)
 
         if not connection_success:
+            # 🕵️ Diagnose the specific authentication issue
+            diagnosis = diagnose_authentication_error("IMAP authentication failed", email)
+
+            error_msg = f"""
+❌ Connection Failed: {diagnosis['problem']}
+
+🔧 **Troubleshooting Steps:**
+"""
+            for solution in diagnosis['solutions']:
+                error_msg += f"• {solution}\n"
+
+            if provider:
+                error_msg += f"\n📧 **Provider-Specific Information:**\n"
+                error_msg += f"• Detected: {provider.name}\n"
+                if enhanced_credentials.get('requires_app_password'):
+                    error_msg += "• ⚠️  This provider typically requires APP-SPECIFIC PASSWORD for IMAP\n"
+                if enhanced_credentials.get('requires_oauth2'):
+                    error_msg += "• ⚠️  This provider typically requires OAUTH2 (use OAuth button instead)\n"
+
             return render_template("login_imap.html",
-                                 error="Failed to connect to email server. Please check your settings.")
+                                   error=error_msg,
+                                   provider_detected=provider.name if provider else None,
+                                   auth_type=enhanced_credentials.get('auth_method', 'basic'),
+                                   server_suggestion=enhanced_credentials)
 
         # Connection successful - create user account
         from database.memory_manager_dynamo import get_user_profile, set_user_profile
