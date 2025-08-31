@@ -162,19 +162,38 @@
 
     .btn.loading {
       pointer-events: none;
-      opacity: 0.7;
+      opacity: 0.8;
+      position: relative;
+    }
+
+    .btn.loading::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: inherit;
+      z-index: -1;
     }
 
     .btn.loading::after {
       content: '';
       position: absolute;
-      width: clamp(1rem, 2.5vw, 1.5rem);
-      height: clamp(1rem, 2.5vw, 1.5rem);
-      margin: auto;
+      left: 50%;
+      top: 50%;
+      width: clamp(1rem, 3vw, 1.2rem);
+      height: clamp(1rem, 3vw, 1.2rem);
+      margin: calc(-0.5 * clamp(1rem, 3vw, 1.2rem)) 0 0 calc(-0.5 * clamp(1rem, 3vw, 1.2rem));
       border: 2px solid transparent;
       border-top: 2px solid currentColor;
       border-radius: 50%;
-      animation: spin 1s linear infinite;
+      animation: subtle-spin 1.5s ease-in-out infinite;
+      opacity: 0.8;
+    }
+
+    @keyframes subtle-spin {
+      0% { transform: rotate(0deg); }
+      50% { transform: rotate(180deg); opacity: 0.5; }
+      100% { transform: rotate(360deg); }
     }
 
     @keyframes spin {
@@ -305,76 +324,52 @@
       scrollbar-color: var(--text-secondary) rgba(255, 255, 255, 0.05);
     }
 
-    /* Swipe gesture styles for mobile tables */
-    .swipe-indicator {
-      position: fixed;
-      top: 50%;
-      transform: translateY(-50%);
-      display: none;
-      z-index: 1000;
-      background: rgba(0, 0, 0, 0.8);
-      color: white;
-      padding: clamp(0.5vh, 8px, 1vh) clamp(1vw, 16px, 2vw);
-      border-radius: clamp(0.5vw, 8px, 1vw);
-      font-size: clamp(0.8rem, 2vw, 0.9rem);
-      font-weight: 600;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
+    /* Improved table interaction without disruptive swipe gestures */
+    /* Focus on smooth, natural interactions */
 
-    .swipe-left-indicator {
-      right: clamp(1vw, 15px, 2vw);
-    }
-
-    .swipe-right-indicator {
-      left: clamp(1vw, 15px, 2vw);
-    }
-
-    .swipe-indicator.show {
-      opacity: 1;
-    }
-
-    .swipe-row {
-      position: relative;
-      cursor: grab;
-      user-select: none;
-      -webkit-user-select: none;
-      -moz-user-select: none;
-      -ms-user-select: none;
-      touch-action: pan-y; /* Only allow vertical scrolling */
-    }
-
-    .swipe-row:touch-action {
-      cursor: grabbing;
-    }
-
-    /* Only apply swipe on mobile */
+    /* Enhanced mobile interaction improvements */
     @media (max-width: 768px) and (hover: none) {
-      .swipe-row {
-        cursor: grab !important;
-      }
-
-      .swipe-row:active {
-        cursor: grabbing !important;
-      }
-    }
-
-    /* Touch feedback improvements */
-    @media (max-width: 768px) and (hover: none) {
+      /* Remove disruptive hover effects on touch devices */
       tbody tr:hover {
-        background: none; /* Disable hover on touch devices */
+        background: none !important;
+        transform: none !important;
+        box-shadow: none !important;
       }
 
+      /* Smooth active states for touch interactions */
       tbody tr:active {
-        background: rgba(59, 130, 246, 0.05);
-        transform: scale(0.98);
+        background: rgba(59, 130, 246, 0.03);
+        transition: background 0.15s ease;
       }
 
+      /* Enhanced button interactions */
       .btn:active {
-        transform: scale(0.95);
+        transform: scale(0.97);
+        transition: transform 0.1s ease;
+      }
+
+      /* Ensure all action buttons have large touch targets */
+      .actions .btn {
+        min-width: clamp(80px, 20vw, 120px);
+        min-height: clamp(40px, 8vh, 44px);
+        font-size: clamp(0.85rem, 2.5vw, 0.95rem);
+        margin: clamp(0.2vh, 4px, 0.4vh) 0;
+      }
+
+      /* Improve table cell spacing on mobile */
+      tbody td {
+        padding: clamp(0.8vh, 12px, 1.2vh) clamp(0.8vw, 10px, 1.2vw);
+      }
+    }
+
+    /* Better accessibility for screen readers */
+    @media (prefers-reduced-motion: reduce) {
+      tbody tr {
+        transition: none;
+      }
+
+      .btn {
+        transition: none;
       }
     }
 
@@ -822,7 +817,7 @@
                 {% set st = (it.status or 'PENDING') %}
                 {% if st in ['PENDING', 'DRAFT'] %}
                   {% set _ = (visible_count.__add__(1)) %}
-                  <tr class="swipe-row" data-id="{{ it.get('id', '') }}" data-status="{{ st }}" data-sensitivity="{{ it.get('sensitivity', 'normal') }}">
+                  <tr data-id="{{ it.get('id', '') }}" data-status="{{ st }}" data-sensitivity="{{ it.get('sensitivity', 'normal') }}">
                     <td class="col-select"><input type="checkbox" class="rowCheck" aria-label="Select row" /></td>
                     <td class="col-created nowrap" title="{{ it.get('created_at', '') }}">{{ it.get('created_at', '') }}</td>
                     <td class="col-recipients" title="{{ (it.get('recipients', []) or []) | join(', ') }}">{{ (it.get('recipients', []) or []) | join(", ") }}</td>
@@ -882,32 +877,7 @@
   </div>
 
   <script>
-      // Add swipe indicators to the DOM
-      const leftIndicator = document.createElement('div');
-      leftIndicator.className = 'swipe-indicator swipe-left-indicator';
-      leftIndicator.textContent = 'Send Email 👈';
-      document.body.appendChild(leftIndicator);
-  
-      const rightIndicator = document.createElement('div');
-      rightIndicator.className = 'swipe-indicator swipe-right-indicator';
-      rightIndicator.textContent = 'Cancel Email ❯';
-      document.body.appendChild(rightIndicator);
-  
-      // Swipe gesture handling variables
-      let isSwiping = false;
-      let startX, startY;
-      let currentRow;
-      let swipeThreshold = window.innerWidth > 768 ? 150 : 80; // Different threshold for desktop/mobile
-  
-      // Show/hide swipe indicators
-      function showSwipeIndicator(direction, show = true) {
-        const indicator = direction === 'left' ? leftIndicator : rightIndicator;
-        if (show) {
-          indicator.classList.add('show');
-        } else {
-          indicator.classList.remove('show');
-        }
-      }
+      // Clean, smooth interactions without disruptive swipe gestures
   
       (function() {
         // Inline filters (wide screens)
@@ -1223,185 +1193,133 @@
       sendSelectedMore && sendSelectedMore.addEventListener('click', () => { closeMenu(moreMenu, moreBtn); batchSend(); });
       cancelSelectedMore && cancelSelectedMore.addEventListener('click', () => { closeMenu(moreMenu, moreBtn); batchCancel(); });
 
-      // TOUCH GESTURE HANDLING FOR SWIPE
-      let touchStartX = 0;
-      let touchStartY = 0;
-      let isSwiping = false;
-      let currentSwipedRow = null;
-
-      tbody.addEventListener('touchstart', (e) => {
-        if (window.innerWidth > 768) return; // Only enable on mobile
-
-        touchStartX = e.touches[0].clientX;
-        touchStartY = e.touches[0].clientY;
-        isSwiping = false;
-
-        const row = e.target.closest('tr');
-        if (row) {
-          currentSwipedRow = row;
-          row.classList.add('swipe-row');
-        }
-      }, { passive: true });
-
-      tbody.addEventListener('touchmove', (e) => {
-        if (!currentSwipedRow || window.innerWidth > 768) return;
-
-        const touchCurrentX = e.touches[0].clientX;
-        const touchCurrentY = e.touches[0].clientY;
-        const diffX = touchCurrentX - touchStartX;
-        const diffY = touchCurrentY - touchStartY;
-
-        // Only trigger if horizontal movement is dominant
-        if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 20) {
-          isSwiping = true;
-          e.preventDefault();
-
-          // Apply transform with limits
-          const maxSwipe = window.innerWidth * 0.25; // Max 25% of screen width
-          const translateX = Math.max(-maxSwipe, Math.min(maxSwipe, diffX));
-          currentSwipedRow.style.transform = `translateX(${translateX}px)`;
-
-          // Show indicators based on swipe direction and distance
-          const threshold = window.innerWidth * 0.15; // 15% of screen width
-          if (Math.abs(translateX) > threshold) {
-            if (translateX > 0) {
-              showSwipeIndicator('right', true);
-              showSwipeIndicator('left', false);
-            } else {
-              showSwipeIndicator('left', true);
-              showSwipeIndicator('right', false);
-            }
-          } else {
-            showSwipeIndicator('left', false);
-            showSwipeIndicator('right', false);
+      // Enhanced keyboard navigation and accessibility
+      function setupKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+          // Cmd/Ctrl + A = select all visible rows
+          if ((e.metaKey || e.ctrlKey) && e.key === 'a') {
+            e.preventDefault();
+            toggleAllVisibleRows();
           }
-        }
-      }, { passive: false });
 
-      tbody.addEventListener('touchend', (e) => {
-        if (!currentSwipedRow || !isSwiping || window.innerWidth > 768) {
-          if (currentSwipedRow) {
-            currentSwipedRow.style.transform = '';
-            currentSwipedRow.classList.remove('swipe-row');
+          // Cmd/Ctrl + Enter = send selected
+          if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+            e.preventDefault();
+            const sendBtn = document.getElementById('sendSelected');
+            if (sendBtn && !sendBtn.disabled) sendBtn.click();
           }
-          showSwipeIndicator('left', false);
-          showSwipeIndicator('right', false);
-          currentSwipedRow = null;
-          return;
-        }
 
-        const touchEndX = e.changedTouches[0].clientX;
-        const diffX = touchEndX - touchStartX;
-        const threshold = window.innerWidth * 0.15;
-
-        // Reset visual indicators
-        showSwipeIndicator('left', false);
-        showSwipeIndicator('right', false);
-
-        if (Math.abs(diffX) > threshold) {
-          const emailId = currentSwipedRow.dataset.id;
-
-          if (diffX > 0) {
-            // Swiped right - Cancel action
-            if (confirm('Cancel this pending email?')) {
-              quickAction('/pending/' + emailId + '/cancel', emailId, 'cancel');
-            }
-          } else {
-            // Swiped left - Send action
-            if (confirm('Send this email now?')) {
-              quickAction('/pending/' + emailId + '/send', emailId, 'send');
-            }
+          // Cmd/Ctrl + Shift + Delete = cancel selected
+          if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'Delete') {
+            e.preventDefault();
+            const cancelBtn = document.getElementById('cancelSelected');
+            if (cancelBtn && !cancelBtn.disabled) cancelBtn.click();
           }
-        } else {
-          // Reset row position if threshold not met
-          currentSwipedRow.style.transform = '';
-        }
 
-        currentSwipedRow.classList.remove('swipe-row');
-        currentSwipedRow = null;
-        isSwiping = false;
-      });
-
-      // Clear swipe effects when menu/dropdown opens
-      document.addEventListener('click', () => {
-        showSwipeIndicator('left', false);
-        showSwipeIndicator('right', false);
-        if (currentSwipedRow) {
-          currentSwipedRow.style.transform = '';
-          currentSwipedRow.classList.remove('swipe-row');
-          currentSwipedRow = null;
-        }
-      });
-
-      // Quick action helper for swipe gestures
-      function quickAction(url, emailId, action) {
-        showToast(`Processing ${action}...`, 'info');
-
-        fetch(url, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        }).then(response => {
-          if (response.ok) {
-            showToast(`${action.toUpperCase()} successful!`, 'success');
-            setTimeout(() => window.location.reload(), 1000);
-          } else {
-            throw new Error(`${action.toUpperCase()} failed`);
+          // Escape = clear selection
+          if (e.key === 'Escape') {
+            clearRowSelection();
           }
-        }).catch(error => {
-          console.error(`${action} error:`, error);
-          showToast(`${action.toUpperCase()} failed. Please try again.`, 'error');
+
+          // / = focus search box
+          if (e.key === '/' && !e.metaKey && !e.ctrlKey) {
+            e.preventDefault();
+            const searchInput = document.getElementById('search') || document.getElementById('search_hdr');
+            if (searchInput) searchInput.focus();
+          }
         });
       }
 
-      // Toast notification system
+      function toggleAllVisibleRows() {
+        const visibleRows = getRows().filter(r => r.style.display !== 'none');
+        const firstVisibleCheckbox = visibleRows[0]?.querySelector('.rowCheck');
+        if (firstVisibleCheckbox) {
+          const shouldCheck = !firstVisibleCheckbox.checked;
+          visibleRows.forEach(row => {
+            const cb = row.querySelector('.rowCheck');
+            if (cb) cb.checked = shouldCheck;
+          });
+          updateBatchButtons();
+          showToast(`${shouldCheck ? 'Selected' : 'Deselected'} all visible emails`, 'info');
+        }
+      }
+
+      function clearRowSelection() {
+        getRows().forEach(row => {
+          const cb = row.querySelector('.rowCheck');
+          if (cb) cb.checked = false;
+        });
+        updateBatchButtons();
+        showToast('Cleared selection', 'info');
+      }
+
+      // Initialize keyboard shortcuts
+      setupKeyboardShortcuts();
+
+      // Enhanced, subtle toast notification system
       function showToast(message, type = 'info') {
+        // Only show critical toasts on mobile to avoid UI clutter
+        if (window.innerWidth <= 768 && type === 'info') {
+          return; // Skip informational toasts on mobile
+        }
+
         const toast = document.createElement('div');
-        toast.className = `toast toast-${type}`;
+        toast.className = `enhanced-toast toast-${type}`;
+
+        const iconMap = {
+          success: '✅',
+          error: '❌',
+          info: 'ℹ️'
+        };
+
         toast.innerHTML = `
           <div style="
             position: fixed;
-            top: 20px;
-            right: 20px;
+            bottom: clamp(2vh, 20px, 4vh);
+            right: clamp(2vw, 20px, 4vw);
             background: ${type === 'success' ? 'rgba(16, 185, 129, 0.95)' : type === 'error' ? 'rgba(239, 68, 68, 0.95)' : 'rgba(59, 130, 246, 0.95)'};
             color: white;
-            padding: clamp(0.75vh, 12px, 1vh) clamp(1vw, 16px, 2vw);
-            border-radius: clamp(0.5vw, 8px, 1vw);
+            padding: clamp(0.8vh, 12px, 1.2vh) clamp(1vw, 16px, 1.8vw);
+            border-radius: clamp(0.6vw, 12px, 1vw);
             font-family: 'Inter', system-ui, sans-serif;
             font-weight: 500;
-            font-size: clamp(0.9rem, 2vw, 1rem);
+            font-size: clamp(0.85rem, 2vw, 0.95rem);
             z-index: 10000;
             opacity: 0;
-            transform: translateY(-20px);
-            transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            max-width: min(80vw, 400px);
+            transform: translateY(20px);
+            transition: all 0.35s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: min(85vw, 320px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
           ">
-            ${message}
+            <span style="font-size: 1.1em; flex-shrink: 0;">${iconMap[type]}</span>
+            <span>${message}</span>
           </div>`;
 
         document.body.appendChild(toast);
 
-        // Animate in
+        // Smooth animate in
         setTimeout(() => {
           toast.firstElementChild.style.opacity = '1';
           toast.firstElementChild.style.transform = 'translateY(0)';
-        }, 100);
+        }, 10);
 
-        // Auto remove
+        // Auto remove with nice animation
         setTimeout(() => {
           const toastElement = toast.firstElementChild;
           toastElement.style.opacity = '0';
-          toastElement.style.transform = 'translateY(-20px)';
+          toastElement.style.transform = 'translateY(10px)';
           setTimeout(() => {
             if (document.body.contains(toast)) {
               document.body.removeChild(toast);
             }
-          }, 300);
-        }, 3000);
+          }, 350);
+        }, type === 'error' ? 4500 : 2500); // Show errors longer
       }
 
       tbody.addEventListener('change', (e) => {
