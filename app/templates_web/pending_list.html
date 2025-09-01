@@ -245,16 +245,16 @@
     }
     .dropdown.open { display: block; }
 
-    /* FULL-SCREEN FILTER MODAL STYLES */
+    /* TRUE FILTER MODAL - TRUE MODAL IMPLEMENTATION */
     .filter-modal-overlay {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(2vw);
-      -webkit-backdrop-filter: blur(2vw);
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
       z-index: 1000;
       opacity: 0;
       visibility: hidden;
@@ -262,46 +262,59 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: clamp(2vw, 6vw, 4vw);
+      padding: 24px;
+      /* Prevent scrolling of background content */
+      overflow: hidden;
     }
 
     .filter-modal-overlay.active {
       opacity: 1;
       visibility: visible;
+      /* Lock body scroll when modal is active */
     }
 
+    .filter-modal-overlay.active ~ .page {
+      pointer-events: none;
+    }
+
+    /* Modal Content Container */
     .filter-modal-content {
       background: var(--surface);
-      backdrop-filter: blur(5vw);
-      -webkit-backdrop-filter: blur(5vw);
-      border: 1px solid var(--border);
-      border-radius: clamp(3vw, 6vw, 8vw);
+      border-radius: 12px;
       width: 100%;
-      max-width: min(75vw, 90vw);
-      max-height: 85vh;
-      overflow-y: auto;
-      transform: scale(0.9) translateY(-2vw);
+      max-width: 500px;
+      max-height: 90vh;
+      /* Content respects its natural height, doesn't stretch full screen */
+      height: auto;
+      /* Respect content width and height in landscape */
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transform: scale(0.9) translateY(-10px);
+      opacity: 0;
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 3vw 6vw rgba(0, 0, 0, 0.4);
     }
 
     .filter-modal-overlay.active .filter-modal-content {
       transform: scale(1) translateY(0);
+      opacity: 1;
     }
 
+    /* Modal Header */
     .filter-modal-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: clamp(3vw, 6vw, 4vw);
+      padding: 24px 24px 20px 24px;
       border-bottom: 1px solid var(--border);
       position: relative;
     }
 
     .filter-modal-header h3 {
       margin: 0;
-      font-size: clamp(4vw, 7vw, 5vw);
-      font-weight: 700;
+      font-size: 20px;
+      font-weight: 600;
       color: var(--text-primary);
       background: linear-gradient(135deg, var(--text-primary) 0%, #3b82f6 100%);
       -webkit-background-clip: text;
@@ -309,24 +322,25 @@
       background-clip: text;
       text-align: center;
       flex: 1;
+      letter-spacing: -0.02em;
     }
 
     .filter-modal-close {
       background: none;
       border: none;
-      font-size: clamp(4vw, 6vw, 5vw);
+      font-size: 24px;
       color: var(--text-secondary);
       cursor: pointer;
-      padding: clamp(2vw, 3vw, 4vw);
-      border-radius: clamp(2vw, 3vw, 4vw);
+      padding: 8px;
+      border-radius: 50%;
       transition: all 0.2s ease;
-      min-width: 12vw;
-      min-height: 12vw;
+      min-width: 40px;
+      min-height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
       position: absolute;
-      right: clamp(2vw, 3vw, 4vw);
+      right: 24px;
       top: 50%;
       transform: translateY(-50%);
     }
@@ -334,7 +348,7 @@
     .filter-modal-close:hover {
       background: rgba(255, 255, 255, 0.1);
       color: var(--text-primary);
-      transform: scale(1.1);
+      transform: translateY(-50%) scale(1.1);
     }
 
     /* Update modal percentages for better small screen experience */
@@ -359,43 +373,48 @@
 
     /* Filter modal is now fully viewport-based and responsive */
 
+    /* Modal Body */
     .filter-modal-body {
-      padding: clamp(3vw, 6vw, 4vw);
+      padding: 24px;
       flex: 1;
+      min-height: 0;
+      overflow-y: auto;
     }
 
     .filter-form {
       display: flex;
       flex-direction: column;
-      gap: clamp(4vw, 6vw, 5vw);
+      gap: 32px; /* Adequate vertical margin between elements */
     }
 
     .filter-field {
       display: flex;
       flex-direction: column;
-      gap: clamp(2vw, 3vw, 3.5vw);
+      gap: 8px;
     }
 
     .filter-label {
       font-weight: 600;
       color: var(--text-primary);
-      font-size: clamp(3.5vw, 5vw, 4.5vw);
+      font-size: 14px;
       display: flex;
       align-items: center;
-      gap: 1vw;
+      gap: 8px;
+      letter-spacing: -0.01em;
     }
 
     .filter-input,
     .filter-select {
       width: 100%;
-      padding: clamp(3vw, 4vw, 5vw);
+      padding: 16px;
       border: 1px solid var(--border);
-      border-radius: clamp(2vw, 3vw, 4vw);
+      border-radius: 8px;
       background: var(--surface);
       color: var(--text-primary);
-      font-size: clamp(3.5vw, 5vw, 4.5vw);
+      font-size: 16px;
       transition: all 0.2s ease;
-      min-height: 12vw;
+      min-height: 48px; /* Touch-friendly size */
+      font-family: inherit;
     }
 
     .filter-input:focus,
@@ -403,73 +422,150 @@
       outline: none;
       border-color: #3b82f6;
       background: rgba(255, 255, 255, 0.05);
-      box-shadow: 0 0 0 1vw rgba(59, 130, 246, 0.1);
+      box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
     }
 
     .filter-select {
       cursor: pointer;
     }
 
-    /* Ensure proper sizing for the modal structure */
-    .filter-modal-content,
-    .filter-modal-header,
-    .filter-modal-body,
-    .filter-modal-footer {
-      box-sizing: border-box;
+    .filter-input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
     }
 
+    /* Modal Footer */
     .filter-modal-footer {
       display: flex;
-      gap: clamp(3vw, 4vw, 5vw);
-      padding: clamp(3vw, 6vw, 4vw);
+      gap: 16px;
+      padding: 24px;
       border-top: 1px solid var(--border);
-      justify-content: center;
-      background: rgba(0, 0, 0, 0.05);
-    }
-
-    .filter-modal-content {
-      display: flex;
-      flex-direction: column;
-      max-height: 85vh;
-      overflow: hidden;
-    }
-
-    .filter-modal-body {
-      overflow-y: auto;
-      flex: 1;
-      min-height: 0;
+      justify-content: flex-end; /* Align to right instead of center */
+      background: rgba(0, 0, 0, 0.02);
     }
 
     .filter-modal-footer .btn {
-      flex: 1;
-      max-width: 30vw;
-      min-height: 12vw;
-      font-size: clamp(3.5vw, 5vw, 4.5vw);
+      flex: 0 0 auto;
+      min-height: 48px;
+      min-width: 120px;
+      font-size: 14px;
       font-weight: 600;
       transition: all 0.2s ease;
+      padding: 12px 24px;
+      border-radius: 8px;
     }
 
-    /* Mobile optimizations for full-screen modal */
-    @media (max-width: 640px) {
+    .filter-modal-footer .btn:last-child {
+      background: #3b82f6;
+      color: white;
+      border-color: #3b82f6;
+    }
+
+    .filter-modal-footer .btn:last-child:hover {
+      background: #2563eb;
+      border-color: #2563eb;
+    }
+
+    /* True Modal Structure */
+    .filter-modal-content {
+      display: flex;
+      flex-direction: column;
+      max-height: 90vh;
+      overflow: hidden;
+      box-sizing: border-box;
+    }
+
+    /* Responsive Sizing Based on Orientation */
+
+    /* Portrait Mode (usually mobile) */
+    @media screen and (orientation: portrait) and (max-width: 768px) {
       .filter-modal-overlay {
-        padding: 2vw;
+        padding: 16px;
       }
 
       .filter-modal-content {
-        width: 100%;
-        max-width: 100vw;
-        height: 100%;
-        max-height: 100vh;
-        border-radius: 0;
+        width: 90%;
+        max-width: 90vw; /* 90% width as requested */
+        max-height: 90vh;
+        height: auto;
+        border-radius: 12px;
       }
 
       .filter-modal-body {
+        padding: 20px;
         flex: 1;
-        padding: 4vw;
+        min-height: 200px;
       }
 
       .filter-form {
-        gap: 4vw;
+        gap: 24px;
+      }
+
+      .filter-modal-footer {
+        padding: 20px 16px;
+        gap: 12px;
+        justify-content: space-between; /* Better on mobile */
+      }
+
+      .filter-modal-footer .btn {
+        flex: 1;
+        min-width: 0;
+      }
+    }
+
+    /* Landscape Mode (usually tablets/rotated mobile) */
+    @media screen and (orientation: landscape) and (max-height: 500px) {
+      .filter-modal-content {
+        max-width: 500px; /* Compact centered box as requested */
+        max-height: 85vh;
+        height: auto; /* Respect content height, don't stretch full */
+        border-radius: 12px;
+      }
+
+      .filter-modal-overlay {
+        padding: 24px;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .filter-modal-body {
+        padding: 24px;
+        max-height: calc(85vh - 140px); /* Account for header and footer */
+        overflow-y: auto;
+      }
+    }
+
+    /* General mobile optimization */
+    @media (max-width: 480px) {
+      .filter-modal-content {
+        width: calc(100vw - 32px);
+        max-width: none;
+        margin: 0;
+      }
+
+      .filter-modal-body {
+        padding: 20px;
+      }
+
+      .filter-modal-header {
+        padding: 20px 20px 16px 20px;
+      }
+
+      .filter-modal-header h3 {
+        font-size: 18px;
+      }
+
+      .filter-modal-close {
+        right: 20px;
+      }
+
+      .filter-label {
+        font-size: 14px;
+      }
+
+      .filter-input,
+      .filter-select {
+        font-size: 16px; /* Prevent zoom on iOS */
+        padding: 14px;
       }
     }
 
@@ -1416,15 +1512,24 @@
 
       moreBtn && moreBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(moreMenu, moreBtn); });
 
-      // Modal functionality for filters
+      // MODAL FUNCTIONALITY - TRUE MODAL BEHAVIOR
       const filterModal = document.getElementById('filterModal_hdr');
       const filterModalCloseBtn = document.getElementById('closeFilterModal_hdr');
+      const applyBtn = document.getElementById('applyFilters_hdr');
+      const resetBtn = document.getElementById('resetFilters_hdr');
 
       function openFilterModal() {
         if (filterModal) {
           filterModal.classList.add('active');
           filterModal.setAttribute('aria-hidden', 'false');
-          document.body.style.overflow = 'hidden'; // Prevent background scrolling
+          document.body.style.overflow = 'hidden'; // Completely prevent background scrolling
+
+          // Announce modal open for screen readers
+          const modalTitle = filterModal.querySelector('h3');
+          if (modalTitle) {
+            modalTitle.setAttribute('aria-live', 'polite');
+            modalTitle.focus();
+          }
         }
       }
 
@@ -1433,58 +1538,92 @@
           filterModal.classList.remove('active');
           filterModal.setAttribute('aria-hidden', 'true');
           document.body.style.overflow = ''; // Restore body scrolling
+
+          // Return focus to the filters button
+          if (filtersBtnHdr) {
+            filtersBtnHdr.focus();
+          }
         }
+      }
+
+      function applyFiltersAndClose() {
+        // Apply filters first
+        mirrorFiltersToBothUIs(searchHdr?.value || '', statusFilterHdr?.value || '', sensitivityFilterHdr?.value || '');
+        applyFilter();
+        // Then close modal
+        closeFilterModal();
       }
 
       const onDocClick = (e) => {
         if (moreMenu && !moreMenu.contains(e.target) && e.target !== moreBtn) closeMenu(moreMenu, moreBtn);
-        // Close modal when clicking on dimmed overlay
+
+        // Close modal when clicking on the dimmed overlay background
         if (filterModal && filterModal.classList.contains('active') &&
             e.target === filterModal) {
-          closeFilterModal();
+          e.preventDefault();
+          closeFilterModal(); // Close without applying filters
         }
       };
 
       document.addEventListener('click', onDocClick);
+
       window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
           closeMenu(moreMenu, moreBtn);
-          closeFilterModal();
+          closeFilterModal(); // ESC closes modal without applying
+        }
+
+        // Ensure focus stays within modal when it's open
+        if (filterModal && filterModal.classList.contains('active')) {
+          // Add focus trapping logic if needed
         }
       });
 
-      // Open modal when Filters button is clicked
-      filtersBtnHdr && filtersBtnHdr.addEventListener('click', (e) => {
-        e.preventDefault();
-        openFilterModal();
-      });
+      // OPEN: Filters button click opens the modal
+      if (filtersBtnHdr) {
+        filtersBtnHdr.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation(); // Prevent document click from closing immediately
+          openFilterModal();
+        });
+      }
 
-      // Close modal when X button is clicked
-      filterModalCloseBtn && filterModalCloseBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        closeFilterModal();
-      });
+      // CLOSE OPTIONS:
 
-      // Apply button handler - closes modal after applying filters
-      const applyBtn = document.getElementById('applyFilters_hdr');
-      if (applyBtn) {
-        applyBtn.addEventListener('click', () => {
-          mirrorFiltersToBothUIs(searchHdr?.value || '', statusFilterHdr?.value || '', sensitivityFilterHdr?.value || '');
-          applyFilter();
+      // 1. X button closes without applying
+      if (filterModalCloseBtn) {
+        filterModalCloseBtn.addEventListener('click', (e) => {
+          e.preventDefault();
           closeFilterModal();
         });
       }
 
-      // Reset button handler - clears filters but keeps modal open
-      const resetBtn = document.getElementById('resetFilters_hdr');
+      // 2. Apply button applies filters and closes modal
+      if (applyBtn) {
+        applyBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          applyFiltersAndClose();
+        });
+      }
+
+      // 3. Reset button clears filters but keeps modal open for user to select new ones
       if (resetBtn) {
-        resetBtn.addEventListener('click', () => {
+        resetBtn.addEventListener('click', (e) => {
+          e.preventDefault();
           if (searchHdr) searchHdr.value = '';
           if (statusFilterHdr) statusFilterHdr.value = '';
           if (sensitivityFilterHdr) sensitivityFilterHdr.value = '';
           mirrorFiltersToBothUIs('', '', '');
           applyFilter();
-          // Modal stays open for user to set new filters
+          // Modal stays open - user can now set new filter values
+        });
+      }
+
+      // Prevent modal content clicks from closing the modal
+      const modalContent = filterModal?.querySelector('.filter-modal-content');
+      if (modalContent) {
+        modalContent.addEventListener('click', (e) => {
+          e.stopPropagation(); // Prevent closing when clicking modal content
         });
       }
 
