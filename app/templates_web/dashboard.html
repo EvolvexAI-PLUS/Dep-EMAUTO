@@ -694,123 +694,54 @@
         max-height: calc(100vh - 300px);
       }
 
-      /* Enhanced Bottom Navigation - Unified Tab Bar */
+      /* Bottom Navigation for Mobile - Hidden by default */
       .bottom-nav {
         position: fixed;
         bottom: 0;
         left: 0;
         right: 0;
-        background: rgba(15, 23, 42, 0.95);
-        border-top: 1px solid rgba(255, 255, 255, 0.1);
-        padding: clamp(0.6vw, 12px, 1.2vw) 0;
-        display: none; /* Controlled by media queries below */
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+        padding: clamp(0.4vw, 8px, 1vw);
+        display: none !important; /* Always hidden by default */
         justify-content: space-around;
         align-items: center;
         z-index: 1000;
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
-        border-radius: 20px 20px 0 0;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
       }
-  
+
       .bottom-nav-item {
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: clamp(0.3vh, 6px, 0.6vh);
-        padding: clamp(0.6vw, 10px, 1.2vw) clamp(0.6vw, 12px, 1.4vw);
+        gap: clamp(0.2vh, 4px, 0.5vh);
+        padding: clamp(0.4vw, 8px, 1vw);
         color: var(--text-secondary);
         text-decoration: none;
-        font-size: clamp(0.7vw, 13px, 1.2vw);
-        font-weight: 500;
-        min-width: clamp(4vw, 70px, 8vw);
-        border-radius: clamp(0.6vw, 12px, 1.4vw);
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 2px solid transparent;
-        position: relative;
-        overflow: hidden;
+        font-size: clamp(0.6vw, 12px, 1.5vw);
+        min-width: clamp(3vw, 60px, 7vw);
+        border-radius: clamp(0.4vw, 8px, 1vw);
+        transition: all 0.2s ease;
       }
-  
-      .bottom-nav-item::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -50%;
-        width: 200%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
-        transition: left 0.5s ease;
-        z-index: -1;
-      }
-  
-      .bottom-nav-item:hover::before {
-        left: -100%;
-      }
-  
+
       .bottom-nav-item:hover {
-        background: rgba(99, 102, 241, 0.05);
+        background: var(--surface-hover);
         color: var(--text-primary);
-        transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(99, 102, 241, 0.15);
       }
-  
+
       .bottom-nav-item.active {
         color: var(--primary);
-        background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), rgba(99, 102, 241, 0.05));
-        border-color: rgba(59, 130, 246, 0.3);
-        box-shadow: 0 4px 16px rgba(59, 130, 246, 0.2);
-        font-weight: 600;
+        background: rgba(59, 130, 246, 0.1);
       }
-  
-      .bottom-nav-item.active .icon img {
-        filter: brightness(1.1) saturate(1.2);
-        transform: scale(1.1);
-      }
-  
+
       .bottom-nav-item .icon {
-        width: clamp(2vw, 28px, 3.2vw);
-        height: clamp(2vw, 28px, 3.2vw);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.3s ease;
+        font-size: clamp(1.2vw, 18px, 2vw);
       }
-  
-      /* Mobile-optimized bottom navigation */
-      @media (max-width: 768px) {
-        .bottom-nav {
-          padding: clamp(0.4vh, 8px, 1vh) 0;
-          border-radius: 16px 16px 0 0;
-          backdrop-filter: blur(16px);
-        }
-  
-        .bottom-nav-item {
-          padding: clamp(0.6vh, 10px, 1vh) clamp(0.5vw, 8px, 1vw);
-          font-size: clamp(0.7vw, 11px, 1vw);
-          min-width: clamp(3.5vw, 55px, 6vw);
-        }
-  
-        .bottom-nav-item .icon {
-          width: clamp(1.8vw, 24px, 2.8vw);
-          height: clamp(1.8vw, 24px, 2.8vw);
-        }
-      }
-  
-      /* Tablet-specific optimizations */
-      @media (min-width: 481px) and (max-width: 768px) {
-        .bottom-nav {
-          display: flex !important;
-        }
-  
-        .bottom-nav-item {
-          padding: clamp(0.8vw, 14px, 1.2vw);
-          font-size: clamp(0.8vw, 14px, 1.1vw);
-        }
-      }
-  
+
       /* Adjust content to account for bottom nav */
       .app-content {
-        padding-bottom: clamp(6vh, 100px, 14vh);
+        padding-bottom: clamp(5vh, 80px, 12vh);
       }
 
       /* Hide regular sidebar navigation in portrait mode */
@@ -1074,6 +1005,12 @@
           </a>
         </div>
         {% endif %}
+        <div class="sidebar-list-item">
+          <a href="/logout" data-label="Logout">
+            <span class="icon" aria-hidden="true"><img src="{{ url_for('static', filename='logos/logout-rounded.gif') }}" alt="" style="width: clamp(20px, 2vw, 24px); height: clamp(20px, 2vw, 24px);"></span>
+            <span class="label">Logout</span>
+          </a>
+        </div>
       </nav>
     </aside>
 
@@ -1107,6 +1044,44 @@
           <button id="toggleAutoSend" type="button" class="action-button" aria-label="Toggle auto-send">Toggle</button>
         </div>
       </div>
+
+      <!-- New User Welcome Section -->
+      {% if not replies or replies|length == 0 %}
+      <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: var(--radius-lg); padding: 2rem; margin: var(--space-lg) 0; color: white; text-align: center;">
+        <h2 style="margin-bottom: 1rem; font-size: clamp(1.5rem, 4vw, 2rem);">🎉 Welcome to EmailAI!</h2>
+        <p style="margin-bottom: 2rem; font-size: clamp(1rem, 2.5vw, 1.25rem); opacity: 0.9;">
+          Your 30-day free trial has started. Here's how to get started:
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+          <div style="background: rgba(255, 255, 255, 0.1); padding: 1.5rem; border-radius: 1rem;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📧</div>
+            <h4 style="margin-bottom: 0.5rem; font-size: 1.1rem;">Step 1: Connect Your Email</h4>
+            <p style="font-size: 0.9rem; opacity: 0.9;">Add your email account to start receiving AI-powered replies</p>
+            <a href="/login" class="action-button" style="margin-top: 1rem; padding: 0.75rem 1.5rem; font-size: 0.9rem;">Connect Email →</a>
+          </div>
+
+          <div style="background: rgba(255, 255, 255, 0.1); padding: 1.5rem; border-radius: 1rem;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">⚙️</div>
+            <h4 style="margin-bottom: 0.5rem; font-size: 1.1rem;">Step 2: Configure Settings</h4>
+            <p style="font-size: 0.9rem; opacity: 0.9;">Customize your AI responses and automation preferences</p>
+            <a href="/profile" class="action-button" style="margin-top: 1rem; padding: 0.75rem 1.5rem; font-size: 0.9rem;">Go to Profile →</a>
+          </div>
+
+          <div style="background: rgba(255, 255, 255, 0.1); padding: 1.5rem; border-radius: 1rem;">
+            <div style="font-size: 2rem; margin-bottom: 0.5rem;">📬</div>
+            <h4 style="margin-bottom: 0.5rem; font-size: 1.1rem;">Step 3: Start Receiving Emails</h4>
+            <p style="font-size: 0.9rem; opacity: 0.9;">AI will monitor your inbox and send smart replies automatically</p>
+          </div>
+        </div>
+
+        <div style="background: rgba(255, 255, 255, 0.1); padding: 1rem; border-radius: 0.5rem; margin-top: 1rem;">
+          <p style="margin: 0; font-size: 0.9rem;">
+            💡 <strong>Pro Tip:</strong> Try connecting with Microsoft 365 (Outlook) or Google for the best experience - OAuth2 authentication makes setup much easier!
+          </p>
+        </div>
+      </div>
+      {% endif %}
 
       <!-- Metrics Overview -->
       <div class="metric-cards">
@@ -1162,25 +1137,31 @@
     </main>
   </div>
 
-  <!-- Unified Bottom Navigation -->
+  <!-- Bottom Navigation for Portrait Mode -->
   <nav class="bottom-nav" aria-label="Main navigation">
-    <a href="/dashboard" class="bottom-nav-item active" data-label="Dashboard">
+    <a href="#" class="bottom-nav-item active" data-label="My Replies">
       <span class="icon">
-        <img src="{{ url_for('static', filename='logos/mail_send.svg') }}" alt="Dashboard" style="width: clamp(20px, 4vw, 24px); height: clamp(20px, 4vw, 24px);">
+        <img src="{{ url_for('static', filename='logos/mail_send.svg') }}" alt="Replies" style="width: clamp(18px, 4vw, 20px); height: clamp(18px, 4vw, 20px);">
       </span>
-      <span class="label">Dashboard</span>
+      <span class="label">Replies</span>
     </a>
     <a href="/pending" class="bottom-nav-item" data-label="Pending">
       <span class="icon">
-        <img src="{{ url_for('static', filename='logos/pending_mails.svg') }}" alt="Pending" style="width: clamp(20px, 4vw, 24px); height: clamp(20px, 4vw, 24px);">
+        <img src="{{ url_for('static', filename='logos/pending_mails.svg') }}" alt="Pending" style="width: clamp(18px, 4vw, 20px); height: clamp(18px, 4vw, 20px);">
       </span>
       <span class="label">Pending</span>
     </a>
     <a href="/profile" class="bottom-nav-item" data-label="Profile">
       <span class="icon">
-        <img src="{{ url_for('static', filename='logos/user.svg') }}" alt="Profile" style="width: clamp(20px, 4vw, 24px); height: clamp(20px, 4vw, 24px);">
+        <img src="{{ url_for('static', filename='logos/user.svg') }}" alt="Profile" style="width: clamp(18px, 4vw, 20px); height: clamp(18px, 4vw, 20px);">
       </span>
       <span class="label">Profile</span>
+    </a>
+    <a href="/logout" class="bottom-nav-item" data-label="Logout">
+      <span class="icon">
+        <img src="{{ url_for('static', filename='logos/logout-rounded.gif') }}" alt="Logout" style="width: clamp(18px, 4vw, 20px); height: clamp(18px, 4vw, 20px);">
+      </span>
+      <span class="label">Logout</span>
     </a>
   </nav>
 
@@ -1376,69 +1357,6 @@
       setTimeout(() => {
         window.notifications.info('Dashboard loaded successfully!', 3000);
       }, 1000);
-    }
-
-    // BOTTOM NAVIGATION FUNCTIONALITY
-    function initializeBottomNavigation() {
-      const bottomNav = document.querySelector('.bottom-nav');
-      if (!bottomNav) return;
-
-      const navItems = bottomNav.querySelectorAll('.bottom-nav-item');
-      const currentPath = '/dashboard'; // Dashboard is the current page
-
-      // Set active state based on current page
-      const pathMappings = {
-        '/dashboard': 'Dashboard',
-        '/pending': 'Pending',
-        '/profile': 'Profile'
-      };
-
-      // Find which tab should be active
-      const currentLabel = pathMappings[currentPath];
-      if (currentLabel) {
-        navItems.forEach(item => {
-          const itemLabel = item.getAttribute('data-label');
-          if (itemLabel === currentLabel) {
-            item.classList.add('active');
-          } else {
-            item.classList.remove('active');
-          }
-        });
-      }
-
-      // Add click handlers with enhanced navigation
-      navItems.forEach(item => {
-        item.addEventListener('click', (e) => {
-          e.preventDefault();
-          const href = item.getAttribute('href');
-
-          // Only navigate if not already on the current page
-          if (href && href !== currentPath) {
-            // Add smooth transition effect
-            bottomNav.style.opacity = '0.7';
-            setTimeout(() => {
-              window.location.href = href;
-            }, 150);
-          }
-        });
-      });
-
-      // Add hover effects for better touch feedback
-      navItems.forEach(item => {
-        item.addEventListener('touchstart', () => {
-          item.style.transform = 'translateY(-1px)';
-          setTimeout(() => {
-            item.style.transform = '';
-          }, 150);
-        });
-      });
-    }
-
-    // Initialize bottom navigation when DOM is ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initializeBottomNavigation);
-    } else {
-      initializeBottomNavigation();
     }
   </script>
 </body>

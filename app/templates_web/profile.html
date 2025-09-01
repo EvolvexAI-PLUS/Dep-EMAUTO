@@ -1286,6 +1286,14 @@
           </a>
         </div>
         {% endif %}
+        <div class="sidebar-list-item">
+          <a href="/logout" data-label="Logout">
+            <span class="icon" aria-hidden="true">
+              <img src="{{ url_for('static', filename='logos/logout-rounded.gif') }}" alt="" width="24" height="24">
+            </span>
+            <span class="label">Logout</span>
+          </a>
+        </div>
       </nav>
     </aside>
 
@@ -1540,9 +1548,6 @@
 
           <div class="profile-field-group">
             <div class="profile-actions">
-              <button class="profile-btn profile-btn-secondary" onclick="logoutAccount()">
-                🚪 Logout
-              </button>
               <button class="profile-btn profile-btn-danger" onclick="deleteAccount()">
                 🗑️ Delete Account
               </button>
@@ -1553,25 +1558,31 @@
     </main>
   </div>
 
-  <!-- Unified Bottom Navigation -->
+  <!-- Bottom Navigation for Portrait Mode -->
   <nav class="bottom-nav" aria-label="Main navigation">
     <a href="/dashboard" class="bottom-nav-item" data-label="Dashboard">
       <span class="icon">
-        <img src="{{ url_for('static', filename='logos/mail_send.svg') }}" alt="Dashboard" style="width: clamp(20px, 4vw, 24px); height: clamp(20px, 4vw, 24px);">
+        <img src="{{ url_for('static', filename='logos/mail_send.svg') }}" alt="Dashboard" style="width: clamp(18px, 4vw, 20px); height: clamp(18px, 4vw, 20px);">
       </span>
       <span class="label">Dashboard</span>
     </a>
     <a href="/pending" class="bottom-nav-item" data-label="Pending">
       <span class="icon">
-        <img src="{{ url_for('static', filename='logos/pending_mails.svg') }}" alt="Pending" style="width: clamp(20px, 4vw, 24px); height: clamp(20px, 4vw, 24px);">
+        <img src="{{ url_for('static', filename='logos/pending_mails.svg') }}" alt="Pending" style="width: clamp(18px, 4vw, 20px); height: clamp(18px, 4vw, 20px);">
       </span>
       <span class="label">Pending</span>
     </a>
     <a href="/profile" class="bottom-nav-item active" data-label="Profile">
       <span class="icon">
-        <img src="{{ url_for('static', filename='logos/user.svg') }}" alt="Profile" style="width: clamp(20px, 4vw, 24px); height: clamp(20px, 4vw, 24px);">
+        <img src="{{ url_for('static', filename='logos/user.svg') }}" alt="Profile" style="width: clamp(18px, 4vw, 20px); height: clamp(18px, 4vw, 20px);">
       </span>
       <span class="label">Profile</span>
+    </a>
+    <a href="/logout" class="bottom-nav-item" data-label="Logout">
+      <span class="icon">
+        <img src="{{ url_for('static', filename='logos/logout-rounded.gif') }}" alt="Logout" style="width: clamp(18px, 4vw, 20px); height: clamp(18px, 4vw, 20px);">
+      </span>
+      <span class="label">Logout</span>
     </a>
   </nav>
 
@@ -1716,43 +1727,6 @@
       toggle.classList.toggle('active');
     }
 
-    async function logoutAccount() {
-      const confirmed = confirm('Are you sure you want to logout? You will be redirected to the login page.');
-      if (!confirmed) return;
-
-      try {
-        // Show logout loading feedback
-        const logoutBtn = document.querySelector(`[onclick="logoutAccount()"]`);
-        const originalText = logoutBtn.innerHTML;
-        logoutBtn.innerHTML = '🚪 Logging out...';
-        logoutBtn.disabled = true;
-
-        // Use fetch to call logout endpoint for proper session cleanup
-        const response = await fetch('/logout', {
-          method: 'GET',
-          headers: {
-            'X-Requested-With': 'XMLHttpRequest'
-          }
-        });
-
-        if (response.ok) {
-          if (window.notifications) {
-            window.notifications.success('Logged out successfully. Redirecting to login...');
-          }
-          setTimeout(() => window.location.href = '/login', 1000);
-        } else {
-          throw new Error('Logout failed');
-        }
-      } catch (error) {
-        console.error('Logout error:', error);
-        if (window.notifications) {
-          window.notifications.error('Failed to logout properly. Please refresh the page.');
-        }
-        // Fallback: direct redirect
-        setTimeout(() => window.location.href = '/logout', 1000);
-      }
-    }
-
     async function changePassword() {
       const newPassword = prompt('Enter new password (Note: This is for future OAuth integration):');
       if (newPassword) {
@@ -1856,69 +1830,6 @@
       setTimeout(() => {
         window.notifications.info('Profile loaded successfully!', 3000);
       }, 1000);
-    }
-
-    // BOTTOM NAVIGATION FUNCTIONALITY
-    function initializeBottomNavigation() {
-      const bottomNav = document.querySelector('.bottom-nav');
-      if (!bottomNav) return;
-
-      const navItems = bottomNav.querySelectorAll('.bottom-nav-item');
-      const currentPath = '/profile'; // Profile is the current page
-
-      // Set active state based on current page
-      const pathMappings = {
-        '/dashboard': 'Dashboard',
-        '/pending': 'Pending',
-        '/profile': 'Profile'
-      };
-
-      // Find which tab should be active
-      const currentLabel = pathMappings[currentPath];
-      if (currentLabel) {
-        navItems.forEach(item => {
-          const itemLabel = item.getAttribute('data-label');
-          if (itemLabel === currentLabel) {
-            item.classList.add('active');
-          } else {
-            item.classList.remove('active');
-          }
-        });
-      }
-
-      // Add click handlers with enhanced navigation
-      navItems.forEach(item => {
-        item.addEventListener('click', (e) => {
-          e.preventDefault();
-          const href = item.getAttribute('href');
-
-          // Only navigate if not already on the current page
-          if (href && href !== currentPath) {
-            // Add smooth transition effect
-            bottomNav.style.opacity = '0.7';
-            setTimeout(() => {
-              window.location.href = href;
-            }, 150);
-          }
-        });
-      });
-
-      // Add hover effects for better touch feedback
-      navItems.forEach(item => {
-        item.addEventListener('touchstart', () => {
-          item.style.transform = 'translateY(-1px)';
-          setTimeout(() => {
-            item.style.transform = '';
-          }, 150);
-        });
-      });
-    }
-
-    // Initialize bottom navigation when DOM is ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initializeBottomNavigation);
-    } else {
-      initializeBottomNavigation();
     }
   </script>
 </body>

@@ -29,11 +29,6 @@
       --space-md: clamp(8px, 1.5vw, 12px);
       --space-lg: clamp(12px, 2vw, 16px);
       --space-xl: clamp(16px, 3vw, 24px);
-      --nav-bg: rgba(15, 22, 37, 0.98);
-      --nav-shadow: 0 -2px 16px rgba(0, 0, 0, 0.15);
-      --nav-border: rgba(255, 255, 255, 0.08);
-      --nav-item-hover: rgba(59, 130, 246, 0.1);
-      --nav-item-active: rgba(59, 130, 246, 0.2);
     }
 
     html, body { height: 100%; margin: 0; }
@@ -117,157 +112,6 @@
       gap: clamp(0.4vw, 8px, 1vw);
       flex-wrap: nowrap;
       flex: 0 0 auto;
-    }
-
-    /* Contextual Action Bar Styles */
-    .header-default,
-    .header-selection {
-      display: flex;
-      align-items: center;
-      width: 100%;
-      opacity: 1;
-      transform: translateY(0);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      position: absolute;
-      left: 0;
-      top: 0;
-      padding: clf clamp(0.6vh, 12px, 1.4vh) clamp(0.7vw, 14px, 1.7vw);
-    }
-
-    .header-default {
-      justify-content: space-between;
-    }
-
-    .header-selection {
-      justify-content: space-between;
-      opacity: 0;
-      transform: translateY(-10px);
-      pointer-events: none;
-    }
-
-    .header-default.active {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
-    }
-
-    .header-selection.active {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
-    }
-
-    /* Selection Count Styling */
-    .selection-count {
-      font-size: clamp(1.3rem, 3vw, 1.8rem);
-      font-weight: 700;
-      color: var(--text-primary);
-      background: linear-gradient(135deg, var(--text-primary) 0%, #3b82f6 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-left: clamp(0.5vw, 8px, 1.2vw);
-    }
-
-    /* Action Buttons */
-    .action-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: clamp(0.3vw, 6px, 0.7vw);
-      height: clamp(2vh, 42px, 4vh);
-      padding: 0 clamp(0.8vw, 16px, 1.6vw);
-      border-radius: clamp(0.5vw, 12px, 1.2vw);
-      border: 2px solid transparent;
-      background: rgba(17, 24, 39, 0.8);
-      color: #e5ecff;
-      cursor: pointer;
-      font-size: clamp(0.9rem, 2vw, 1rem);
-      font-weight: 600;
-      transition: all 0.2s ease;
-      white-space: nowrap;
-      position: relative;
-      overflow: hidden;
-      min-width: clamp(10vw, 100px, 15vw);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-
-    .action-btn::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      transition: left 0.5s ease;
-      z-index: 1;
-    }
-
-    .action-btn:hover:not(:disabled)::before {
-      left: 100%;
-    }
-
-    .action-btn:hover:not(:disabled) {
-      background: rgba(61, 87, 122, 0.9);
-      border-color: rgba(255,255,255,0.2);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    }
-
-    .action-btn:active:not(:disabled) {
-      transform: translateY(0);
-    }
-
-    .action-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
-
-    .action-btn.primary:not(:disabled):hover {
-      background: #2563eb;
-      border-color: #1d4ed8;
-    }
-
-    .action-btn.danger:not(:disabled):hover {
-      background: rgba(239, 68, 68, 0.9);
-      border-color: rgba(239, 68, 68, 0.6);
-    }
-
-    .action-btn .action-icon {
-      font-size: clamp(1.1rem, 3vw, 1.4rem);
-      line-height: 1;
-      z-index: 2;
-      position: relative;
-    }
-
-    .action-btn span {
-      z-index: 2;
-      position: relative;
-    }
-
-    /* Loading state for action buttons */
-    .action-btn.loading {
-      pointer-events: none;
-      opacity: 0.8;
-      position: relative;
-    }
-
-    .action-btn.loading::after {
-      content: '';
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: clamp(1.2rem, 3vw, 1.4rem);
-      height: clamp(1.2rem, 3vw, 1.4rem);
-      margin: calc(-0.6 * clamp(1.2rem, 3vw, 1.4rem)) 0 0 calc(-0.6 * clamp(1.2rem, 3vw, 1.4rem));
-      border: 2px solid transparent;
-      border-top: 2px solid currentColor;
-      border-radius: 50%;
-      animation: spin 1.2s ease-in-out infinite;
-      z-index: 3;
     }
 
     .btn {
@@ -1191,437 +1035,66 @@
       line-height: 1.2;
       font-size: clamp(0.85rem, 2vw, 0.95rem);
     }
-
-    /* Bottom Navigation Styles */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: clamp(60px, 12vh, 80px);
-      background: var(--nav-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-top: 1px solid var(--nav-border);
-      box-shadow: var(--nav-shadow);
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      z-index: 100;
-      padding: 0 clamp(1vw, 16px, 2vw);
-      transition: all 0.2s ease;
-    }
-
-    .bottom-nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-decoration: none;
-      color: var(--text-secondary);
-      gap: clamp(0.2vh, 4px, 0.5vh);
-      flex: 1;
-      padding: clamp(0.4vh, 6px, 0.8vh) 0;
-      border-radius: var(--radius-md);
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      min-width: 0;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .bottom-nav-item::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 50%;
-      width: 0;
-      height: 100%;
-      background: linear-gradient(135deg, var(--nav-item-hover) 0%, rgba(59, 130, 246, 0.05) 100%);
-      transition: all 0.3s ease;
-      transform: translateX(-50%);
-      z-index: -1;
-    }
-
-    .bottom-nav-item:hover {
-      color: var(--text-primary);
-      transform: translateY(-2px);
-    }
-
-    .bottom-nav-item:hover::before {
-      width: 100%;
-    }
-
-    .bottom-nav-item.active {
-      color: #3b82f6;
-      background: var(--nav-item-active);
-    }
-
-    .bottom-nav-item.active::before {
-      width: 100%;
-      background: linear-gradient(135deg, var(--nav-item-active) 0%, rgba(59, 130, 246, 0.1) 100%);
-    }
-
-    .bottom-nav-item .icon {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 2px;
-    }
-
-    .bottom-nav-item .icon img {
-      transition: transform 0.2s ease;
-    }
-
-    .bottom-nav-item.active .icon img {
-      transform: scale(1.1);
-    }
-
-    .bottom-nav-item .label {
-      font-size: clamp(0.7rem, 3vw, 0.85rem);
-      font-weight: 500;
-      line-height: 1;
-      white-space: nowrap;
-      transition: all 0.2s ease;
-    }
-
-    .bottom-nav-item.active .label {
-      font-weight: 600;
-      transform: translateY(-1px);
-    }
-
-    /* Responsive adjustments for bottom navigation */
-    @media (max-width: 480px) {
-      .bottom-nav {
-        height: clamp(56px, 11vh, 70px);
-        padding: 0 clamp(0.5vw, 8px, 1vw);
-      }
-
-      .bottom-nav-item {
-        gap: 1px;
-        padding: clamp(0.3vh, 4px, 0.6vh) 0;
-      }
-
-      .bottom-nav-item .icon {
-        margin-bottom: 1px;
-      }
-
-      .bottom-nav-item .label {
-        font-size: clamp(0.65rem, 2.8vw, 0.75rem);
-      }
-    }
-
-    /* Safe area adjustments for mobile devices with notches */
-    @supports (padding: max(0px)) {
-      .bottom-nav {
-        padding-bottom: max(0px, env(safe-area-inset-bottom));
-      }
-    }
-
-    /* MOBILE CARD-BASED EMAIL LIST LAYOUT */
-    /* Desktop: keep existing table layout */
-    /* Mobile: convert to card-based list */
-
-    /* Hide table header on mobile */
-    @media (max-width: 767px) {
-      #pendingTable thead {
-        display: none;
-      }
-
-      /* Show card list instead of table */
-      .mobile-card-list {
-        display: block !important;
-      }
-
-      /* Hide the desktop table */
-      .table-wrap table {
-        display: none;
-      }
-    }
-
-    /* Desktop: keep table, hide mobile list */
-    @media (min-width: 768px) {
-      .mobile-card-list {
-        display: none !important;
-      }
-    }
-
-    /* Mobile Card List Styles */
-    .mobile-card-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      display: none; /* Controlled by media queries above */
-    }
-
-    .mobile-card-item {
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: var(--radius);
-      margin-bottom: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      overflow: hidden;
-      transition: all 0.2s ease;
-      position: relative;
-      padding: 16px;
-    }
-
-    .mobile-card-item:hover {
-      background: rgba(59, 130, 246, 0.05);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
-    }
-
-    /* Mobile Card Layout - Flexbox Structure */
-    .mobile-card-content {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-    }
-
-    /* Checkbox container */
-    .mobile-card-checkbox {
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 24px;
-      height: 24px;
-    }
-
-    .mobile-card-checkbox input[type="checkbox"] {
-      transform: scale(1.2);
-      accent-color: var(--primary);
-    }
-
-    /* Content area - grows to fill space and stacks vertically */
-    .mobile-card-details {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      min-width: 0; /* Allow text to overflow properly */
-    }
-
-    /* Card text styling */
-    .mobile-card-recipient {
-      font-weight: 500;
-      color: var(--text-primary);
-      font-size: 0.95rem;
-      margin: 0;
-      word-break: break-word;
-    }
-
-    .mobile-card-subject {
-      font-weight: 600;
-      color: var(--text-primary);
-      font-size: 1rem;
-      margin: 0;
-      word-break: break-word;
-      display: -webkit-box; /* For Safari */
-      display: box;
-      -webkit-line-clamp: 2; /* For Safari */
-      line-clamp: 2;
-      -webkit-box-orient: vertical; /* For Safari */
-      box-orient: vertical;
-      overflow: hidden;
-      line-height: 1.4;
-      background: linear-gradient(135deg, var(--text-primary) 0%, #93c5fd 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-
-    .mobile-card-date {
-      font-weight: 500;
-      color: var(--muted);
-      font-size: 0.85rem;
-      margin: 0;
-      word-break: break-word;
-    }
-
-    /* Additional mobile card actions */
-    .mobile-card-actions {
-      display: flex;
-      gap: 8px;
-      margin-top: 8px;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    /* Style for sensitivity and attachment indicators */
-    .mobile-card-indicators {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    /* Preview text styling for mobile */
-    .email-preview {
-      font-size: 0.85rem;
-      color: var(--muted);
-      margin: 0;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-      line-height: 1.3;
-    }
-
-    .email-sender {
-      font-weight: 600;
-      color: var(--text-secondary);
-      font-size: 0.85rem;
-      margin-bottom: 2px;
-    }
-
-    .email-snippet {
-      color: var(--muted);
-      font-size: 0.8rem;
-      line-height: 1.2;
-    }
-
-    /* Enhanced mobile card responsiveness */
-    @media (max-width: 480px) {
-      .mobile-card-item {
-        padding: 14px;
-        margin-bottom: 10px;
-      }
-
-      .mobile-card-content {
-        gap: 10px;
-      }
-
-      .mobile-card-subject {
-        font-size: 0.9rem;
-        -webkit-line-clamp: 3;
-        line-clamp: 3;
-      }
-
-      .mobile-card-recipient {
-        font-size: 0.9rem;
-      }
-
-      .mobile-card-date {
-        font-size: 0.8rem;
-      }
-    }
-
-    /* Selection states for mobile cards */
-    .mobile-card-item.selected {
-      background: rgba(59, 130, 246, 0.1);
-      border-color: rgba(59, 130, 246, 0.3);
-    }
-
-    /* Status badges in mobile cards */
-    .mobile-status-badge {
-      display: inline-flex;
-      align-items: center;
-      padding: 2px 8px;
-      border-radius: 12px;
-      font-size: 0.75rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin-top: 4px;
-      align-self: flex-start;
-    }
-
-    .mobile-status-sent {
-      background: rgba(16, 185, 129, 0.2);
-      color: #10b981;
-      border: 1px solid rgba(16, 185, 129, 0.3);
-    }
-
-    .mobile-status-failed {
-      background: rgba(239, 68, 68, 0.2);
-      color: #ef4444;
-      border: 1px solid rgba(239, 68, 68, 0.3);
-    }
-
-    .mobile-status-pending {
-      background: rgba(245, 158, 11, 0.2);
-      color: #f59e0b;
-      border: 1px solid rgba(245, 158, 11, 0.3);
-    }
   </style>
 </head>
 <body>
   <div class="page">
     <!-- Header -->
     <div class="header-panel glass container-width">
-      <!-- Default State: Normal header with title and filters -->
-      <div class="header-default active">
-        <div class="header-left">
-          <h2>Pending Emails</h2>
-          <span class="subtitle">Review and send AI-generated responses</span>
-          <span class="count-badge" id="headerCount">
-            {{ items|length if items else 0 }} pending
-          </span>
-        </div>
-        <div class="header-right">
-          <!-- Filters Button -->
-          <button id="filtersBtn_hdr" class="btn" type="button">🔍 Filters</button>
-        </div>
+      <div class="header-left">
+        <h2>Pending Emails</h2>
+        <span class="subtitle">Review and send AI-generated responses</span>
+        <span class="count-badge" id="headerCount">
+          {{ items|length if items else 0 }} pending
+        </span>
       </div>
+      <div class="header-right">
+        <!-- Filters Button -->
+        <button id="filtersBtn_hdr" class="btn" type="button">🔍 Filters</button>
 
-      <!-- Selection State: Action bar when items are selected -->
-      <div class="header-selection">
-        <div class="header-left">
-          <span id="selectionCount" class="selection-count">0 Selected</span>
-        </div>
-        <div class="header-right">
-          <button id="sendSelected" class="action-btn primary" type="button" disabled>
-            <span class="action-icon">📤</span>
-            <span>Send</span>
-          </button>
-          <button id="cancelSelected" class="action-btn danger" type="button" disabled>
-            <span class="action-icon">🗑️</span>
-            <span>Cancel</span>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Filter Modal -->
-    <div id="filterModal_hdr" class="filter-modal-overlay" aria-hidden="true">
-      <div class="filter-modal-content">
-        <div class="filter-modal-header">
-          <h3>Filter Pending Emails</h3>
-          <button id="closeFilterModal_hdr" class="filter-modal-close" type="button" aria-label="Close filters">×</button>
-        </div>
-
-        <div class="filter-modal-body">
-          <div class="filter-form">
-            <div class="filter-field">
-              <label for="search_hdr" class="filter-label">🔎 Search</label>
-              <input id="search_hdr" class="filter-input" type="search" placeholder="Search subject or recipient…" aria-label="Search pending emails">
+        <!-- Filter Modal -->
+        <div id="filterModal_hdr" class="filter-modal-overlay" aria-hidden="true">
+          <div class="filter-modal-content">
+            <div class="filter-modal-header">
+              <h3>Filter Pending Emails</h3>
+              <button id="closeFilterModal_hdr" class="filter-modal-close" type="button" aria-label="Close filters">×</button>
             </div>
 
-            <div class="filter-field">
-              <label for="statusFilter_hdr" class="filter-label">📋 Status</label>
-              <select id="statusFilter_hdr" class="filter-select" aria-label="Filter by status">
-                <option value="">All statuses</option>
-                <option value="PENDING">Pending</option>
-                <option value="DRAFT">Draft</option>
-              </select>
+            <div class="filter-modal-body">
+              <div class="filter-form">
+                <div class="filter-field">
+                  <label for="search_hdr" class="filter-label">🔎 Search</label>
+                  <input id="search_hdr" class="filter-input" type="search" placeholder="Search subject or recipient…" aria-label="Search pending emails">
+                </div>
+
+                <div class="filter-field">
+                  <label for="statusFilter_hdr" class="filter-label">📋 Status</label>
+                  <select id="statusFilter_hdr" class="filter-select" aria-label="Filter by status">
+                    <option value="">All statuses</option>
+                    <option value="PENDING">Pending</option>
+                    <option value="DRAFT">Draft</option>
+                  </select>
+                </div>
+
+                <div class="filter-field">
+                  <label for="sensitivityFilter_hdr" class="filter-label">⚠️ Sensitivity</label>
+                  <select id="sensitivityFilter_hdr" class="filter-select" aria-label="Filter by sensitivity">
+                    <option value="">All sensitivities</option>
+                    <option value="normal">Normal</option>
+                    <option value="sensitive">Sensitive</option>
+                    <option value="high">High</option>
+                  </select>
+                </div>
+              </div>
             </div>
 
-            <div class="filter-field">
-              <label for="sensitivityFilter_hdr" class="filter-label">⚠️ Sensitivity</label>
-              <select id="sensitivityFilter_hdr" class="filter-select" aria-label="Filter by sensitivity">
-                <option value="">All sensitivities</option>
-                <option value="normal">Normal</option>
-                <option value="sensitive">Sensitive</option>
-                <option value="high">High</option>
-              </select>
+            <div class="filter-modal-footer">
+              <button id="resetFilters_hdr" class="btn" type="button">Reset All</button>
+              <button id="applyFilters_hdr" class="btn primary" type="button">Apply Filters</button>
             </div>
           </div>
         </div>
 
-        <div class="filter-modal-footer">
-          <button id="resetFilters_hdr" class="btn" type="button">Reset All</button>
-          <button id="applyFilters_hdr" class="btn primary" type="button">Apply Filters</button>
-        </div>
       </div>
     </div>
 
@@ -1707,82 +1180,6 @@
               {% endfor %}
             </tbody>
           </table>
-
-          <!-- Mobile Card-Based List (hidden on desktop, shown on mobile) -->
-          <ul class="mobile-card-list" id="mobileCardList">
-            {% set visible_count = 0 %}
-            {% for it in items %}
-              {% set st = (it.status or 'PENDING') %}
-              {% if st in ['PENDING', 'DRAFT'] %}
-                {% set _ = (visible_count.__add__(1)) %}
-                <li class="mobile-card-item" data-id="{{ it.get('id', '') }}" data-status="{{ st }}" data-sensitivity="{{ it.get('sensitivity', 'normal') }}">
-                  <div class="mobile-card-content">
-                    <div class="mobile-card-checkbox">
-                      <input type="checkbox" class="mobile-row-check" aria-label="Select email">
-                    </div>
-                    <div class="mobile-card-details">
-                      <div class="mobile-card-recipient">
-                        {{ (it.get('recipients', []) or []) | join(", ") or "No recipient" }}
-                      </div>
-                      <div class="mobile-card-subject">
-                        {{ it.get('subject', 'No subject') }}
-                      </div>
-                      <div class="mobile-card-date">
-                        {{ it.get('created_at', 'Unknown date') }}
-                      </div>
-
-                      <!-- Email preview area -->
-                      {% if it.original_email %}
-                        {% set orig = it.original_email %}
-                        <div class="email-preview">
-                          {% if orig.sender %}
-                            <div class="email-sender">
-                              {% if orig.sender.emailAddress %}
-                                📧 {{ orig.sender.emailAddress.address }}
-                              {% else %}
-                                📧 {{ orig.sender }}
-                              {% endif %}
-                            </div>
-                          {% endif %}
-                          {% if orig.snippet %}
-                            <div class="email-snippet">{{ orig.snippet[:100] }}{% if orig.snippet|length > 100 %}...{% endif %}</div>
-                          {% endif %}
-                        </div>
-                      {% else %}
-                        <div class="email-preview">
-                          <em style="color: #64748b; font-size: 0.85rem;">Preview not available</em>
-                        </div>
-                      {% endif %}
-
-                      <!-- Status and actions row -->
-                      <div class="mobile-card-actions">
-                        <div class="mobile-card-indicators">
-                          <span class="mobile-status-badge mobile-status-{{ (st or 'pending') | lower | replace(' ', '_') | replace('-', '_') }}">
-                            {{ (st or 'pending') | title }}
-                          </span>
-                          <span class="chip">
-                            {{ it.sensitivity or "normal" }}
-                          </span>
-                          {% if (it.attachments or []) | length > 0 %}
-                            <span style="font-size: 0.8rem; color: var(--muted);">
-                              📎 {{ (it.attachments or []) | length }}
-                            </span>
-                          {% endif %}
-                        </div>
-                        <div class="actions" style="gap: 4px;">
-                          <a class="btn primary" href="{{ url_for('routes.pending_edit', pid=it.id) }}" style="font-size: 0.8rem; padding: 6px 12px;">Review</a>
-                          <form method="POST" action="{{ url_for('routes.pending_cancel', pid=it.id) }}" style="display:inline;">
-                            <button class="btn" type="submit" style="font-size: 0.8rem; padding: 6px 12px;">Cancel</button>
-                          </form>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              {% endif %}
-            {% endfor %}
-          </ul>
-
           {% if not items or visible_count == 0 %}
             <div class="empty-state" id="emptyState">
               <div class="empty-illustration">
@@ -1802,28 +1199,6 @@
       </div>
     </div>
   </div>
-
-  <!-- Unified Bottom Navigation -->
-  <nav class="bottom-nav" aria-label="Main navigation">
-    <a href="/dashboard" class="bottom-nav-item" data-label="Dashboard">
-      <span class="icon">
-        <img src="{{ url_for('static', filename='logos/mail_send.svg') }}" alt="Dashboard" style="width: clamp(20px, 4vw, 24px); height: clamp(20px, 4vw, 24px);">
-      </span>
-      <span class="label">Dashboard</span>
-    </a>
-    <a href="/pending" class="bottom-nav-item active" data-label="Pending">
-      <span class="icon">
-        <img src="{{ url_for('static', filename='logos/pending_mails.svg') }}" alt="Pending" style="width: clamp(20px, 4vw, 24px); height: clamp(20px, 4vw, 24px);">
-      </span>
-      <span class="label">Pending</span>
-    </a>
-    <a href="/profile" class="bottom-nav-item" data-label="Profile">
-      <span class="icon">
-        <img src="{{ url_for('static', filename='logos/user.svg') }}" alt="Profile" style="width: clamp(20px, 4vw, 24px); height: clamp(20px, 4vw, 24px);">
-      </span>
-      <span class="label">Profile</span>
-    </a>
-  </nav>
 
   <script>
       // Clean, smooth interactions without disruptive swipe gestures
@@ -2020,40 +1395,8 @@
       }
 
       function updateBatchButtons() {
-        const selectedIds = getSelectedIds();
-        const hasSelection = selectedIds.length > 0;
-
-        // Update button states
+        const hasSelection = getSelectedIds().length > 0;
         [sendSelectedBtn, cancelSelectedBtn].forEach(b => { if (b) b.disabled = !hasSelection; });
-
-        // Update header state
-        updateHeaderState(hasSelection);
-
-        // Update selection count if in selection state
-        updateSelectionCount(selectedIds);
-      }
-
-      function updateHeaderState(hasSelection) {
-        const headerDefault = document.querySelector('.header-default');
-        const headerSelection = document.querySelector('.header-selection');
-
-        if (hasSelection) {
-          // Show selection state
-          headerDefault.classList.remove('active');
-          headerSelection.classList.add('active');
-        } else {
-          // Show default state
-          headerSelection.classList.remove('active');
-          headerDefault.classList.add('active');
-        }
-      }
-
-      function updateSelectionCount(selectedIds) {
-        const selectionCount = document.getElementById('selectionCount');
-        if (selectionCount) {
-          // Use singular/plural forms appropriately
-          selectionCount.textContent = selectedIds.length === 1 ? '1 Selected' : `${selectedIds.length} Selected`;
-        }
       }
 
       function toggleAll(checked) {
@@ -2403,289 +1746,10 @@
         }
       });
 
-      // Initialize header state on page load
-      function initializeHeaderState() {
-        const headerDefault = document.querySelector('.header-default');
-        const headerSelection = document.querySelector('.header-selection');
-
-        // Ensure we start with default state active
-        headerDefault.classList.add('active');
-        headerSelection.classList.remove('active');
-
-        // Trigger initial batch button update
-        updateBatchButtons();
-      }
-
       // Build and init fixed header
-  buildFixedHeader();
-   mirrorFiltersToBothUIs(searchInput?.value || '', statusFilter?.value || '', sensitivityFilter?.value || '');
-   applyFilter(); // triggers refreshFixedHeader via rAF
-
-      // Initialize header state after page load
-      setTimeout(initializeHeaderState, 100);
-
-      // BOTTOM NAVIGATION FUNCTIONALITY
-      function initializeBottomNavigation() {
-        const bottomNav = document.querySelector('.bottom-nav');
-        if (!bottomNav) return;
-
-        const navItems = bottomNav.querySelectorAll('.bottom-nav-item');
-        const currentPath = window.location.pathname;
-
-        // Set active state based on current page
-        const pathMappings = {
-          '/dashboard': 'Dashboard',
-          '/pending': 'Pending',
-          '/profile': 'Profile'
-        };
-
-        // Find which tab should be active
-        const currentLabel = pathMappings[currentPath];
-        if (currentLabel) {
-          navItems.forEach(item => {
-            const itemLabel = item.getAttribute('data-label');
-            if (itemLabel === currentLabel) {
-              item.classList.add('active');
-            } else {
-              item.classList.remove('active');
-            }
-          });
-        }
-
-        // Add click handlers with enhanced navigation
-        navItems.forEach(item => {
-          item.addEventListener('click', (e) => {
-            e.preventDefault();
-            const href = item.getAttribute('href');
-
-            // Only navigate if not already on the current page
-            if (href && href !== currentPath) {
-              // Add smooth transition effect
-              bottomNav.style.opacity = '0.7';
-              setTimeout(() => {
-                window.location.href = href;
-              }, 150);
-            }
-          });
-        });
-
-        // Add hover effects for better touch feedback
-        navItems.forEach(item => {
-          item.addEventListener('touchstart', () => {
-            item.style.transform = 'translateY(-1px)';
-            setTimeout(() => {
-              item.style.transform = '';
-            }, 150);
-          });
-        });
-      }
-
-      // Initialize bottom navigation when DOM is ready
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializeBottomNavigation);
-      } else {
-        initializeBottomNavigation();
-      }
-
-      // MOBILE CARD-BASED EMAIL LIST FUNCTIONALITY
-      function initializeMobileCards() {
-        const mobileCardList = document.getElementById('mobileCardList');
-        if (!mobileCardList) return;
-
-        // Handle mobile card filtering to match desktop table
-        function applyMobileCardFilters() {
-          const cards = Array.from(mobileCardList.querySelectorAll('.mobile-card-item'));
-          const { q, st, sens } = getActiveFilters();
-
-          cards.forEach(card => {
-            const recipientText = card.querySelector('.mobile-card-recipient')?.textContent || '';
-            const subjectText = card.querySelector('.mobile-card-subject')?.textContent || '';
-            const emailPreview = card.querySelector('.email-preview')?.textContent || '';
-            const combinedText = (recipientText + ' ' + subjectText + ' ' + emailPreview).toLowerCase();
-
-            const cardStatus = normalize(card.getAttribute('data-status') || '');
-            const cardSensitivity = normalize(card.getAttribute('data-sensitivity') || '');
-
-            const matchesSearch = !q || combinedText.includes(q);
-            const matchesStatus = !st || cardStatus === st;
-            const matchesSens = !sens || cardSensitivity === sens;
-
-            if (matchesSearch && matchesStatus && matchesSens) {
-              card.style.display = '';
-            } else {
-              card.style.display = 'none';
-            }
-          });
-
-          updateMobileCardCounts();
-        }
-
-        // Update counts for mobile cards
-        function updateMobileCardCounts() {
-          const visibleCards = Array.from(mobileCardList.querySelectorAll('.mobile-card-item')).filter(card =>
-            card.style.display !== 'none'
-          );
-
-          if (rowCount) rowCount.textContent = visibleCards.length;
-          if (headerCount) headerCount.textContent = `${visibleCards.length} pending`;
-          if (emptyState) emptyState.style.display = visibleCards.length === 0 ? '' : 'none';
-
-          updateMobileBatchButtons();
-        }
-
-        // Handle mobile card selection
-        function updateMobileBatchButtons() {
-          const selectedCards = Array.from(mobileCardList.querySelectorAll('.mobile-card-item')).filter(card =>
-            card.querySelector('.mobile-row-check')?.checked
-          );
-
-          const hasSelection = selectedCards.length > 0;
-
-          [sendSelectedBtn, cancelSelectedBtn].forEach(b => {
-            if (b) b.disabled = !hasSelection;
-          });
-
-          // Update header state
-          updateHeaderState(hasSelection);
-          updateSelectionCount(selectedCards);
-
-          // Update select all state
-          if (selectAll) {
-            const visibleCheckedCards = Array.from(mobileCardList.querySelectorAll('.mobile-card-item')).filter(card =>
-              card.style.display !== 'none' && card.querySelector('.mobile-row-check')?.checked
-            );
-            const visibleCards = Array.from(mobileCardList.querySelectorAll('.mobile-card-item')).filter(card =>
-              card.style.display !== 'none'
-            );
-            selectAll.checked = visibleCards.length > 0 && visibleCheckedCards.length === visibleCards.length;
-          }
-        }
-
-        // Select all mobile cards
-        function toggleAllMobileCards(checked) {
-          const visibleCards = Array.from(mobileCardList.querySelectorAll('.mobile-card-item')).filter(card =>
-            card.style.display !== 'none'
-          );
-
-          visibleCards.forEach(card => {
-            const checkbox = card.querySelector('.mobile-row-check');
-            if (checkbox) checkbox.checked = checked;
-          });
-
-          updateMobileBatchButtons();
-        }
-
-        // Get selected card IDs for mobile batch operations
-        function getSelectedCardIds() {
-          return Array.from(mobileCardList.querySelectorAll('.mobile-card-item')).filter(card =>
-            card.querySelector('.mobile-row-check')?.checked
-          ).map(card => card.getAttribute('data-id'));
-        }
-
-        // Mobile batch send function
-        async function batchSendMobile() {
-          const ids = getSelectedCardIds();
-          if (ids.length === 0) return;
-
-          const buttons = [sendSelectedBtn, cancelSelectedBtn];
-          buttons.forEach(b => { if (b) { b.classList.add('loading'); b.disabled = true; } });
-
-          try {
-            const response = await postJSON('/pending/batch/send', { ids });
-            if (response) {
-              showToast(`Successfully sent ${ids.length} email${ids.length > 1 ? 's' : ''}!`, 'success');
-              setTimeout(() => window.location.reload(), 1500);
-            }
-          } catch (e) {
-            showToast('Failed to send selected emails: ' + e.message, 'error');
-          } finally {
-            buttons.forEach(b => { if (b) { b.classList.remove('loading'); b.disabled = false; } });
-          }
-        }
-
-        // Mobile batch cancel function
-        async function batchCancelMobile() {
-          const ids = getSelectedCardIds();
-          if (ids.length === 0) return;
-          if (!confirm(`Cancel ${ids.length} pending draft${ids.length > 1 ? 's' : ''}?`)) return;
-
-          const buttons = [sendSelectedBtn, cancelSelectedBtn];
-          buttons.forEach(b => { if (b) { b.classList.add('loading'); b.disabled = true; } });
-
-          try {
-            const response = await postJSON('/pending/batch/cancel', { ids });
-            if (response) {
-              showToast(`Successfully canceled ${ids.length} email${ids.length > 1 ? 's' : ''}!`, 'success');
-              setTimeout(() => window.location.reload(), 1500);
-            }
-          } catch (e) {
-            showToast('Failed to cancel selected emails: ' + e.message, 'error');
-          } finally {
-            buttons.forEach(b => { if (b) { b.classList.remove('loading'); b.disabled = false; } });
-          }
-        }
-
-        // Event listeners for mobile cards
-        mobileCardList.addEventListener('change', (e) => {
-          if (e.target && e.target.classList.contains('mobile-row-check')) {
-            updateMobileBatchButtons();
-          }
-        });
-
-        // Update mobile batch button event listeners
-        if (sendSelectedBtn) {
-          sendSelectedBtn.removeEventListener('click', batchSend);
-          sendSelectedBtn.addEventListener('click', batchSendMobile);
-        }
-        if (cancelSelectedBtn) {
-          cancelSelectedBtn.removeEventListener('click', batchCancel);
-          cancelSelectedBtn.addEventListener('click', batchCancelMobile);
-        }
-
-        // Update select all checkbox to work with mobile cards
-        if (selectAll) {
-          selectAll.removeEventListener('change', (e) => toggleAll(e.target.checked));
-          selectAll.addEventListener('change', (e) => toggleAllMobileCards(e.target.checked));
-        }
-
-        // Apply filters to mobile cards
-        searchInput?.addEventListener('input', applyMobileCardFilters);
-        statusFilter?.addEventListener('change', applyMobileCardFilters);
-        sensitivityFilter?.addEventListener('change', applyMobileCardFilters);
-
-        // Apply initial filters
-        applyMobileCardFilters();
-
-        // Add touch feedback to mobile cards
-        const mobileCards = mobileCardList.querySelectorAll('.mobile-card-item');
-        mobileCards.forEach(card => {
-          card.addEventListener('touchstart', () => {
-            card.style.transform = 'scale(0.98)';
-            setTimeout(() => {
-              card.style.transform = '';
-            }, 150);
-          });
-        });
-      }
-
-      // Initialize mobile cards when DOM is ready, but only if on mobile
-      if (window.innerWidth <= 768) {
-        if (document.readyState === 'loading') {
-          document.addEventListener('DOMContentLoaded', initializeMobileCards);
-        } else {
-          initializeMobileCards();
-        }
-      }
-
-      // Handle window resize to switch between table and cards
-      window.addEventListener('resize', debounce(() => {
-        if (window.innerWidth <= 768) {
-          if (!document.querySelector('.mobile-card-list').classList.contains('initialized')) {
-            initializeMobileCards();
-            document.querySelector('.mobile-card-list').classList.add('initialized');
-          }
-        }
-      }, 250));
+ buildFixedHeader();
+  mirrorFiltersToBothUIs(searchInput?.value || '', statusFilter?.value || '', sensitivityFilter?.value || '');
+  applyFilter(); // triggers refreshFixedHeader via rAF
 
   // Scroll/resize/fonts handlers
   tableWrap.addEventListener('scroll', () => { updateFixedHeaderVisibility(); syncHorizontalScroll(); }, { passive: true });
