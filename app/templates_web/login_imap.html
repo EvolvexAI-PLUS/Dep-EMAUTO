@@ -288,20 +288,15 @@
                         {% elif provider_detected == 'Microsoft 365' %}
                         <h5 style="color: #0078d4;">📧 Microsoft 365 / Exchange Online IMAP Setup</h5>
                         <div style="background: #fefefe; padding: 1rem; border-radius: 6px; border: 1px solid #dadce0; margin-bottom: 1rem;">
-                            <strong>🎯 RECOMMENDED:</strong> Use the <span style="color: #0078d4; font-weight: bold;">Sign in with Microsoft</span> OAuth2 button for the best experience!<br><br>
-                            <strong>Why OAuth2 is better:</strong><br>
-                            • No need to generate app passwords<br>
-                            • More secure and reliable<br>
-                            • Automatic token refresh<br>
-                            • Works consistently with Microsoft 365<br><br>
-                            <strong>If you must use IMAP:</strong><br>
-                            1. Enable IMAP in your Microsoft 365 admin center<br>
-                            2. Go to <a href="https://account.microsoft.com/security/app-passwords" target="_blank">Microsoft App Passwords</a><br>
-                            3. Generate app password for "Email Automation"<br>
-                            4. Use these exact server settings:<br>
-                               <code>• IMAP: outlook.office365.com:993</code><br>
-                               <code>• SMTP: smtp-mail.outlook.com:587</code><br>
-                            5. Use the app password (NOT your regular password)<br>
+                            <strong>🔐 You need an App Password for IMAP access:</strong><br><br>
+                            <strong>Step-by-Step Setup:</strong><br>
+                            1. Go to <a href="https://account.live.com/security/app-passwords" target="_blank" style="color: #0078d4;">Microsoft Account App Passwords</a><br>
+                            2. Sign in with <strong>user@company</strong><br>
+                            3. Click "Create a new app password"<br>
+                            4. Name it "EmailAI Automation"<br>
+                            5. Copy the 16-character password<br>
+                            6. <strong>Use this App Password below (NOT your regular password)</strong><br><br>
+                            <em>Keep your regular password for Outlook - use App Password only for automation!</em>
                         </div>
                         {% elif provider_detected == 'Outlook' %}
                         <h5 style="color: #0078d4;">📧 Outlook IMAP Setup</h5>
@@ -448,11 +443,184 @@
     </div>
 
     <script>
-        // Auto-fill server fields based on email domain
+        // Smart email server auto-discovery
+        let discoveryTimeout;
+
+        document.getElementById('email').addEventListener('input', function() {
+            const email = this.value.trim();
+            clearTimeout(discoveryTimeout);
+
+            // Only proceed if email has @ and basic domain structure
+            if (!email.includes('@') || email.split('@')[1].length < 3) return;
+
+            // Debounce API calls
+            discoveryTimeout = setTimeout(() => discoverEmailSettings(email), 1000);
+        });
+
         document.getElementById('email').addEventListener('blur', function() {
-            const email = this.value;
+            const email = this.value.trim();
             if (!email.includes('@')) return;
 
+            // Immediate discovery on blur if email is valid
+            discoverEmailSettings(email);
+        });
+
+        async function discoverEmailSettings(email) {
+            try {
+                const response = await fetch('/api/discover-email-settings', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({ email })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    updateFormWithDiscoveredSettings(result.config);
+                    showProviderGuidance(result.config);
+                } else {
+                    console.log('Discovery failed:', result.error);
+                    // Fall back to basic domain detection
+                    fallbackServerFill(email);
+                }
+            } catch (error) {
+                console.error('Discovery API error:', error);
+                // Fall back to basic domain detection
+                fallbackServerFill(email);
+            }
+        }
+
+        function updateFormWithDiscoveredSettings(config) {
+            const imapServer = document.getElementById('imap_server');
+            const smtpServer = document.getElementById('smtp_server');
+            const imapPort = document.getElementById('imap_port');
+            const smtpPort = document.getElementById('smtp_port');
+
+            // Auto-fill server settings if not manually set
+            if (!imapServer.value) {
+                imapServer.value = config.imap_host || '';
+                console.log(`Auto-filled IMAP: ${imapServer.value}:${config.imap_port}`);
+            }
+            if (!smtpServer.value) {
+                smtpServer.value = config.smtp_host || '';
+                console.log(`Auto-filled SMTP: ${smtpServer.value}:${config.smtp_port}`);
+            }
+
+            // Set port if default
+            if (imapPort.value === '993') {
+                imapPort.value = config.imap_port || 993;
+            }
+            if (smtpPort.value === '587') {
+                smtpPort.value = config.smtp_port || 587;
+            }
+
+            // Add visual indication
+            const emailField = document.getElementById('email');
+            emailField.style.borderColor = '#10b981'; // Green for successful discovery
+            emailField.title = `Auto-discovered ${config.provider_type || 'provider'} settings`;
+
+            console.log(`✅ Auto-discovered ${config.provider_type} settings`);
+        }
+
+        function showProviderGuidance(config) {
+            let guidanceElement = document.getElementById('provider-guidance');
+            if (!guidanceElement) {
+                guidanceElement = document.createElement('div');
+                guidanceElement.id = 'provider-guidance';
+                guidanceElement.className = 'info-banner';
+                guidanceElement.style.cssText = 'background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-color: #2196f3; margin-bottom: 1rem;';
+
+                const form = document.querySelector('.imap-form');
+                const emailSection = form.querySelector('.form-section');
+                emailSection.appendChild(guidanceElement);
+            }
+
+            const provider = config.provider_type || 'custom';
+            const authMethod = config.auth_method || 'basic';
+
+            let guidanceText = `🎯 **${provider.replace('_', ' ').toUpperCase()} Detected**<br>`;
+
+            if (config.custom_domain) {
+                guidanceText += `🚨 Custom domain using ${provider} server.<br>`;
+            }
+
+            if (config.requires_app_password) {
+                guidanceText += `🔑 **App Password Required** - Regular password won't work!<br>`;
+                if (config.help_url) {
+                    guidanceText += `<a href="${config.help_url}" target="_blank">📋 Get App Password</a><br>`;
+                }
+            }
+
+            if (authMethod === 'oauth2') {
+                guidanceText += `🌐 **OAuth2 Recommended** - Use the blue "Sign in" button`;
+            }
+
+            guidanceText += ` (IMAP: ${config.imap_host}:${config.imap_port}, SMTP: ${config.smtp_host}:${config.smtp_port})`;
+
+            guidanceElement.innerHTML = guidanceText;
+            guidanceElement.style.display = 'block';
+
+            // Add help links for specific providers
+            if (provider === 'microsoft365') {
+                addMicrosoft365Help();
+            } else if (provider === 'google_workspace') {
+                addGoogleHelp();
+            }
+        }
+
+        function addMicrosoft365Help() {
+            // Add specific Microsoft guidance if not already there
+            let helpSection = document.querySelector('#microsoft365-help');
+            if (!helpSection) {
+                const guidance = document.getElementById('provider-guidance');
+                if (guidance) {
+                    helpSection = document.createElement('div');
+                    helpSection.id = 'microsoft365-help';
+                    helpSection.className = 'help-section';
+                    helpSection.style.cssText = 'background: #f0f9ff; border: 1px solid #3b82f6; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;';
+                    helpSection.innerHTML = `
+                        <h4 style="margin: 0 0 0.5rem 0; color: #1e40af;">🔧 Microsoft 365 Setup Guide</h4>
+                        <div style="background: white; padding: 0.75rem; border-radius: 6px; border: 1px solid #dbeafe;">
+                            <strong>Before connecting:</strong><br>
+                            1. <strong>Enable IMAP</strong> in Exchange admin center<br>
+                            2. <strong>Enable Authenticated SMTP</strong> in Exchange admin center<br>
+                            3. <strong>Create App Password</strong> in Azure AD<br>
+                            4. <strong>Use App Password</strong> (NOT regular password)<br><br>
+                            <a href="https://account.live.com/security/app-passwords" target="_blank" style="color: #2563eb;">🔗 Create App Password</a>
+                        </div>
+                    `;
+                    guidance.insertAdjacentElement('afterend', helpSection);
+                }
+            }
+        }
+
+        function addGoogleHelp() {
+            // Similar structure for Google Workspace
+            let helpSection = document.querySelector('#google-help');
+            if (!helpSection) {
+                const guidance = document.getElementById('provider-guidance');
+                if (guidance) {
+                    helpSection = document.createElement('div');
+                    helpSection.id = 'google-help';
+                    helpSection.className = 'help-section';
+                    helpSection.style.cssText = 'background: #f0fdf4; border: 1px solid #22c55e; padding: 1rem; border-radius: 8px; margin-bottom: 1rem;';
+                    helpSection.innerHTML = `
+                        <h4 style="margin: 0 0 0.5rem 0; color: #166534;">🔧 Google Workspace Setup Guide</h4>
+                        <div style="background: white; padding: 0.75rem; border-radius: 6px; border: 1px solid #bbf7d0;">
+                            <strong>Before connecting:</strong><br>
+                            1. <strong>Enable 2-Factor Authentication</strong><br>
+                            2. <strong>Enable IMAP</strong> in Gmail settings<br>
+                            3. <strong>Generate App Password</strong><br>
+                            4. <strong>Use App Password</strong> (NOT regular password)<br><br>
+                            <a href="https://myaccount.google.com/apppasswords" target="_blank" style="color: #16a34a;">🔗 Get App Password</a>
+                        </div>
+                    `;
+                    guidance.insertAdjacentElement('afterend', helpSection);
+                }
+            }
+        }
+
+        function fallbackServerFill(email) {
             const domain = email.split('@')[1].toLowerCase();
             const imapServer = document.getElementById('imap_server');
             const smtpServer = document.getElementById('smtp_server');
@@ -460,7 +628,7 @@
             // Don't overwrite if user has already typed
             if (imapServer.value || smtpServer.value) return;
 
-            // Auto-fill based on domain
+            // Basic fallback for when API fails
             if (domain === 'gmail.com') {
                 imapServer.value = 'imap.gmail.com';
                 smtpServer.value = 'smtp.gmail.com';
@@ -470,17 +638,12 @@
             } else if (domain === 'yahoo.com' || domain === 'yahoo.co.uk') {
                 imapServer.value = 'imap.mail.yahoo.com';
                 smtpServer.value = 'smtp.mail.yahoo.com';
-            } else if (domain === 'aol.com') {
-                imapServer.value = 'imap.aol.com';
-                smtpServer.value = 'smtp.aol.com';
             } else {
-                // Microsoft 365 / Exchange Online detection
-                // Most custom domains use Microsoft 365 these days
-                imapServer.value = 'outlook.office365.com';
-                smtpServer.value = 'smtp-mail.outlook.com';
-                console.log('Detected potential Microsoft 365 domain, using Exchange Online servers');
+                // For unknown/custom domains, we'd typically try common patterns
+                // But let the user specify custom settings instead
+                console.log(`Unknown domain ${domain} - user needs to specify servers manually`);
             }
-        });
+        }
 
         // Form validation
         document.querySelector('form').addEventListener('submit', function(e) {

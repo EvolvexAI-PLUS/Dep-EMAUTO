@@ -354,14 +354,19 @@ def diagnose_authentication_error(error_message: str, email: str) -> Dict:
         },
 
         'microsoft_365_auth': {
-            'problem': "Microsoft 365 authentication failed - OAuth2 recommended",
+            'problem': "Microsoft 365 blocks basic IMAP authentication - Use App Password",
             'solutions': [
-                "🎯 RECOMMENDED: Use the 'Sign in with Microsoft' OAuth2 button instead of IMAP",
-                "Microsoft 365 prefers OAuth2 authentication for security",
-                "IMAP with Microsoft 365 can be complex and may require special app password setup",
-                "If you must use IMAP:",
-                "   • Enable IMAP access in Microsoft 365 admin center",
-                "   • Create an 'App Password' in your Microsoft account settings"
+                "🔐 SOLUTION: Microsoft 365 requires an App Password for IMAP access",
+                "👨‍💻 How to create App Password:",
+                "   1. Go to https://account.live.com/security/app-passwords",
+                "   2. Sign in with your tareeque@evolvexai.ai account",
+                "   3. Click 'Create a new app password'",
+                "   4. Name it 'EmailAI Automation'",
+                "   5. Copy the 16-character password",
+                "   6. Use this App Password below (NOT your regular password)",
+                "🔑 Keep your regular password for Outlook/email login",
+                "   Only use the App Password for automated IMAP connections",
+                "   - Delete/refresh the App Password if it gets compromised"
             ]
         },
 

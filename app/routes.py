@@ -1,4 +1,4 @@
-from flask import Blueprint, Flask, render_template, render_template_string, request, redirect, url_for, session, make_response
+from flask import Blueprint, Flask, render_template, render_template_string, request, redirect, url_for, session, make_response, flash, jsonify
 from app.auth_manager import init_oauth, oauth
 from database.memory_manager_dynamo import (
     get_conversation_history,
@@ -16,6 +16,7 @@ from database.memory_manager_dynamo import (
 from automation.send_reply import main_loop, send_pending_email
 from automation.clients.imap_client import test_imap_connection
 from app.auth_provider_detection import EmailProviderDetection, diagnose_authentication_error
+from app.email_server_discovery import get_email_config
 from boto3.dynamodb.conditions import Key
 import threading
 import jwt
@@ -305,6 +306,92 @@ def dashboard():
 def login():
     return render_template("login.html")
 
+@routes.route("/imap-demo")
+def imap_demo():
+    """Universal IMAP auto-discovery demonstration"""
+    return render_template("imap_demo.html")
+
+@routes.route("/register")
+def register():
+    """Free trial signup page"""
+    user = get_current_user()
+    if user:
+        return redirect(url_for("routes.dashboard"))
+    return render_template("register.html")
+
+@routes.route("/signup", methods=["POST"])
+@rate_limiter(max_requests=5, window_seconds=300)  # Prevent spam signups
+def signup():
+    """Handle free trial signup"""
+    try:
+        email = request.form.get("email", "").strip()
+        name = request.form.get("name", "").strip()
+
+        # Basic validation
+        if not email or not name:
+            flash("Please fill in all fields", "error")
+            return redirect(url_for("routes.register"))
+
+        import re
+        if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
+            flash("Please enter a valid email address", "error")
+            return redirect(url_for("routes.register"))
+
+        # Check if user already exists
+        if get_user(email):
+            flash("An account with this email already exists. Try signing in instead.", "info")
+            return redirect(url_for("routes.login"))
+
+        # Create trial user with secure defaults
+        token_limit = 100  # Free trial limit
+        users_table().put_item(Item={
+            "email": email,
+            "name": name,
+            "provider": "trial",
+            "plan": "trial",
+            "token_limit": token_limit,
+            "used_tokens": 0,
+            "is_admin": False,
+            "role": "user",
+            "created_at": datetime.datetime.utcnow().isoformat(),
+            "trial_ends": (datetime.datetime.utcnow() + datetime.timedelta(days=30)).isoformat()
+        })
+
+        # Create initial profile with welcome settings
+        from database.memory_manager_dynamo import set_user_profile
+        initial_profile = {
+            "name": name,
+            "email": email,
+            "preferences": {
+                "auto_send": False,
+                "notifications": True
+            },
+            "account_type": "trial",
+            "trial_started": datetime.datetime.utcnow().isoformat()
+        }
+        set_user_profile(email, initial_profile)
+
+        # Log the signup
+        audit_log("TRIAL_SIGNUP", user_email=email, details={"name": name})
+
+        # Auto-login after signup
+        session_uuid = create_user_session(email)
+        jwt_token = generate_jwt(email, "user")
+
+        # Flash welcome message
+        resp = redirect(url_for("routes.dashboard"))
+        set_auth_cookies(resp, jwt_token, session_uuid, email)
+
+        # Start background email monitoring (will be empty until they connect email)
+        threading.Thread(target=main_loop, args=(None, None, email, session_uuid), daemon=True).start()
+
+        return resp
+
+    except Exception as e:
+        print(f"❌ Trial signup error: {e}")
+        flash("There was an error creating your account. Please try again.", "error")
+        return redirect(url_for("routes.register"))
+
 @routes.route("/login/imap", methods=["GET", "POST"])
 @rate_limiter(max_requests=5, window_seconds=300)  # 5 attempts per 5 minutes
 def login_imap():
@@ -330,9 +417,25 @@ def login_imap():
         if not re.match(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', email):
             return render_template("login_imap.html", error="Invalid email format")
 
-        # Validate server formats (basic)
-        if not all(server and '.' in server for server in [imap_server, smtp_server]):
-            return render_template("login_imap.html", error="Invalid server format. Use format like 'mail.example.com'")
+        # 🔍 Auto-discover server settings based on email
+        discovered_config = get_email_config(email)
+
+        if not discovered_config.get('discovery_failed'):
+            # Use auto-discovered settings if manual ones aren't provided
+            if not imap_server or imap_server == '' or imap_server == 'mail.' + email.split('@')[1]:
+                imap_server = discovered_config.get('imap_host', f'mail.{email.split("@")[1]}')
+                imap_port = discovered_config.get('imap_port', 993)
+                audit_log("AUTO_DISCOVERED_IMAP", user_email=email, details=f"Server: {imap_server}:{imap_port}")
+
+            if not smtp_server or smtp_server == '' or smtp_server == 'mail.' + email.split('@')[1]:
+                smtp_server = discovered_config.get('smtp_host', f'mail.{email.split("@")[1]}')
+                smtp_port = discovered_config.get('smtp_port', 587)
+                audit_log("AUTO_DISCOVERED_SMTP", user_email=email, details=f"Server: {smtp_server}:{smtp_port}")
+
+            # Store provider info for better error messages
+            provider_type = discovered_config.get('provider_type', 'unknown')
+            requires_app_password = discovered_config.get('requires_app_password', True)
+            help_url = discovered_config.get('help_url')
 
         # Safe port parsing with validation
         try:
@@ -768,6 +871,53 @@ def logout():
     resp = make_response(redirect(url_for("routes.login")))
     clear_auth_cookies(resp)
     return resp
+
+# ---------------- API Endpoints for UI Integration ----------------
+
+@routes.route("/api/discover-email-settings", methods=["POST"])
+def discover_email_settings():
+    """API endpoint to auto-discover email server settings"""
+    try:
+        data = request.json
+        email = data.get('email', '').strip()
+
+        if not email or '@' not in email:
+            return jsonify({'success': False, 'error': 'Invalid email format'})
+
+        # Auto-discover settings
+        config = get_email_config(email)
+
+        if config.get('discovery_failed'):
+            return jsonify({
+                'success': False,
+                'error': 'Could not auto-discover settings',
+                'fallback': config.get('fallback_config'),
+                'manual_setup_required': True
+            })
+
+        # Return discovered config
+        return jsonify({
+            'success': True,
+            'config': {
+                'email': email,
+                'domain': email.split('@')[1],
+                'imap_host': config.get('imap_host'),
+                'imap_port': config.get('imap_port', 993),
+                'smtp_host': config.get('smtp_host'),
+                'smtp_port': config.get('smtp_port', 587),
+                'provider_type': config.get('provider_type'),
+                'auth_method': config.get('auth_method'),
+                'requires_app_password': config.get('requires_app_password', True),
+                'custom_domain': config.get('custom_domain', False),
+                'help_url': config.get('help_url')
+            },
+            'hints': config.get('hints', {}),
+            'recommendations': config.get('connection_recommendations', {})
+        })
+
+    except Exception as e:
+        print(f"Discovery API error: {e}")
+        return jsonify({'success': False, 'error': str(e)})
 
 # ---------------- API Endpoints for UI Integration ----------------
 
