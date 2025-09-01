@@ -373,6 +373,289 @@
 
     /* Filter modal is now fully viewport-based and responsive */
 
+    /* HAMBURGER MENU & NAVIGATION DRAWER STYLES */
+    .hamburger-btn {
+      background: none;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      transition: all 0.2s ease;
+      width: 48px;
+      height: 48px;
+      align-items: center;
+      justify-content: center;
+      background-color: rgba(17, 24, 39, 0.6);
+    }
+
+    .hamburger-btn:hover {
+      background-color: rgba(17, 24, 39, 0.8);
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .hamburger-btn:focus {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+    }
+
+    .hamburger-btn.active .hamburger-line:nth-child(1) {
+      transform: rotate(45deg) translate(6px, 6px);
+    }
+
+    .hamburger-btn.active .hamburger-line:nth-child(2) {
+      opacity: 0;
+    }
+
+    .hamburger-btn.active .hamburger-line:nth-child(3) {
+      transform: rotate(-45deg) translate(6px, -6px);
+    }
+
+    .hamburger-line {
+      width: 20px;
+      height: 2px;
+      background-color: #e5ecff;
+      transition: all 0.3s ease;
+      border-radius: 1px;
+    }
+
+    /* Navigation Drawer */
+    .nav-drawer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 300px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      z-index: 1200;
+      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-drawer.active {
+      transform: translateX(0);
+    }
+
+    /* Drawer Backdrop */
+    .nav-drawer-backdrop {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease;
+      z-index: 1150;
+    }
+
+    .nav-drawer-backdrop.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    /* Drawer Header */
+    .nav-drawer-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 70px;
+    }
+
+    .nav-drawer-title {
+      color: var(--text-primary);
+      font-size: 20px;
+      font-weight: 600;
+      margin: 0;
+      background: linear-gradient(135deg, var(--text-primary) 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-close-btn {
+      background: none;
+      border: none;
+      font-size: 20px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 8px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-close-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+    }
+
+    /* Drawer Content */
+    .nav-drawer-content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 0;
+    }
+
+    .nav-drawer-section {
+      margin-bottom: 32px;
+      padding: 0 24px;
+    }
+
+    .nav-section-title {
+      color: var(--text-primary);
+      font-size: 14px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin: 0 0 16px 0;
+      opacity: 0.7;
+    }
+
+    .nav-links {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .nav-links li {
+      margin-bottom: 4px;
+    }
+
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 16px 20px;
+      text-decoration: none;
+      color: var(--text-secondary);
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      font-weight: 500;
+      min-height: 56px;
+      width: 100%;
+      text-align: left;
+      border: none;
+      background: none;
+      cursor: pointer;
+    }
+
+    .nav-link:hover {
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--text-primary);
+      transform: translateX(4px);
+    }
+
+    .nav-link:focus {
+      outline: 2px solid #3b82f6;
+      outline-offset: 2px;
+    }
+
+    .nav-icon {
+      font-size: 16px;
+      width: 24px;
+      text-align: center;
+    }
+
+    .nav-text {
+      flex: 1;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+
+    .nav-btn.primary {
+      background: #3b82f6;
+      color: white;
+      border: 1px solid #3b82f6;
+    }
+
+    .nav-btn.primary:hover {
+      background: #2563eb;
+      border-color: #2563eb;
+    }
+
+    .nav-btn.danger {
+      background: rgba(239, 68, 68, 0.1);
+      color: #ef4444;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .nav-btn.danger:hover {
+      background: rgba(239, 68, 68, 0.2);
+    }
+
+    /* Mobile Optimizations */
+    @media (max-width: 480px) {
+      .nav-drawer {
+        width: 280px;
+      }
+
+      .nav-drawer-header {
+        padding: 16px 20px;
+        min-height: 60px;
+      }
+
+      .nav-drawer-content {
+        padding: 16px 0;
+      }
+
+      .nav-drawer-section {
+        padding: 0 20px;
+        margin-bottom: 24px;
+      }
+
+      .nav-links li {
+        margin-bottom: 2px;
+      }
+
+      .nav-link {
+        padding: 14px 16px;
+        min-height: 48px;
+      }
+
+      .nav-icon {
+        font-size: 14px;
+        width: 20px;
+      }
+
+      .nav-text {
+        font-size: 14px;
+      }
+    }
+
+    /* Prevent body scroll when drawer is open */
+    body.nav-drawer-open {
+      overflow: hidden;
+    }
+
+    /* Improve touch targets for mobile */
+    @media (max-width: 768px) and (hover: none) {
+      .hamburger-btn,
+      .nav-close-btn {
+        width: 56px;
+        height: 56px;
+        touch-action: manipulation;
+      }
+
+      .nav-link {
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: rgba(59, 130, 246, 0.1);
+      }
+    }
+
     /* Modal Body */
     .filter-modal-body {
       padding: 24px;
@@ -1053,16 +1336,63 @@
         <a class="btn collapse-on-narrow" href="/dashboard">Dashboard</a>
         <a class="btn collapse-on-narrow" href="/logout">Logout</a>
 
-        <!-- More dropdown -->
-        <div class="dropdown-wrap">
-          <button id="moreBtn" class="btn" aria-haspopup="true" aria-expanded="false">More ▾</button>
-          <div id="moreMenu" class="dropdown" role="menu" aria-label="More actions">
-            <button id="sendSelectedMore" class="btn primary" type="button" disabled>Send selected</button>
-            <button id="cancelSelectedMore" class="btn danger" type="button" disabled>Cancel selected</button>
-            <a class="btn" href="/dashboard">Dashboard</a>
-            <a class="btn" href="/logout">Logout</a>
+        <!-- Hamburger Menu Button -->
+        <button id="hamburgerBtn" class="hamburger-btn" type="button" aria-label="Open menu" aria-expanded="false">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </button>
+
+        <!-- Navigation Drawer -->
+        <nav id="navDrawer" class="nav-drawer" aria-hidden="true" role="navigation" aria-label="Main navigation">
+          <div class="nav-drawer-header">
+            <h2 class="nav-drawer-title">Menu</h2>
+            <button id="closeDrawerBtn" class="nav-close-btn" type="button" aria-label="Close menu">
+              ✕
+            </button>
           </div>
-        </div>
+
+          <div class="nav-drawer-content">
+            <div class="nav-drawer-section">
+              <h3 class="nav-section-title">Actions</h3>
+              <ul class="nav-links">
+                <li>
+                  <button id="sendSelectedDrawer" class="nav-link nav-btn primary" type="button" disabled>
+                    <span class="nav-icon">📤</span>
+                    <span class="nav-text">Send selected</span>
+                  </button>
+                </li>
+                <li>
+                  <button id="cancelSelectedDrawer" class="nav-link nav-btn danger" type="button" disabled>
+                    <span class="nav-icon">❌</span>
+                    <span class="nav-text">Cancel selected</span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+
+            <div class="nav-drawer-section">
+              <h3 class="nav-section-title">Navigation</h3>
+              <ul class="nav-links">
+                <li>
+                  <a class="nav-link" href="/dashboard">
+                    <span class="nav-icon">🏠</span>
+                    <span class="nav-text">Dashboard</span>
+                  </a>
+                </li>
+                <li>
+                  <a class="nav-link" href="/logout">
+                    <span class="nav-icon">🚪</span>
+                    <span class="nav-text">Logout</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+
+        <!-- Drawer Backdrop -->
+        <div id="drawerBackdrop" class="nav-drawer-backdrop" aria-hidden="true"></div>
 
         <!-- Filters Button -->
         <button id="filtersBtn_hdr" class="btn" type="button">🔍 Filters</button>
@@ -1236,11 +1566,8 @@
       const selectAll = document.getElementById('selectAll');
       const sendSelectedBtn = document.getElementById('sendSelected');
       const cancelSelectedBtn = document.getElementById('cancelSelected');
-      const sendSelectedMore = document.getElementById('sendSelectedMore');
-      const cancelSelectedMore = document.getElementById('cancelSelectedMore');
 
-      const moreBtn = document.getElementById('moreBtn');
-      const moreMenu = document.getElementById('moreMenu');
+      // Note: moreBtn and moreMenu have been replaced with hamburger drawer
 
       const filtersPanel = document.getElementById('filtersPanel');
       const filtersBtnHdr = document.getElementById('filtersBtn_hdr');
@@ -1485,7 +1812,125 @@
         }
       }
 
-      // Dropdown helpers
+      // NAVIGATION DRAWER FUNCTIONALITY
+      const hamburgerBtn = document.getElementById('hamburgerBtn');
+      const navDrawer = document.getElementById('navDrawer');
+      const closeDrawerBtn = document.getElementById('closeDrawerBtn');
+      const drawerBackdrop = document.getElementById('drawerBackdrop');
+
+      // Drawer buttons
+      const sendSelectedDrawer = document.getElementById('sendSelectedDrawer');
+      const cancelSelectedDrawer = document.getElementById('cancelSelectedDrawer');
+
+      function openNavDrawer() {
+        if (navDrawer && drawerBackdrop) {
+          navDrawer.classList.add('active');
+          drawerBackdrop.classList.add('active');
+          navDrawer.setAttribute('aria-hidden', 'false');
+          drawerBackdrop.setAttribute('aria-hidden', 'false');
+          hamburgerBtn.classList.add('active');
+          hamburgerBtn.setAttribute('aria-expanded', 'true');
+          document.body.classList.add('nav-drawer-open'); // Prevent body scroll
+
+          // Focus management
+          const firstLink = navDrawer.querySelector('.nav-link');
+          if (firstLink) {
+            firstLink.focus();
+          }
+        }
+      }
+
+      function closeNavDrawer() {
+        if (navDrawer && drawerBackdrop) {
+          navDrawer.classList.remove('active');
+          drawerBackdrop.classList.remove('active');
+          navDrawer.setAttribute('aria-hidden', 'true');
+          drawerBackdrop.setAttribute('aria-hidden', 'true');
+          hamburgerBtn.classList.remove('active');
+          hamburgerBtn.setAttribute('aria-expanded', 'false');
+          document.body.classList.remove('nav-drawer-open'); // Restore body scroll
+
+          // Return focus to hamburger button
+          hamburgerBtn.focus();
+        }
+      }
+
+      function toggleNavDrawer() {
+        if (navDrawer.classList.contains('active')) {
+          closeNavDrawer();
+        } else {
+          openNavDrawer();
+        }
+      }
+
+      // Event listeners
+      if (hamburgerBtn) {
+        hamburgerBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          toggleNavDrawer();
+        });
+      }
+
+      if (closeDrawerBtn) {
+        closeDrawerBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          closeNavDrawer();
+        });
+      }
+
+      if (drawerBackdrop) {
+        drawerBackdrop.addEventListener('click', (e) => {
+          e.preventDefault();
+          closeNavDrawer();
+        });
+      }
+
+      // Handle drawer buttons
+      if (sendSelectedDrawer) {
+        sendSelectedDrawer.addEventListener('click', (e) => {
+          e.preventDefault();
+          closeNavDrawer();
+          batchSend();
+        });
+      }
+
+      if (cancelSelectedDrawer) {
+        cancelSelectedDrawer.addEventListener('click', (e) => {
+          e.preventDefault();
+          closeNavDrawer();
+          batchCancel();
+        });
+      }
+
+      // Prevent drawer content clicks from closing drawer
+      if (navDrawer) {
+        navDrawer.addEventListener('click', (e) => {
+          e.stopPropagation();
+        });
+      }
+
+      // Keyboard navigation
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && navDrawer.classList.contains('active')) {
+          closeNavDrawer();
+        }
+      });
+
+      // Update batch button states in drawer
+      const originalUpdateBatchButtons = updateBatchButtons;
+      updateBatchButtons = function() {
+        // Call original function
+        originalUpdateBatchButtons();
+
+        // Update drawer buttons
+        const hasSelection = getSelectedIds().length > 0;
+        if (sendSelectedBtn) sendSelectedBtn.disabled = !hasSelection;
+        if (cancelSelectedBtn) cancelSelectedBtn.disabled = !hasSelection;
+        if (sendSelectedDrawer) sendSelectedDrawer.disabled = !hasSelection;
+        if (cancelSelectedDrawer) cancelSelectedDrawer.disabled = !hasSelection;
+      };
+
+      // Old dropdown helpers (kept for compatibility if needed elsewhere)
       function closeMenu(menuEl, btnEl) {
         if (!menuEl) return;
         menuEl.classList.remove('open');
@@ -1510,7 +1955,6 @@
         applyFilter();
       });
 
-      moreBtn && moreBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(moreMenu, moreBtn); });
 
       // MODAL FUNCTIONALITY - TRUE MODAL BEHAVIOR
       const filterModal = document.getElementById('filterModal_hdr');
@@ -1555,8 +1999,6 @@
       }
 
       const onDocClick = (e) => {
-        if (moreMenu && !moreMenu.contains(e.target) && e.target !== moreBtn) closeMenu(moreMenu, moreBtn);
-
         // Close modal when clicking on the dimmed overlay background
         if (filterModal && filterModal.classList.contains('active') &&
             e.target === filterModal) {
@@ -1569,7 +2011,6 @@
 
       window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
-          closeMenu(moreMenu, moreBtn);
           closeFilterModal(); // ESC closes modal without applying
         }
 
@@ -1630,8 +2071,6 @@
       selectAll && selectAll.addEventListener('change', (e) => toggleAll(e.target.checked));
       sendSelectedBtn && sendSelectedBtn.addEventListener('click', batchSend);
       cancelSelectedBtn && cancelSelectedBtn.addEventListener('click', batchCancel);
-      sendSelectedMore && sendSelectedMore.addEventListener('click', () => { closeMenu(moreMenu, moreBtn); batchSend(); });
-      cancelSelectedMore && cancelSelectedMore.addEventListener('click', () => { closeMenu(moreMenu, moreBtn); batchCancel(); });
 
       // Enhanced keyboard navigation and accessibility
       function setupKeyboardShortcuts() {
