@@ -357,10 +357,7 @@
       }
     }
 
-    /* Ensure consistency with overall modal design system */
-    .filter-modal-overlay {
-      /* Already fully viewport-based */
-    }
+    /* Filter modal is now fully viewport-based and responsive */
 
     .filter-modal-body {
       padding: clamp(3vw, 6vw, 4vw);
@@ -1579,11 +1576,11 @@
         toast.innerHTML = `
           <div style="
             position: fixed;
-            bottom: clamp(2vh, 20px, 4vh);
-            right: clamp(2vw, 20px, 4vw);
+            bottom: clamp(2vh, 4vh, 4vh);
+            right: clamp(2vw, 4vw, 4vw);
             background: ${type === 'success' ? 'rgba(16, 185, 129, 0.95)' : type === 'error' ? 'rgba(239, 68, 68, 0.95)' : 'rgba(59, 130, 246, 0.95)'};
             color: white;
-            padding: clamp(0.8vh, 12px, 1.2vh) clamp(1vw, 16px, 1.8vw);
+            padding: clamp(1vh, 2vh, 2vh) clamp(1.5vw, 2.5vw, 2.5vw);
             border-radius: clamp(0.6vw, 12px, 1vw);
             font-family: 'Inter', system-ui, sans-serif;
             font-weight: 500;
