@@ -114,6 +114,157 @@
       flex: 0 0 auto;
     }
 
+    /* Contextual Action Bar Styles */
+    .header-default,
+    .header-selection {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      opacity: 1;
+      transform: translateY(0);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: absolute;
+      left: 0;
+      top: 0;
+      padding: clf clamp(0.6vh, 12px, 1.4vh) clamp(0.7vw, 14px, 1.7vw);
+    }
+
+    .header-default {
+      justify-content: space-between;
+    }
+
+    .header-selection {
+      justify-content: space-between;
+      opacity: 0;
+      transform: translateY(-10px);
+      pointer-events: none;
+    }
+
+    .header-default.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .header-selection.active {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    /* Selection Count Styling */
+    .selection-count {
+      font-size: clamp(1.3rem, 3vw, 1.8rem);
+      font-weight: 700;
+      color: var(--text-primary);
+      background: linear-gradient(135deg, var(--text-primary) 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-left: clamp(0.5vw, 8px, 1.2vw);
+    }
+
+    /* Action Buttons */
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: clamp(0.3vw, 6px, 0.7vw);
+      height: clamp(2vh, 42px, 4vh);
+      padding: 0 clamp(0.8vw, 16px, 1.6vw);
+      border-radius: clamp(0.5vw, 12px, 1.2vw);
+      border: 2px solid transparent;
+      background: rgba(17, 24, 39, 0.8);
+      color: #e5ecff;
+      cursor: pointer;
+      font-size: clamp(0.9rem, 2vw, 1rem);
+      font-weight: 600;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      position: relative;
+      overflow: hidden;
+      min-width: clamp(10vw, 100px, 15vw);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .action-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s ease;
+      z-index: 1;
+    }
+
+    .action-btn:hover:not(:disabled)::before {
+      left: 100%;
+    }
+
+    .action-btn:hover:not(:disabled) {
+      background: rgba(61, 87, 122, 0.9);
+      border-color: rgba(255,255,255,0.2);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .action-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .action-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .action-btn.primary:not(:disabled):hover {
+      background: #2563eb;
+      border-color: #1d4ed8;
+    }
+
+    .action-btn.danger:not(:disabled):hover {
+      background: rgba(239, 68, 68, 0.9);
+      border-color: rgba(239, 68, 68, 0.6);
+    }
+
+    .action-btn .action-icon {
+      font-size: clamp(1.1rem, 3vw, 1.4rem);
+      line-height: 1;
+      z-index: 2;
+      position: relative;
+    }
+
+    .action-btn span {
+      z-index: 2;
+      position: relative;
+    }
+
+    /* Loading state for action buttons */
+    .action-btn.loading {
+      pointer-events: none;
+      opacity: 0.8;
+      position: relative;
+    }
+
+    .action-btn.loading::after {
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: clamp(1.2rem, 3vw, 1.4rem);
+      height: clamp(1.2rem, 3vw, 1.4rem);
+      margin: calc(-0.6 * clamp(1.2rem, 3vw, 1.4rem)) 0 0 calc(-0.6 * clamp(1.2rem, 3vw, 1.4rem));
+      border: 2px solid transparent;
+      border-top: 2px solid currentColor;
+      border-radius: 50%;
+      animation: spin 1.2s ease-in-out infinite;
+      z-index: 3;
+    }
+
     .btn {
       display: inline-flex;
       align-items: center;
@@ -373,288 +524,6 @@
 
     /* Filter modal is now fully viewport-based and responsive */
 
-    /* HAMBURGER MENU & NAVIGATION DRAWER STYLES */
-    .hamburger-btn {
-      background: none;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 8px;
-      padding: 12px;
-      cursor: pointer;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      transition: all 0.2s ease;
-      width: 48px;
-      height: 48px;
-      align-items: center;
-      justify-content: center;
-      background-color: rgba(17, 24, 39, 0.6);
-    }
-
-    .hamburger-btn:hover {
-      background-color: rgba(17, 24, 39, 0.8);
-      border-color: rgba(255, 255, 255, 0.25);
-    }
-
-    .hamburger-btn:focus {
-      outline: 2px solid #3b82f6;
-      outline-offset: 2px;
-    }
-
-    .hamburger-btn.active .hamburger-line:nth-child(1) {
-      transform: rotate(45deg) translate(6px, 6px);
-    }
-
-    .hamburger-btn.active .hamburger-line:nth-child(2) {
-      opacity: 0;
-    }
-
-    .hamburger-btn.active .hamburger-line:nth-child(3) {
-      transform: rotate(-45deg) translate(6px, -6px);
-    }
-
-    .hamburger-line {
-      width: 20px;
-      height: 2px;
-      background-color: #e5ecff;
-      transition: all 0.3s ease;
-      border-radius: 1px;
-    }
-
-    /* Navigation Drawer */
-    .nav-drawer {
-      position: fixed;
-      top: 0;
-      left: 0;
-      height: 100vh;
-      width: 300px;
-      background: var(--surface);
-      border-right: 1px solid var(--border);
-      transform: translateX(-100%);
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      z-index: 1200;
-      box-shadow: 4px 0 20px rgba(0, 0, 0, 0.3);
-      display: flex;
-      flex-direction: column;
-    }
-
-    .nav-drawer.active {
-      transform: translateX(0);
-    }
-
-    /* Drawer Backdrop */
-    .nav-drawer-backdrop {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: rgba(0, 0, 0, 0.5);
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.3s ease;
-      z-index: 1150;
-    }
-
-    .nav-drawer-backdrop.active {
-      opacity: 1;
-      visibility: visible;
-    }
-
-    /* Drawer Header */
-    .nav-drawer-header {
-      padding: 20px 24px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      min-height: 70px;
-    }
-
-    .nav-drawer-title {
-      color: var(--text-primary);
-      font-size: 20px;
-      font-weight: 600;
-      margin: 0;
-      background: linear-gradient(135deg, var(--text-primary) 0%, #3b82f6 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-    }
-
-    .nav-close-btn {
-      background: none;
-      border: none;
-      font-size: 20px;
-      color: var(--text-secondary);
-      cursor: pointer;
-      padding: 8px;
-      border-radius: 6px;
-      transition: all 0.2s ease;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .nav-close-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: var(--text-primary);
-    }
-
-    /* Drawer Content */
-    .nav-drawer-content {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px 0;
-    }
-
-    .nav-drawer-section {
-      margin-bottom: 32px;
-      padding: 0 24px;
-    }
-
-    .nav-section-title {
-      color: var(--text-primary);
-      font-size: 14px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin: 0 0 16px 0;
-      opacity: 0.7;
-    }
-
-    .nav-links {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-
-    .nav-links li {
-      margin-bottom: 4px;
-    }
-
-    .nav-link {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 16px 20px;
-      text-decoration: none;
-      color: var(--text-secondary);
-      border-radius: 8px;
-      transition: all 0.2s ease;
-      font-weight: 500;
-      min-height: 56px;
-      width: 100%;
-      text-align: left;
-      border: none;
-      background: none;
-      cursor: pointer;
-    }
-
-    .nav-link:hover {
-      background: rgba(59, 130, 246, 0.1);
-      color: var(--text-primary);
-      transform: translateX(4px);
-    }
-
-    .nav-link:focus {
-      outline: 2px solid #3b82f6;
-      outline-offset: 2px;
-    }
-
-    .nav-icon {
-      font-size: 16px;
-      width: 24px;
-      text-align: center;
-    }
-
-    .nav-text {
-      flex: 1;
-      font-size: 16px;
-      line-height: 1.4;
-    }
-
-    .nav-btn.primary {
-      background: #3b82f6;
-      color: white;
-      border: 1px solid #3b82f6;
-    }
-
-    .nav-btn.primary:hover {
-      background: #2563eb;
-      border-color: #2563eb;
-    }
-
-    .nav-btn.danger {
-      background: rgba(239, 68, 68, 0.1);
-      color: #ef4444;
-      border: 1px solid rgba(239, 68, 68, 0.2);
-    }
-
-    .nav-btn.danger:hover {
-      background: rgba(239, 68, 68, 0.2);
-    }
-
-    /* Mobile Optimizations */
-    @media (max-width: 480px) {
-      .nav-drawer {
-        width: 280px;
-      }
-
-      .nav-drawer-header {
-        padding: 16px 20px;
-        min-height: 60px;
-      }
-
-      .nav-drawer-content {
-        padding: 16px 0;
-      }
-
-      .nav-drawer-section {
-        padding: 0 20px;
-        margin-bottom: 24px;
-      }
-
-      .nav-links li {
-        margin-bottom: 2px;
-      }
-
-      .nav-link {
-        padding: 14px 16px;
-        min-height: 48px;
-      }
-
-      .nav-icon {
-        font-size: 14px;
-        width: 20px;
-      }
-
-      .nav-text {
-        font-size: 14px;
-      }
-    }
-
-    /* Prevent body scroll when drawer is open */
-    body.nav-drawer-open {
-      overflow: hidden;
-    }
-
-    /* Improve touch targets for mobile */
-    @media (max-width: 768px) and (hover: none) {
-      .hamburger-btn,
-      .nav-close-btn {
-        width: 56px;
-        height: 56px;
-        touch-action: manipulation;
-      }
-
-      .nav-link {
-        touch-action: manipulation;
-        -webkit-tap-highlight-color: rgba(59, 130, 246, 0.1);
-      }
-    }
 
     /* Modal Body */
     .filter-modal-body {
@@ -1323,123 +1192,79 @@
   <div class="page">
     <!-- Header -->
     <div class="header-panel glass container-width">
-      <div class="header-left">
-        <h2>Pending Emails</h2>
-        <span class="subtitle">Review and send AI-generated responses</span>
-        <span class="count-badge" id="headerCount">
-          {{ items|length if items else 0 }} pending
-        </span>
+      <!-- Default State: Normal header with title and filters -->
+      <div class="header-default active">
+        <div class="header-left">
+          <h2>Pending Emails</h2>
+          <span class="subtitle">Review and send AI-generated responses</span>
+          <span class="count-badge" id="headerCount">
+            {{ items|length if items else 0 }} pending
+          </span>
+        </div>
+        <div class="header-right">
+          <!-- Filters Button -->
+          <button id="filtersBtn_hdr" class="btn" type="button">🔍 Filters</button>
+        </div>
       </div>
-      <div class="header-right">
-        <button id="sendSelected" class="btn primary collapse-on-narrow" type="button" disabled>Send selected</button>
-        <button id="cancelSelected" class="btn danger collapse-on-narrow" type="button" disabled>Cancel selected</button>
-        <a class="btn collapse-on-narrow" href="/dashboard">Dashboard</a>
-        <a class="btn collapse-on-narrow" href="/logout">Logout</a>
 
-        <!-- Hamburger Menu Button -->
-        <button id="hamburgerBtn" class="hamburger-btn" type="button" aria-label="Open menu" aria-expanded="false">
-          <span class="hamburger-line"></span>
-          <span class="hamburger-line"></span>
-          <span class="hamburger-line"></span>
-        </button>
+      <!-- Selection State: Action bar when items are selected -->
+      <div class="header-selection">
+        <div class="header-left">
+          <span id="selectionCount" class="selection-count">0 Selected</span>
+        </div>
+        <div class="header-right">
+          <button id="sendSelected" class="action-btn primary" type="button" disabled>
+            <span class="action-icon">📤</span>
+            <span>Send</span>
+          </button>
+          <button id="cancelSelected" class="action-btn danger" type="button" disabled>
+            <span class="action-icon">🗑️</span>
+            <span>Cancel</span>
+          </button>
+        </div>
+      </div>
+    </div>
 
-        <!-- Navigation Drawer -->
-        <nav id="navDrawer" class="nav-drawer" aria-hidden="true" role="navigation" aria-label="Main navigation">
-          <div class="nav-drawer-header">
-            <h2 class="nav-drawer-title">Menu</h2>
-            <button id="closeDrawerBtn" class="nav-close-btn" type="button" aria-label="Close menu">
-              ✕
-            </button>
-          </div>
+    <!-- Filter Modal -->
+    <div id="filterModal_hdr" class="filter-modal-overlay" aria-hidden="true">
+      <div class="filter-modal-content">
+        <div class="filter-modal-header">
+          <h3>Filter Pending Emails</h3>
+          <button id="closeFilterModal_hdr" class="filter-modal-close" type="button" aria-label="Close filters">×</button>
+        </div>
 
-          <div class="nav-drawer-content">
-            <div class="nav-drawer-section">
-              <h3 class="nav-section-title">Actions</h3>
-              <ul class="nav-links">
-                <li>
-                  <button id="sendSelectedDrawer" class="nav-link nav-btn primary" type="button" disabled>
-                    <span class="nav-icon">📤</span>
-                    <span class="nav-text">Send selected</span>
-                  </button>
-                </li>
-                <li>
-                  <button id="cancelSelectedDrawer" class="nav-link nav-btn danger" type="button" disabled>
-                    <span class="nav-icon">❌</span>
-                    <span class="nav-text">Cancel selected</span>
-                  </button>
-                </li>
-              </ul>
+        <div class="filter-modal-body">
+          <div class="filter-form">
+            <div class="filter-field">
+              <label for="search_hdr" class="filter-label">🔎 Search</label>
+              <input id="search_hdr" class="filter-input" type="search" placeholder="Search subject or recipient…" aria-label="Search pending emails">
             </div>
 
-            <div class="nav-drawer-section">
-              <h3 class="nav-section-title">Navigation</h3>
-              <ul class="nav-links">
-                <li>
-                  <a class="nav-link" href="/dashboard">
-                    <span class="nav-icon">🏠</span>
-                    <span class="nav-text">Dashboard</span>
-                  </a>
-                </li>
-                <li>
-                  <a class="nav-link" href="/logout">
-                    <span class="nav-icon">🚪</span>
-                    <span class="nav-text">Logout</span>
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </nav>
-
-        <!-- Drawer Backdrop -->
-        <div id="drawerBackdrop" class="nav-drawer-backdrop" aria-hidden="true"></div>
-
-        <!-- Filters Button -->
-        <button id="filtersBtn_hdr" class="btn" type="button">🔍 Filters</button>
-
-        <!-- Filter Modal -->
-        <div id="filterModal_hdr" class="filter-modal-overlay" aria-hidden="true">
-          <div class="filter-modal-content">
-            <div class="filter-modal-header">
-              <h3>Filter Pending Emails</h3>
-              <button id="closeFilterModal_hdr" class="filter-modal-close" type="button" aria-label="Close filters">×</button>
+            <div class="filter-field">
+              <label for="statusFilter_hdr" class="filter-label">📋 Status</label>
+              <select id="statusFilter_hdr" class="filter-select" aria-label="Filter by status">
+                <option value="">All statuses</option>
+                <option value="PENDING">Pending</option>
+                <option value="DRAFT">Draft</option>
+              </select>
             </div>
 
-            <div class="filter-modal-body">
-              <div class="filter-form">
-                <div class="filter-field">
-                  <label for="search_hdr" class="filter-label">🔎 Search</label>
-                  <input id="search_hdr" class="filter-input" type="search" placeholder="Search subject or recipient…" aria-label="Search pending emails">
-                </div>
-
-                <div class="filter-field">
-                  <label for="statusFilter_hdr" class="filter-label">📋 Status</label>
-                  <select id="statusFilter_hdr" class="filter-select" aria-label="Filter by status">
-                    <option value="">All statuses</option>
-                    <option value="PENDING">Pending</option>
-                    <option value="DRAFT">Draft</option>
-                  </select>
-                </div>
-
-                <div class="filter-field">
-                  <label for="sensitivityFilter_hdr" class="filter-label">⚠️ Sensitivity</label>
-                  <select id="sensitivityFilter_hdr" class="filter-select" aria-label="Filter by sensitivity">
-                    <option value="">All sensitivities</option>
-                    <option value="normal">Normal</option>
-                    <option value="sensitive">Sensitive</option>
-                    <option value="high">High</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-
-            <div class="filter-modal-footer">
-              <button id="resetFilters_hdr" class="btn" type="button">Reset All</button>
-              <button id="applyFilters_hdr" class="btn primary" type="button">Apply Filters</button>
+            <div class="filter-field">
+              <label for="sensitivityFilter_hdr" class="filter-label">⚠️ Sensitivity</label>
+              <select id="sensitivityFilter_hdr" class="filter-select" aria-label="Filter by sensitivity">
+                <option value="">All sensitivities</option>
+                <option value="normal">Normal</option>
+                <option value="sensitive">Sensitive</option>
+                <option value="high">High</option>
+              </select>
             </div>
           </div>
         </div>
 
+        <div class="filter-modal-footer">
+          <button id="resetFilters_hdr" class="btn" type="button">Reset All</button>
+          <button id="applyFilters_hdr" class="btn primary" type="button">Apply Filters</button>
+        </div>
       </div>
     </div>
 
@@ -1566,8 +1391,6 @@
       const selectAll = document.getElementById('selectAll');
       const sendSelectedBtn = document.getElementById('sendSelected');
       const cancelSelectedBtn = document.getElementById('cancelSelected');
-
-      // Note: moreBtn and moreMenu have been replaced with hamburger drawer
 
       const filtersPanel = document.getElementById('filtersPanel');
       const filtersBtnHdr = document.getElementById('filtersBtn_hdr');
@@ -1742,8 +1565,40 @@
       }
 
       function updateBatchButtons() {
-        const hasSelection = getSelectedIds().length > 0;
-        [sendSelectedBtn, cancelSelectedBtn, sendSelectedMore, cancelSelectedMore].forEach(b => { if (b) b.disabled = !hasSelection; });
+        const selectedIds = getSelectedIds();
+        const hasSelection = selectedIds.length > 0;
+
+        // Update button states
+        [sendSelectedBtn, cancelSelectedBtn].forEach(b => { if (b) b.disabled = !hasSelection; });
+
+        // Update header state
+        updateHeaderState(hasSelection);
+
+        // Update selection count if in selection state
+        updateSelectionCount(selectedIds);
+      }
+
+      function updateHeaderState(hasSelection) {
+        const headerDefault = document.querySelector('.header-default');
+        const headerSelection = document.querySelector('.header-selection');
+
+        if (hasSelection) {
+          // Show selection state
+          headerDefault.classList.remove('active');
+          headerSelection.classList.add('active');
+        } else {
+          // Show default state
+          headerSelection.classList.remove('active');
+          headerDefault.classList.add('active');
+        }
+      }
+
+      function updateSelectionCount(selectedIds) {
+        const selectionCount = document.getElementById('selectionCount');
+        if (selectionCount) {
+          // Use singular/plural forms appropriately
+          selectionCount.textContent = selectedIds.length === 1 ? '1 Selected' : `${selectedIds.length} Selected`;
+        }
       }
 
       function toggleAll(checked) {
@@ -1771,7 +1626,7 @@
         const ids = getSelectedIds(); if (ids.length === 0) return;
 
         // Add loading states to buttons
-        const buttons = [sendSelectedBtn, cancelSelectedBtn, sendSelectedMore, cancelSelectedMore];
+        const buttons = [sendSelectedBtn, cancelSelectedBtn];
         buttons.forEach(b => { if (b) { b.classList.add('loading'); b.disabled = true; } });
 
         try {
@@ -1794,7 +1649,7 @@
         if (!confirm(`Cancel ${ids.length} pending draft${ids.length > 1 ? 's' : ''}?`)) return;
 
         // Add loading states to buttons
-        const buttons = [sendSelectedBtn, cancelSelectedBtn, sendSelectedMore, cancelSelectedMore];
+        const buttons = [sendSelectedBtn, cancelSelectedBtn];
         buttons.forEach(b => { if (b) { b.classList.add('loading'); b.disabled = true; } });
 
         try {
@@ -1812,123 +1667,6 @@
         }
       }
 
-      // NAVIGATION DRAWER FUNCTIONALITY
-      const hamburgerBtn = document.getElementById('hamburgerBtn');
-      const navDrawer = document.getElementById('navDrawer');
-      const closeDrawerBtn = document.getElementById('closeDrawerBtn');
-      const drawerBackdrop = document.getElementById('drawerBackdrop');
-
-      // Drawer buttons
-      const sendSelectedDrawer = document.getElementById('sendSelectedDrawer');
-      const cancelSelectedDrawer = document.getElementById('cancelSelectedDrawer');
-
-      function openNavDrawer() {
-        if (navDrawer && drawerBackdrop) {
-          navDrawer.classList.add('active');
-          drawerBackdrop.classList.add('active');
-          navDrawer.setAttribute('aria-hidden', 'false');
-          drawerBackdrop.setAttribute('aria-hidden', 'false');
-          hamburgerBtn.classList.add('active');
-          hamburgerBtn.setAttribute('aria-expanded', 'true');
-          document.body.classList.add('nav-drawer-open'); // Prevent body scroll
-
-          // Focus management
-          const firstLink = navDrawer.querySelector('.nav-link');
-          if (firstLink) {
-            firstLink.focus();
-          }
-        }
-      }
-
-      function closeNavDrawer() {
-        if (navDrawer && drawerBackdrop) {
-          navDrawer.classList.remove('active');
-          drawerBackdrop.classList.remove('active');
-          navDrawer.setAttribute('aria-hidden', 'true');
-          drawerBackdrop.setAttribute('aria-hidden', 'true');
-          hamburgerBtn.classList.remove('active');
-          hamburgerBtn.setAttribute('aria-expanded', 'false');
-          document.body.classList.remove('nav-drawer-open'); // Restore body scroll
-
-          // Return focus to hamburger button
-          hamburgerBtn.focus();
-        }
-      }
-
-      function toggleNavDrawer() {
-        if (navDrawer.classList.contains('active')) {
-          closeNavDrawer();
-        } else {
-          openNavDrawer();
-        }
-      }
-
-      // Event listeners
-      if (hamburgerBtn) {
-        hamburgerBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          toggleNavDrawer();
-        });
-      }
-
-      if (closeDrawerBtn) {
-        closeDrawerBtn.addEventListener('click', (e) => {
-          e.preventDefault();
-          closeNavDrawer();
-        });
-      }
-
-      if (drawerBackdrop) {
-        drawerBackdrop.addEventListener('click', (e) => {
-          e.preventDefault();
-          closeNavDrawer();
-        });
-      }
-
-      // Handle drawer buttons
-      if (sendSelectedDrawer) {
-        sendSelectedDrawer.addEventListener('click', (e) => {
-          e.preventDefault();
-          closeNavDrawer();
-          batchSend();
-        });
-      }
-
-      if (cancelSelectedDrawer) {
-        cancelSelectedDrawer.addEventListener('click', (e) => {
-          e.preventDefault();
-          closeNavDrawer();
-          batchCancel();
-        });
-      }
-
-      // Prevent drawer content clicks from closing drawer
-      if (navDrawer) {
-        navDrawer.addEventListener('click', (e) => {
-          e.stopPropagation();
-        });
-      }
-
-      // Keyboard navigation
-      window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && navDrawer.classList.contains('active')) {
-          closeNavDrawer();
-        }
-      });
-
-      // Update batch button states in drawer
-      const originalUpdateBatchButtons = updateBatchButtons;
-      updateBatchButtons = function() {
-        // Call original function
-        originalUpdateBatchButtons();
-
-        // Update drawer buttons
-        const hasSelection = getSelectedIds().length > 0;
-        if (sendSelectedBtn) sendSelectedBtn.disabled = !hasSelection;
-        if (cancelSelectedBtn) cancelSelectedBtn.disabled = !hasSelection;
-        if (sendSelectedDrawer) sendSelectedDrawer.disabled = !hasSelection;
-        if (cancelSelectedDrawer) cancelSelectedDrawer.disabled = !hasSelection;
-      };
 
       // Old dropdown helpers (kept for compatibility if needed elsewhere)
       function closeMenu(menuEl, btnEl) {
@@ -2210,10 +1948,26 @@
         }
       });
 
+      // Initialize header state on page load
+      function initializeHeaderState() {
+        const headerDefault = document.querySelector('.header-default');
+        const headerSelection = document.querySelector('.header-selection');
+
+        // Ensure we start with default state active
+        headerDefault.classList.add('active');
+        headerSelection.classList.remove('active');
+
+        // Trigger initial batch button update
+        updateBatchButtons();
+      }
+
       // Build and init fixed header
- buildFixedHeader();
-  mirrorFiltersToBothUIs(searchInput?.value || '', statusFilter?.value || '', sensitivityFilter?.value || '');
-  applyFilter(); // triggers refreshFixedHeader via rAF
+  buildFixedHeader();
+   mirrorFiltersToBothUIs(searchInput?.value || '', statusFilter?.value || '', sensitivityFilter?.value || '');
+   applyFilter(); // triggers refreshFixedHeader via rAF
+
+      // Initialize header state after page load
+      setTimeout(initializeHeaderState, 100);
 
   // Scroll/resize/fonts handlers
   tableWrap.addEventListener('scroll', () => { updateFixedHeaderVisibility(); syncHorizontalScroll(); }, { passive: true });
