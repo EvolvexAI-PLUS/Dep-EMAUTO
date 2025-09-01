@@ -48,7 +48,7 @@ PROVIDERS = [
     EmailProvider(
         name="Microsoft 365",
         domains=[],  # Dynamic detection
-        domain_patterns=[".*\.onmicrosoft\.com$", ".*"],  # Matches any domain potentially using M365
+        domain_patterns=[r".*\.onmicrosoft\.com$", r".*"],  # Matches any domain potentially using M365
         authentication_types=["oauth2", "app_password"],
         imap_settings={
             "server": "outlook.office365.com",
