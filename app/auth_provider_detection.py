@@ -11,11 +11,9 @@ class EmailProvider:
     """Represents an email service provider with its authentication requirements"""
 
     def __init__(self, name: str, domains: List[str], authentication_types: List[str],
-                 imap_settings: Dict, smtp_settings: Dict, oauth_scopes: List[str] = None,
-                 domain_patterns: List[str] = None):
+                 imap_settings: Dict, smtp_settings: Dict, oauth_scopes: List[str] = None):
         self.name = name
         self.domains = domains
-        self.domain_patterns = domain_patterns or []  # Regex patterns for dynamic domain matching
         self.authentication_types = authentication_types  # ['oauth2', 'app_password', 'basic']
         self.imap_settings = imap_settings
         self.smtp_settings = smtp_settings
@@ -42,28 +40,6 @@ PROVIDERS = [
             "https://www.googleapis.com/auth/gmail.readonly",
             "https://www.googleapis.com/auth/gmail.modify",
             "https://www.googleapis.com/auth/gmail.send"
-        ]
-    ),
-
-    EmailProvider(
-        name="Microsoft 365",
-        domains=[],  # Dynamic detection
-        domain_patterns=[r".*\.onmicrosoft\.com$", r".*"],  # Matches any domain potentially using M365
-        authentication_types=["oauth2", "app_password"],
-        imap_settings={
-            "server": "outlook.office365.com",
-            "port": 993,
-            "use_ssl": True
-        },
-        smtp_settings={
-            "server": "smtp-mail.outlook.com",
-            "port": 587,
-            "use_ssl": True
-        },
-        oauth_scopes=[
-            "User.Read",
-            "Mail.ReadWrite",
-            "Mail.Send"
         ]
     ),
 
@@ -150,32 +126,10 @@ class EmailProviderDetection:
 
         domain = email.split('@')[1].lower()
 
-        # Check specific providers first
+        # Check specific providers
         for provider in PROVIDERS:
             if domain in provider.domains:
                 return provider, "Provider detected"
-
-        # Check domain patterns for dynamic providers (like Microsoft 365)
-        import re
-        for provider in PROVIDERS:
-            if provider.domain_patterns:
-                for pattern in provider.domain_patterns:
-                    if re.match(pattern, domain):
-                        # For Microsoft 365, we want to be more confident
-                        if provider.name == "Microsoft 365":
-                            # Microsoft 365 might use custom domains, so check for common patterns
-                            # or just assume it's M365 for any non-Gmail domain
-                            if not domain.endswith(('gmail.com', 'yahoo.com', 'hotmail.com', 'live.com')):
-                                return provider, "Microsoft 365/Exchange Online detected"
-                        else:
-                            return provider, f"Provider pattern matched: {pattern}"
-
-        # Enhanced detection: Try to identify Microsoft 365 by domain
-        # If it's not a common personal email and not in our list, it might be M365
-        if not any(domain.endswith(personal) for personal in ['gmail.com', 'yahoo.com', 'hotmail.com', 'live.com', 'aol.com']):
-            # For Microsoft 365 detection, provide M365 settings
-            m365_provider = next(p for p in PROVIDERS if p.name == "Microsoft 365")
-            return m365_provider, "Likely Microsoft 365/Exchange Online domain"
 
         # Custom domain fallback
         custom_provider = next(p for p in PROVIDERS if p.name == "Custom Domain")
@@ -353,31 +307,13 @@ def diagnose_authentication_error(error_message: str, email: str) -> Dict:
             ]
         },
 
-        'microsoft_365_auth': {
-            'problem': "Microsoft 365 blocks basic IMAP authentication - Use App Password",
-            'solutions': [
-                "🔐 SOLUTION: Microsoft 365 requires an App Password for IMAP access",
-                "👨‍💻 How to create App Password:",
-                "   1. Go to https://account.live.com/security/app-passwords",
-                "   2. Sign in with your tareeque@evolvexai.ai account",
-                "   3. Click 'Create a new app password'",
-                "   4. Name it 'EmailAI Automation'",
-                "   5. Copy the 16-character password",
-                "   6. Use this App Password below (NOT your regular password)",
-                "🔑 Keep your regular password for Outlook/email login",
-                "   Only use the App Password for automated IMAP connections",
-                "   - Delete/refresh the App Password if it gets compromised"
-            ]
-        },
-
         'imap_disabled': {
             'problem': "IMAP/SMTP access is disabled on your account",
             'solutions': [
                 f"Enable IMAP access in your {provider_name} account settings",
                 f"For Gmail: Go to Settings > Forwarding and POP/IMAP > Enable IMAP",
                 f"For Outlook: Ensure POP/IMAP is enabled in account settings",
-                f"For Yahoo: Check Account Security settings for IMAP access",
-                f"For Microsoft 365: Enable IMAP in the Microsoft 365 admin center"
+                f"For Yahoo: Check Account Security settings for IMAP access"
             ]
         },
 
@@ -405,29 +341,7 @@ def diagnose_authentication_error(error_message: str, email: str) -> Dict:
             'solutions': [
                 "Try disabling SSL verification temporarily (not recommended for production)",
                 "Check if server certificate is valid",
-                "For Microsoft 365: Ensure you're using 'outlook.office365.com' as IMAP server",
-                f"For {provider_name}: Verify you're using the correct server name"
-            ]
-        },
-
-        'server_not_verified': {
-            'problem': "Server cannot be verified or connected",
-            'solutions': [
-                f"For Microsoft 365: Ensure you're using outlook.office365.com (not your custom domain)",
-                f"For {provider_name}: Verify the exact server names and ports",
-                "Check if your domain has proper MX records pointing to the email provider",
-                "Try using OAuth2 authentication instead - it's more reliable",
-                "If connecting from restricted network, check firewall/proxy settings"
-            ]
-        },
-
-        'dns_resolution': {
-            'problem': "DNS resolution failed - mail server not found",
-            'solutions': [
-                "For Microsoft 365: IMAP should be 'outlook.office365.com', SMTP 'smtp-mail.outlook.com'",
-                "For custom domains: Ensure your mail server (mail.yourdomain.com) exists and is accessible",
-                "Check if your domain's DNS records are properly configured",
-                "Contact your email hosting provider for correct server addresses"
+                "Contact your email provider about certificate issues"
             ]
         }
     }
@@ -435,16 +349,6 @@ def diagnose_authentication_error(error_message: str, email: str) -> Dict:
     # Analyze error message and return most likely diagnosis
     error_lower = error_message.lower()
 
-    # Special handling for Microsoft 365 errors
-    if provider and provider.name == "Microsoft 365":
-        if any(keyword in error_lower for keyword in ['auth', 'login', 'password']):
-            return diagnoses['microsoft_365_auth']
-        elif any(keyword in error_lower for keyword in ['verif', 'cannot be verified', 'certificate']):
-            return diagnoses['server_not_verified']
-        elif any(keyword in error_lower for keyword in ['connect', 'refused']):
-            return diagnoses['connection_refused']
-
-    # Standard error pattern matching
     if any(keyword in error_lower for keyword in ['auth', 'login', 'password', 'credentials']):
         return diagnoses['authentication_failed']
     elif any(keyword in error_lower for keyword in ['imap', 'disabled', 'not enabled']):
@@ -455,23 +359,13 @@ def diagnose_authentication_error(error_message: str, email: str) -> Dict:
         return diagnoses['connection_refused']
     elif any(keyword in error_lower for keyword in ['certificate', 'ssl', 'tls']):
         return diagnoses['certificate_error']
-    elif any(keyword in error_lower for keyword in ['verif', 'cannot be verified']):
-        return diagnoses['server_not_verified']
-    elif any(keyword in error_lower for keyword in ['name or service not known', 'dns', 'resolution']):
-        return diagnoses['dns_resolution']
     else:
-        # Default diagnosis with provider-specific suggestions
-        base_solutions = [
-            "Verify all email settings are correct",
-            "Try using app-specific password instead of regular password",
-            "Contact your email provider's support"
-        ]
-
-        if provider and provider.name == "Microsoft 365":
-            base_solutions.insert(0, "🎯 RECOMMENDED: Use 'Sign in with Microsoft' OAuth2 button instead of IMAP")
-            base_solutions.append("Microsoft 365 works best with OAuth2 authentication")
-
         return {
             'problem': "Unknown authentication error",
-            'solutions': base_solutions
+            'solutions': [
+                "Verify all email settings are correct",
+                "Try using app-specific password instead of regular password",
+                "Contact your email provider's support",
+                "Consider using OAuth2 authentication if available"
+            ]
         }
