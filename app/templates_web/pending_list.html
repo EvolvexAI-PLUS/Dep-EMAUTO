@@ -245,6 +245,150 @@
     }
     .dropdown.open { display: block; }
 
+    /* MODAL BOTTOM SHEET STYLES */
+    .filter-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .filter-modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .filter-modal-content {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: var(--glass-border);
+      border-radius: clamp(16px, 4vw, 24px) clamp(16px, 4vw, 24px) 0 0;
+      width: 100%;
+      max-width: 100vw;
+      min-height: 50vh;
+      max-height: 90vh;
+      overflow-y: auto;
+      transform: translateY(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .filter-modal-overlay.active .filter-modal-content {
+      transform: translateY(0);
+    }
+
+    .filter-modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: clamp(1.5rem, 4vw, 2rem) clamp(1.5rem, 4vw, 2rem) clamp(1rem, 2.5vw, 1.5rem);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .filter-modal-header h3 {
+      margin: 0;
+      font-size: clamp(1.25rem, 4vw, 1.5rem);
+      font-weight: 700;
+      color: var(--text-primary);
+      background: linear-gradient(135deg, var(--text-primary) 0%, #3b82f6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .close-modal-btn {
+      background: none;
+      border: none;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: clamp(0.5rem, 1vw, 1rem);
+      border-radius: var(--border-radius);
+      transition: all 0.2s ease;
+      min-width: 44px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .close-modal-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+    }
+
+    .filter-modal-body {
+      padding: clamp(1.5rem, 4vw, 2rem);
+    }
+
+    .filter-form {
+      display: flex;
+      flex-direction: column;
+      gap: clamp(1rem, 3vw, 1.5rem);
+    }
+
+    .filter-modal-body .form-label {
+      font-weight: 600;
+      color: var(--text-primary);
+      font-size: clamp(0.9rem, 2.5vw, 1rem);
+      margin-bottom: clamp(0.5rem, 1vw, 0.75rem);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .filter-modal-body .input,
+    .filter-modal-body .select {
+      width: 100%;
+      padding: clamp(1rem, 2.5vw, 1.25rem);
+      border: 1px solid var(--border);
+      border-radius: var(--border-radius);
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+      font-size: clamp(1rem, 2.5vw, 1.1rem);
+      backdrop-filter: blur(10px);
+      transition: all 0.2s ease;
+      min-height: 48px;
+    }
+
+    .filter-modal-body .input:focus,
+    .filter-modal-body .select:focus {
+      outline: none;
+      border-color: #3b82f6;
+      background: rgba(255, 255, 255, 0.08);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .filter-modal-body .select {
+      cursor: pointer;
+    }
+
+    .filter-modal-footer {
+      display: flex;
+      gap: clamp(1rem, 2vw, 1.5rem);
+      padding: clamp(1.5rem, 4vw, 2rem);
+      border-top: 1px solid var(--border);
+      justify-content: center;
+    }
+
+    .filter-modal-footer .btn {
+      flex: 1;
+      max-width: 200px;
+      min-height: 48px;
+      font-size: clamp(1rem, 2.5vw, 1.1rem);
+      font-weight: 600;
+    }
+
     /* Inline filters row (wide screens) */
     .filters-panel {
       position: sticky;
@@ -740,33 +884,42 @@
           </div>
         </div>
 
-        <!-- Filters dropdown (appears next to More on narrow) -->
-        <div class="dropdown-wrap">
-          <button id="filtersBtn_hdr" class="btn" aria-haspopup="true" aria-expanded="false">Filters ▾</button>
-          <div id="filtersMenu_hdr" class="dropdown" role="menu" aria-label="Filters">
-            <div style="display:grid; gap:8px; width:min(320px, 92vw);">
-              <label for="search_hdr" style="font-size:0.85rem; color:var(--muted);">Search</label>
-              <input id="search_hdr" class="input" type="search" placeholder="Search subject or recipient…">
+        <!-- Filters Button -->
+        <button id="filtersBtn_hdr" class="btn" type="button">🔍 Filters</button>
 
-              <label for="statusFilter_hdr" style="font-size:0.85rem; color:var(--muted);">Status</label>
-              <select id="statusFilter_hdr" class="select">
-                <option value="">All statuses</option>
-                <option value="PENDING">Pending</option>
-                <option value="DRAFT">Draft</option>
-              </select>
+        <!-- Modal Bottom Sheet -->
+        <div id="filterModal_hdr" class="filter-modal-overlay" aria-hidden="true">
+          <div class="filter-modal-content">
+            <div class="filter-modal-header">
+              <h3>Filter Pending Emails</h3>
+              <button id="closeFilterModal_hdr" class="close-modal-btn" type="button" aria-label="Close filters">×</button>
+            </div>
 
-              <label for="sensitivityFilter_hdr" style="font-size:0.85rem; color:var(--muted);">Sensitivity</label>
-              <select id="sensitivityFilter_hdr" class="select">
-                <option value="">All sensitivities</option>
-                <option value="normal">Normal</option>
-                <option value="sensitive">Sensitive</option>
-                <option value="high">High</option>
-              </select>
+            <div class="filter-modal-body">
+              <div class="filter-form">
+                <label for="search_hdr" class="form-label">🔎 Search</label>
+                <input id="search_hdr" class="input" type="search" placeholder="Search subject or recipient…" aria-label="Search pending emails">
 
-              <div style="display:flex; gap:8px; margin-top:6px;">
-                <button id="applyFilters_hdr" class="btn primary" type="button">Apply</button>
-                <button id="resetFilters_hdr" class="btn" type="button">Reset</button>
+                <label for="statusFilter_hdr" class="form-label">📋 Status</label>
+                <select id="statusFilter_hdr" class="select" aria-label="Filter by status">
+                  <option value="">All statuses</option>
+                  <option value="PENDING">Pending</option>
+                  <option value="DRAFT">Draft</option>
+                </select>
+
+                <label for="sensitivityFilter_hdr" class="form-label">⚠️ Sensitivity</label>
+                <select id="sensitivityFilter_hdr" class="select" aria-label="Filter by sensitivity">
+                  <option value="">All sensitivities</option>
+                  <option value="normal">Normal</option>
+                  <option value="sensitive">Sensitive</option>
+                  <option value="high">High</option>
+                </select>
               </div>
+            </div>
+
+            <div class="filter-modal-footer">
+              <button id="resetFilters_hdr" class="btn" type="button">Reset All</button>
+              <button id="applyFilters_hdr" class="btn primary" type="button">Apply Filters</button>
             </div>
           </div>
         </div>
@@ -1179,13 +1332,77 @@
       });
 
       moreBtn && moreBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(moreMenu, moreBtn); });
+
+      // Modal functionality for filters
+      const filterModal = document.getElementById('filterModal_hdr');
+      const filterModalCloseBtn = document.getElementById('closeFilterModal_hdr');
+
+      function openFilterModal() {
+        if (filterModal) {
+          filterModal.classList.add('active');
+          filterModal.setAttribute('aria-hidden', 'false');
+        }
+      }
+
+      function closeFilterModal() {
+        if (filterModal) {
+          filterModal.classList.remove('active');
+          filterModal.setAttribute('aria-hidden', 'true');
+        }
+      }
+
       const onDocClick = (e) => {
         if (moreMenu && !moreMenu.contains(e.target) && e.target !== moreBtn) closeMenu(moreMenu, moreBtn);
-        if (filtersMenuHdr && !filtersMenuHdr.contains(e.target) && e.target !== filtersBtnHdr) closeMenu(filtersMenuHdr, filtersBtnHdr);
+        // Close modal when clicking outside or on close button
+        if (filterModal && filterModal.classList.contains('active') &&
+            !filterModal.querySelector('.filter-modal-content')?.contains(e.target) &&
+            e.target !== filtersBtnHdr && e.target !== filterModalCloseBtn) {
+          closeFilterModal();
+        }
       };
+
       document.addEventListener('click', onDocClick);
-      window.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeMenu(moreMenu, moreBtn); closeMenu(filtersMenuHdr, filtersBtnHdr); }});
-      filtersBtnHdr && filtersBtnHdr.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(filtersMenuHdr, filtersBtnHdr); });
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          closeMenu(moreMenu, moreBtn);
+          closeFilterModal();
+        }
+      });
+
+      // Open modal when Filters button is clicked
+      filtersBtnHdr && filtersBtnHdr.addEventListener('click', (e) => {
+        e.preventDefault();
+        openFilterModal();
+      });
+
+      // Close modal events
+      filterModalCloseBtn && filterModalCloseBtn.addEventListener('click', closeFilterModal);
+      filterModal && filterModal.addEventListener('click', (e) => {
+        if (e.target === filterModal) closeFilterModal();
+      });
+
+      // Apply and Reset button handlers for modal
+      const applyBtn = document.getElementById('applyFilters_hdr');
+      const resetBtn = document.getElementById('resetFilters_hdr');
+
+      if (applyBtn) {
+        applyBtn.addEventListener('click', () => {
+          mirrorFiltersToBothUIs(searchHdr?.value || '', statusFilterHdr?.value || '', sensitivityFilterHdr?.value || '');
+          applyFilter();
+          closeFilterModal();
+        });
+      }
+
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          if (searchHdr) searchHdr.value = '';
+          if (statusFilterHdr) statusFilterHdr.value = '';
+          if (sensitivityFilterHdr) sensitivityFilterHdr.value = '';
+          mirrorFiltersToBothUIs('', '', '');
+          applyFilter();
+          // Don't close modal on reset - user might want to set new filters
+        });
+      }
 
       selectAll && selectAll.addEventListener('change', (e) => toggleAll(e.target.checked));
       sendSelectedBtn && sendSelectedBtn.addEventListener('click', batchSend);
