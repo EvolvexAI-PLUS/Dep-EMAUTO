@@ -233,7 +233,8 @@
     .dropdown-wrap { position: relative; }
     .dropdown {
       position: absolute;
-      right: 0; top: calc(100% + clamp(0.4vw, 8px, 1vw));
+      right: 0;
+      top: calc(100% + clamp(0.4vw, 8px, 1vw));
       background: rgba(17, 24, 39, 0.98);
       border: 1px solid rgba(255,255,255,0.08);
       border-radius: clamp(0.6vw, 12px, 1.4vw);
@@ -242,6 +243,16 @@
       min-width: clamp(11vw, 220px, 20vw);
       z-index: 200;
       padding: clamp(0.4vw, 8px, 1vw);
+      transform-origin: top right;
+    }
+
+    /* Force consistent right positioning for mobile across all orientations */
+    @media (max-width: 768px) {
+      .dropdown {
+        right: 0 !important;
+        left: auto !important;
+        transform: none !important;
+      }
     }
     .dropdown.open { display: block; }
 
