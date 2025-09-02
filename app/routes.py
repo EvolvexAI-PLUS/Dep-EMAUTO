@@ -1079,6 +1079,80 @@ def logout():
 
 # ---------------- API Endpoints for UI Integration ----------------
 
+@routes.route("/api/email-preview/<id>")
+@require_jwt
+def email_preview(id):
+    """Get original email content for preview in dashboard (sent replies)"""
+    user_email = request.user["email"]
+
+    try:
+        from database.memory_manager_dynamo import reply_table
+
+        # Get sent reply information
+        reply_response = reply_table.get_item(Key={"user_email": user_email, "id": id})
+
+        if not reply_response.get("Item"):
+            return {"error": "Reply not found"}, 404
+
+        reply = reply_response["Item"]
+        convo_id = reply.get("convo_id")
+
+        if not convo_id:
+            return {"error": "Original email not found"}, 404
+
+        # Get original email content from EmailQueue using convo_id
+        from database.schema_setup import create_email_queue
+        import boto3
+        dynamodb = boto3.resource("dynamodb", region_name=os.getenv("AWS_REGION", "ap-south-1"))
+        email_table = dynamodb.Table("EmailQueue")
+
+        # Try to find original email by conversation id
+        # Note: We need to scan since EmailQueue uses email_id as sort key, not convo_id
+        email_response = email_table.scan(
+            FilterExpression=boto3.dynamodb.conditions.Attr("user_email").eq(user_email) &
+                           boto3.dynamodb.conditions.Attr("conversationId").eq(convo_id)
+        )
+
+        original_email = None
+        if email_response.get("Items"):
+            original_email = email_response["Items"][0]  # Take the most recent/first match
+
+        if not original_email:
+            # Create a preview with available info if original email not found
+            return {
+                "from": "[SENDER_NOT_FOUND]",
+                "subject": reply.get("subject", "Original email not found"),
+                "received": reply.get("timestamp", ""),
+                "content": "Original email content is no longer available.",
+                "reply_text": reply.get("response", ""),
+                "reply_status": "sent",
+                "reply_timestamp": reply.get("timestamp", ""),
+                "warning": "Original email content not available"
+            }
+
+        # Apply privacy-safe masking for preview
+        safe_data = create_llm_safe_email_content(
+            original_email.get("body", ""),
+            original_email.get("sender", ""),
+            user_email
+        )
+
+        # Return both original context and masked content
+        return {
+            "from": safe_data["masked_sender"],
+            "subject": DataPrivacyManager.sanitize_subject_line(original_email.get("subject", "")),
+            "received": original_email.get("timestamp", ""),
+            "content": safe_data["sanitized_content"],
+            "reply_text": reply.get("response", ""),
+            "reply_status": "sent",
+            "reply_timestamp": reply.get("timestamp", ""),
+            "has_original": True
+        }
+
+    except Exception as e:
+        print(f"Email preview error: {e}")
+        return {"error": "Failed to load email preview"}, 500
+
 @routes.route("/api/dashboard-stats")
 @require_jwt
 def dashboard_stats():

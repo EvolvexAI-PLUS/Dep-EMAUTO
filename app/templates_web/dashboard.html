@@ -964,6 +964,220 @@
       backdrop-filter: blur(5px);
       -webkit-backdrop-filter: blur(5px);
     }
+
+    /* Email Preview Modal Styles */
+    .email-preview-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-md);
+    }
+
+    .email-preview-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+    }
+
+    .email-preview-content {
+      position: relative;
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+      max-width: min(800px, 95vw);
+      max-height: 85vh;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .email-preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: var(--space-lg);
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, var(--surface-hover), var(--surface-active));
+    }
+
+    .email-preview-header h3 {
+      margin: 0;
+      color: var(--text-primary);
+      font-size: clamp(1.2rem, 3vw, 1.5rem);
+      font-weight: 600;
+    }
+
+    .email-preview-close {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      cursor: pointer;
+      padding: var(--space-xs);
+      border-radius: var(--radius);
+      transition: all 0.2s ease;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .email-preview-close:hover {
+      background: var(--surface-hover);
+      color: var(--text-primary);
+    }
+
+    .email-preview-body {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .loading-spinner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-2xl);
+      color: var(--text-muted);
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 4px solid var(--border);
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: var(--space-md);
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .preview-container {
+      padding: var(--space-lg);
+    }
+
+    .section-header {
+      color: var(--primary);
+      font-size: clamp(1rem, 2.5vw, 1.2rem);
+      font-weight: 600;
+      margin: var(--space-lg) 0 var(--space-md) 0;
+      padding-bottom: var(--space-xs);
+      border-bottom: 2px solid var(--primary-light);
+    }
+
+    .email-metadata {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-xs);
+      margin-bottom: var(--space-md);
+      padding: var(--space-md);
+      background: var(--surface-hover);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    .meta-item {
+      color: var(--text-secondary);
+      font-size: clamp(0.9rem, 2vw, 1rem);
+    }
+
+    .meta-item strong {
+      color: var(--text-primary);
+      margin-right: var(--space-sm);
+    }
+
+    .email-content, .email-reply {
+      padding: var(--space-md);
+      background: var(--surface-hover);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      font-family: 'Monaco', 'Consolas', monospace;
+      font-size: clamp(0.85rem, 2vw, 0.95rem);
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      max-height: 300px;
+      overflow-y: auto;
+      scrollbar-gutter: stable;
+    }
+
+    .email-content {
+      background: rgba(239, 68, 68, 0.05);
+      border-left: 4px solid rgba(239, 68, 68, 0.3);
+      max-height: 250px;
+    }
+
+    .email-reply {
+      background: rgba(16, 185, 129, 0.05);
+      border-left: 4px solid rgba(16, 185, 129, 0.3);
+      max-height: 200px;
+    }
+
+    .warning-message {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: var(--radius);
+      padding: var(--space-md);
+      color: rgba(245, 158, 11, 0.9);
+      margin-top: var(--space-md);
+      font-weight: 500;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      .email-preview-modal {
+        padding: var(--space-sm);
+      }
+
+      .email-preview-content {
+        max-height: 95vh;
+      }
+
+      .email-preview-header {
+        padding: var(--space-md);
+      }
+
+      .preview-container {
+        padding: var(--space-md);
+      }
+
+      .email-content, .email-reply {
+        font-size: clamp(0.8rem, 3vw, 0.9rem);
+        max-height: 200px;
+      }
+
+      .email-metadata {
+        flex-direction: column;
+      }
+    }
+
+    /* Enhanced clickability for table rows */
+    .email-preview-trigger:hover {
+      cursor: pointer;
+      background: rgba(99, 102, 241, 0.1) !important;
+      transform: scale(1.02) !important;
+    }
   </style>
 </head>
 <body>
@@ -1121,7 +1335,7 @@
           </div>
         {% else %}
           {% for r in replies %}
-          <div class="products-row" role="row">
+          <div class="products-row email-preview-trigger" role="row" data-email-id="{{ r.id }}" style="cursor: pointer;">
             <div class="product-cell" data-field="recipient" title="{{ (r.recipient or '') | e }}">{{ (r.recipient or '') | e }}</div>
             <div class="product-cell" data-field="subject" title="{{ (r.subject or '') | e }}">{{ (r.subject or '') | e }}</div>
             <div class="product-cell" data-field="status">
@@ -1164,6 +1378,48 @@
       <span class="label">Logout</span>
     </a>
   </nav>
+
+  <!-- Email Preview Modal -->
+  <div id="emailPreviewModal" class="email-preview-modal" style="display: none;">
+    <div class="email-preview-overlay" id="emailPreviewOverlay"></div>
+    <div class="email-preview-content">
+      <div class="email-preview-header">
+        <h3>📧 Email Preview</h3>
+        <button class="email-preview-close" id="emailPreviewClose" aria-label="Close preview">&times;</button>
+      </div>
+      <div class="email-preview-body" id="emailPreviewBody">
+        <div class="loading-spinner" id="emailPreviewLoading">
+          <div class="spinner"></div>
+          <p>Loading email preview...</p>
+        </div>
+        <div class="preview-container" id="emailPreviewContainer" style="display: none;">
+          <!-- Original Email Section -->
+          <div class="original-email-section">
+            <h4 class="section-header">📨 Original Email</h4>
+            <div class="email-metadata">
+              <div class="meta-item"><strong>From:</strong> <span id="preview-from"></span></div>
+              <div class="meta-item"><strong>Subject:</strong> <span id="preview-subject"></span></div>
+              <div class="meta-item"><strong>Received:</strong> <span id="preview-received"></span></div>
+            </div>
+            <div class="email-content" id="preview-content"></div>
+          </div>
+
+          <!-- Reply Section -->
+          <div class="reply-section">
+            <h4 class="section-header">💬 Your AI Reply</h4>
+            <div class="email-metadata">
+              <div class="meta-item"><strong>Status:</strong> <span id="preview-reply-status"></span></div>
+              <div class="meta-item"><strong>Sent:</strong> <span id="preview-reply-timestamp"></span></div>
+            </div>
+            <div class="email-reply" id="preview-reply-text"></div>
+            <div class="warning-message" id="preview-warning" style="display: none;">
+              ⚠️ Original email content is no longer available
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <script src="{{ url_for('static', filename='js/notifications.js') }}"></script>
   <script>
@@ -1358,6 +1614,126 @@
         window.notifications.info('Dashboard loaded successfully!', 3000);
       }, 1000);
     }
+
+    // Email Preview Functionality
+    let currentPreviewEmailId = null;
+    const previewModal = document.getElementById('emailPreviewModal');
+    const previewOverlay = document.getElementById('emailPreviewOverlay');
+    const previewClose = document.getElementById('emailPreviewClose');
+    const previewBody = document.getElementById('emailPreviewBody');
+    const previewLoading = document.getElementById('emailPreviewLoading');
+    const previewContainer = document.getElementById('emailPreviewContainer');
+
+    // Email preview elements
+    const previewFrom = document.getElementById('preview-from');
+    const previewSubject = document.getElementById('preview-subject');
+    const previewReceived = document.getElementById('preview-received');
+    const previewContent = document.getElementById('preview-content');
+    const previewReplyStatus = document.getElementById('preview-reply-status');
+    const previewReplyTimestamp = document.getElementById('preview-reply-timestamp');
+    const previewReplyText = document.getElementById('preview-reply-text');
+    const previewWarning = document.getElementById('preview-warning');
+
+    // Handle email row clicks
+    document.addEventListener('click', async function(e) {
+      const emailRow = e.target.closest('.email-preview-trigger');
+      if (!emailRow) return;
+
+      e.preventDefault();
+      currentPreviewEmailId = emailRow.dataset.emailId;
+
+      if (!currentPreviewEmailId) return;
+
+      // Show modal
+      showPreviewModal();
+
+      // Load email preview
+      await loadEmailPreview(currentPreviewEmailId);
+    });
+
+    // Modal controls
+    function showPreviewModal() {
+      previewModal.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+    }
+
+    function hidePreviewModal() {
+      previewModal.style.display = 'none';
+      document.body.style.overflow = '';
+      currentPreviewEmailId = null;
+    }
+
+    function resetPreview() {
+      previewBody.scrollTop = 0;
+      previewLoading.style.display = 'flex';
+      previewContainer.style.display = 'none';
+      previewWarning.style.display = 'none';
+    }
+
+    async function loadEmailPreview(emailId) {
+      resetPreview();
+
+      try {
+        const response = await fetch(`/api/email-preview/${emailId}`);
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Populate preview data
+        if (data.from) previewFrom.textContent = data.from;
+        if (data.subject) previewSubject.textContent = data.subject;
+        if (data.received) previewReceived.textContent = new Date(data.received).toLocaleString();
+        if (data.content) previewContent.textContent = data.content;
+        if (data.reply_status) previewReplyStatus.textContent = data.reply_status;
+        if (data.reply_timestamp) previewReplyTimestamp.textContent = new Date(data.reply_timestamp).toLocaleString();
+        if (data.reply_text) previewReplyText.textContent = data.reply_text;
+
+        // Show warning if original content unavailable
+        if (data.warning) {
+          previewWarning.textContent = data.warning;
+          previewWarning.style.display = 'block';
+        }
+
+        // Hide loading, show content
+        previewLoading.style.display = 'none';
+        previewContainer.style.display = 'block';
+
+        if (window.notifications) {
+          window.notifications.success('Email preview loaded successfully');
+        }
+
+      } catch (error) {
+        console.error('Email preview error:', error);
+        previewLoading.style.display = 'none';
+        previewContainer.style.display = 'none';
+        previewWarning.textContent = '❌ Failed to load email preview. Please try again.';
+        previewWarning.style.display = 'block';
+
+        if (window.notifications) {
+          window.notifications.error('Failed to load email preview');
+        }
+      }
+    }
+
+    // Close modal events
+    previewOverlay.addEventListener('click', hidePreviewModal);
+    previewClose.addEventListener('click', hidePreviewModal);
+
+    // Close on Escape key
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && previewModal.style.display !== 'none') {
+        hidePreviewModal();
+      }
+    });
+
+    // Prevent modal close when clicking inside modal content
+    document.querySelector('.email-preview-content').addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+
   </script>
 </body>
 </html>
