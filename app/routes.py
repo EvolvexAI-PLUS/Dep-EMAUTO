@@ -391,6 +391,22 @@ class DataPrivacyManager:
         return flags
 
     @staticmethod
+    def mask_email_for_audit(content: str) -> str:
+        """Legacy audit logging mask - basic but sufficient for logs"""
+        if not content:
+            return ""
+
+        # Basic PII masking for audit logs
+        content = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', '[EMAIL_MASKED]', content)
+        content = re.sub(r'\b\d{3}[-.]?\d{3}[-.]?\d{4}\b', '[PHONE_MASKED]', content)
+        content = re.sub(r'\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b', '[PAYMENT_MASKED]', content)
+
+        if len(content) > 1000:
+            content = content[:997] + "..."
+
+        return content
+
+    @staticmethod
     def log_privacy_event(user_email: str, event_type: str, pii_detected: Dict[str, Any], compliance_result: Dict[str, Any]):
         """Secure privacy event logging for compliance"""
         audit_entry = {
@@ -409,20 +425,22 @@ def sanitize_email_content(content):
     """Backward compatibility function - now uses DataPrivacyManager"""
     return DataPrivacyManager.mask_email_for_audit(content)
 
-def mask_email_for_audit(content: str) -> str:
-    """Legacy audit logging mask - basic but sufficient for logs"""
-    if not content:
-        return ""
+# Add missing method to DataPrivacyManager
+    @staticmethod
+    def mask_email_for_audit(content: str) -> str:
+        """Legacy audit logging mask - basic but sufficient for logs"""
+        if not content:
+            return ""
 
-    # Basic PII masking for audit logs
-    content = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', '[EMAIL_MASKED]', content)
-    content = re.sub(r'\b\d{3}[-.]?\d{3}[-.]?\d{4}\b', '[PHONE_MASKED]', content)
-    content = re.sub(r'\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b', '[PAYMENT_MASKED]', content)
+        # Basic PII masking for audit logs
+        content = re.sub(r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b', '[EMAIL_MASKED]', content)
+        content = re.sub(r'\b\d{3}[-.]?\d{3}[-.]?\d{4}\b', '[PHONE_MASKED]', content)
+        content = re.sub(r'\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b', '[PAYMENT_MASKED]', content)
 
-    if len(content) > 1000:
-        content = content[:997] + "..."
+        if len(content) > 1000:
+            content = content[:997] + "..."
 
-    return content
+        return content
 
 def create_llm_safe_email_content(content: str, sender_email: str, user_email: str) -> Dict[str, Any]:
     """Public API for LLM-safe content creation with full audit trail"""
