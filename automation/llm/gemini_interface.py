@@ -236,17 +236,43 @@ def classify_and_draft(email_item: Dict[str, Any], user_profile: Optional[Dict[s
             if user_profile.get("policies"): context_block += f"Policies: {user_profile['policies']}\n"
             if user_profile.get("crm_context"): context_block += f"CRM context: {user_profile['crm_context']}\n"
 
+        # 🚨 CRITICAL PRIVACY PROTECTION: Sanitize all content before LLM processing
+        try:
+            from app.routes import create_llm_safe_email_content, DataPrivacyManager
+
+            # Sanitize email content and sender
+            safe_data = create_llm_safe_email_content(body, sender, user_email)
+            safe_sender = safe_data['masked_sender']
+            safe_body = safe_data['sanitized_content']
+            safe_subject = DataPrivacyManager.sanitize_subject_line(subject)
+
+            # Securely sanitize conversation history
+            safe_history = DataPrivacyManager.sanitize_email_for_llm(history)['sanitized_content'] if history else 'No previous conversation history available.'
+
+            # Log privacy compliance
+            if safe_data['audit'].get('has_pii'):
+                print(f"🔐 PRIVACY MASKING: Applied to Gemini email with PII detected")
+
+        except ImportError:
+            # Fallback sanitization if import fails (emergency measure)
+            print("⚠️ WARNING: Privacy sanitization unavailable - Gemini falling back to legacy method")
+            from app.routes import sanitize_email_content as legacy_sanitize
+            safe_sender = sender if '@' not in sender else sender.split('@')[0][:3] + '***@' + sender.split('@')[1]
+            safe_body = legacy_sanitize(body)
+            safe_subject = subject[:50] + '...' if len(subject) > 50 else subject
+            safe_history = legacy_sanitize(history) if history else 'No previous conversation history available.'
+
         full_user_prompt = f"""Incoming email:
-From: {sender}
-Subject: {subject}
+From: {safe_sender}
+Subject: {safe_subject}
 Body:
-{body}
+{safe_body}
 
 Thread context (optional):
 {snippet or thread or ''}
 
 Conversation history:
-{history or 'No previous conversation history available.'}
+{safe_history}
 
 User context:
 {context_block}

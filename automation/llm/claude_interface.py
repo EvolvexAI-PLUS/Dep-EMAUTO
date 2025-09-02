@@ -157,11 +157,33 @@ def classify_and_draft(email_item: Dict[str, Any], user_profile: Optional[Dict[s
         }
 
     user_ctx = build_user_context(user_profile)
+    # 🚨 CRITICAL PRIVACY PROTECTION: Sanitize all content before LLM processing
+    try:
+        from app.routes import create_llm_safe_email_content, DataPrivacyManager
+
+        # Sanitize email content and sender
+        safe_data = create_llm_safe_email_content(body, sender, email_item.get('user_email', ''))
+        safe_sender = safe_data['masked_sender']
+        safe_body = safe_data['sanitized_content']
+        safe_subject = DataPrivacyManager.sanitize_subject_line(subject)
+
+        # Log privacy compliance
+        if safe_data['audit'].get('has_pii'):
+            print(f"🔐 PRIVACY MASKING: Applied to email with PII detected")
+
+    except ImportError:
+        # Fallback sanitization if import fails (should never happen in production)
+        print("⚠️ WARNING: Privacy sanitization unavailable - falling back to legacy method")
+        from app.routes import sanitize_email_content as legacy_sanitize
+        safe_sender = sender if '@' not in sender else sender.split('@')[0][:3] + '***@' + sender.split('@')[1]
+        safe_body = legacy_sanitize(body)
+        safe_subject = subject[:50] + '...' if len(subject) > 50 else subject
+
     user_prompt = f"""Incoming email:
-From: {sender}
-Subject: {subject}
+From: {safe_sender}
+Subject: {safe_subject}
 Body:
-{body}
+{safe_body}
 
 Thread context (optional):
 {snippet or thread or ''}
