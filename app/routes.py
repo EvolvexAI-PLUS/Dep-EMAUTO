@@ -945,7 +945,6 @@ def pending_list():
 
     # 🚨 PRIVACY PROTECTION: Mask sensitive data before sending to template
     try:
-        from database.memory_manager_dynamo import DataPrivacyManager
         safe_items = []
 
         for item in (items or []):
