@@ -217,7 +217,6 @@ import base64
 import os
 import re
 import hashlib
-from datetime import datetime
 from typing import Dict, Any, Optional, List
 
 # Privacy encryption system
@@ -287,7 +286,7 @@ class DataPrivacyManager:
 
         # Create audit record of processing
         processing_audit = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.datetime.utcnow().isoformat(),
             "processing_type": "llm_sanitization",
             "original_length": len(content),
             "pii_flags": DataPrivacyManager.extract_pii_flags(content)
@@ -395,12 +394,12 @@ class DataPrivacyManager:
     def log_privacy_event(user_email: str, event_type: str, pii_detected: Dict[str, Any], compliance_result: Dict[str, Any]):
         """Secure privacy event logging for compliance"""
         audit_entry = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.datetime.utcnow().isoformat(),
             "user": user_email,
             "event": event_type,
             "pii_flags": pii_detected,
             "compliance_status": "PII_MASKED_AND_COMPLIANT" if not any(pii_detected.values()) else "PII_DETECTED_AND_MASKED",
-            "audit_hash": hashlib.sha256(f"{user_email}:{event_type}:{datetime.utcnow().isoformat()}".encode()).hexdigest()[:16]
+            "audit_hash": hashlib.sha256(f"{user_email}:{event_type}:{datetime.datetime.utcnow().isoformat()}".encode()).hexdigest()[:16]
         }
 
         # In production, write to secure audit database
@@ -910,7 +909,7 @@ def privacy_audit():
         except Exception as e:
             print(f"Error fetching audit activity: {e}")
 
-        audit_results["scan_timestamp"] = datetime.utcnow().isoformat()
+        audit_results["scan_timestamp"] = datetime.datetime.utcnow().isoformat()
 
         return render_template("privacy_audit.html", audit=audit_results, role=request.user.get("role"))
 
@@ -1227,7 +1226,7 @@ def export_profile_data():
 
         # Prepare export data
         export_data = {
-            "export_date": datetime.utcnow().isoformat(),
+            "export_date": datetime.datetime.utcnow().isoformat(),
             "user_email": user_email,
             "profile": profile,
             "email_replies": replies,
@@ -1264,7 +1263,7 @@ def delete_account():
 
         profile = get_user_profile(user_email)
         profile["account_status"] = "deletion_requested"
-        profile["deletion_requested_at"] = datetime.utcnow().isoformat()
+        profile["deletion_requested_at"] = datetime.datetime.utcnow().isoformat()
         set_user_profile(user_email, profile)
 
         return {"success": True, "message": "Account deletion requested. You will be contacted for confirmation."}
